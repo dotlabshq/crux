@@ -6,6 +6,50 @@
 
 ---
 
+## Installation
+
+### Quick start
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | sh
+```
+
+### With options
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | sh -s -- \
+  --tool opencode
+```
+
+| Option | Description | Default |
+|---|---|---|
+| `--agents` | Comma-separated agent IDs to install | all available |
+| `--tool` | Target AI tool: `opencode` · `claude-code` · `cursor` · `all` | auto-detect |
+| `--project` | Project name used during workspace initialisation | — |
+| `--force` | Overwrite existing `.crux/` files | false |
+| `--dry-run` | Preview without writing files | false |
+
+### After install
+
+Start your AI tool in the project directory. The coordinator boots automatically and runs workspace initialisation on first launch — asking a few questions to configure your workspace.
+
+```
+@kubernetes-admin   cluster health, namespaces, tenant provisioning
+@postgresql-admin   schema inspection, roles, backups, tenant provisioning
+```
+
+### Keeping agents in sync
+
+After editing any `.crux/agents/` or `.crux/skills/` file, re-run:
+
+```sh
+./scripts/convert.sh
+```
+
+This syncs agent and skill definitions to tool-specific locations (`.opencode/agent/`, `.claude/agents/`, `.cursor/rules/`).
+
+---
+
 ## Directory Structure
 
 ```
@@ -217,21 +261,18 @@ Everything under `workspace/` is gitignored. All static `.crux/` files are commi
 
 ---
 
-## Getting Started
+## Adding Agents, Skills, and Workflows
 
 ```
-1. Add .crux/ to your project with:
-     COORDINATOR.md, AGENTS.md, bus/protocol.md, templates/
-     (or: curl -fsSL .../scripts/install.sh | sh)
-2. Run your AI agent (Claude Code or opencode).
-3. Coordinator detects empty workspace/ → runs installation.
-4. Answers generate: workspace/MANIFEST.md, workspace/MEMORY.md,
-   .crux/CONSTITUTION.md, .crux/SOUL.md
-5. Add agents:    copy AGENT.template.md      → agents/{role}/AGENT.md
-                  copy onboarding.template.md → agents/{role}/onboarding.md
-6. Add skills:    copy SKILL.template.md      → skills/{name}/SKILL.md
-7. Add workflows: copy WORKFLOW.template.md   → workflows/{name}.md
-                  update MANIFEST.md Workflows table
+Agent:    copy templates/AGENT.template.md      → agents/{role}/AGENT.md
+          copy templates/onboarding.template.md → agents/{role}/onboarding.md
+          run: ./scripts/convert.sh
+
+Skill:    copy templates/SKILL.template.md      → skills/{name}/SKILL.md
+          run: ./scripts/convert.sh
+
+Workflow: copy templates/WORKFLOW.template.md   → workflows/{name}.md
+          update workspace/MANIFEST.md Workflows table
 ```
 
 ## Three-Layer Model
