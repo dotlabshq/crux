@@ -6,10 +6,10 @@
 # and converts agent definitions for the specified AI tool.
 #
 # Quick start:
-#   curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | bash
 #
 # With options:
-#   curl -fsSL .../install.sh | sh -s -- \
+#   curl -fsSL .../install.sh | bash -s -- \
 #     --agents kubernetes-admin,postgresql-admin \
 #     --tool opencode \
 #     --project "My Platform"
@@ -80,10 +80,10 @@ Options:
 
 Examples:
   # Minimal
-  curl -fsSL ${REPO_RAW}/scripts/install.sh | sh
+  curl -fsSL ${REPO_RAW}/scripts/install.sh | bash
 
   # With agents and tool
-  curl -fsSL ${REPO_RAW}/scripts/install.sh | sh -s -- \\
+  curl -fsSL ${REPO_RAW}/scripts/install.sh | bash -s -- \\
     --agents kubernetes-admin,postgresql-admin \\
     --tool opencode \\
     --project "My Platform"

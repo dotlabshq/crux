@@ -11,13 +11,13 @@
 ### Quick start
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | bash
 ```
 
 ### With options
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | sh -s -- \
+curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | bash -s -- \
   --tool opencode
 ```
 
