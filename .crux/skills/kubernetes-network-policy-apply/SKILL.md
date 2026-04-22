@@ -53,9 +53,12 @@ Requires already loaded:
       ingress-controller-namespace  (default: ingress-nginx)
       monitoring-namespace          (default: monitoring)
       namespace-pattern             (to validate target namespace)
+      iac-mode                      (kustomize | cicd | direct)
+      cicd-tool                     (for pipeline instructions)
+      kustomize-base-path           (e.g. k8s/)
 
 Estimated token cost: ~500 tokens
-Unloaded after: policies applied and result confirmed
+Unloaded after: policies written and applied (or pipeline notified)
 ```
 
 ---
@@ -94,48 +97,84 @@ Unloaded after: policies applied and result confirmed
    IF policies specified → validate each name against template library
      Unknown name → ask user to provide custom YAML or correct the name
 
-3. Check existing policies
-   kubectl get networkpolicy -n {namespace} -o yaml
-   For each requested policy: note if a policy with the same name already exists
-   Reconcile: existing policies with same name will be replaced (kubectl apply)
+3. Determine write path
+   base_path = MEMORY.md → kustomize-base-path  (e.g. k8s/)
 
-4. Generate manifests
-   Build YAML for each policy (see Policy Templates section)
-   Substitute namespace values from MEMORY.md
+   IF namespace belongs to a tenant (matches tenant-namespace-pattern):
+     Extract tenant-id and env from namespace name
+     policy_path = {base_path}/tenants/{tenant-id}/{env}/networkpolicies/
+   ELSE (non-tenant namespace, e.g. system namespace):
+     policy_path = {base_path}/namespaces/{namespace}/networkpolicies/
 
-5. Show preview — REQUIRE APPROVAL
-   Display full YAML for every policy to be applied
-   List existing policies that will be replaced
+4. Write policy YAML files to disk
+   For each policy in resolved set:
+     Build YAML from Policy Templates section (substitute {namespace} values)
+     Write to: {policy_path}/{policy-name}.yaml
+
+   Write {policy_path}/kustomization.yaml:
+     apiVersion: kustomize.config.k8s.io/v1beta1
+     kind: Kustomization
+     namespace: {namespace}
+     resources:
+       - {policy-name}.yaml
+       - ...
+
+   IF this is a tenant namespace:
+     Ensure {policy_path} is referenced in
+     {base_path}/tenants/{tenant-id}/{env}/kustomization.yaml resources list
+     Add entry if missing.
+
+5. Check existing policies (for diff context)
+   kubectl get networkpolicy -n {namespace} --no-headers 2>/dev/null
+   Note: existing policies with same names will be replaced (idempotent)
+
+6. Show diff — REQUIRE APPROVAL
+   IF dry-run OR before applying:
+     kubectl diff -k {policy_path} 2>/dev/null
+   Display diff output (or full YAML if diff unavailable).
+   List existing policies that will be replaced.
    Print:
-     "Ready to apply {n} NetworkPolicy resources to namespace {namespace}.
+     "Policy files written to: {policy_path}
+      kubectl diff output: (above)
       Existing policies with matching names will be replaced.
       Proceed? (yes / no)"
    STOP — wait for explicit "yes"
 
-6. Apply
-   IF dry-run:
-     kubectl apply --dry-run=server -f - <<EOF ... EOF
-   ELSE:
-     kubectl apply -f - <<EOF ... EOF
-   Capture output, check for errors
+7. Apply based on iac-mode
 
-7. Verify
+   IF iac-mode == kustomize:
+     kubectl apply -k {policy_path}
+     Capture output. Check for errors.
+
+   IF iac-mode == cicd:
+     DO NOT run kubectl apply.
+     Show:
+       "Policy files written to {policy_path}
+        Your {cicd-tool} pipeline will apply these changes."
+
+   IF iac-mode == direct:
+     kubectl apply -k {policy_path}
+
+8. Verify (kustomize and direct modes only)
    kubectl get networkpolicy -n {namespace} -o wide
-   Confirm all applied policies appear in list
+   Confirm all applied policies appear in list.
 
-8. Report
-   "Applied {n} NetworkPolicy resources to {namespace}:
+9. Report
+   "NetworkPolicy files written to: {policy_path}
+    Applied: {yes | pending pipeline | yes — direct}
     {policy-name}: created | configured | unchanged
     ...
     Current policies in namespace: {count}"
 
-9. Log to .crux/bus/kubernetes-admin/
-   action: network-policy-apply
-   namespace: {namespace}
-   policies: {list}
-   approver: user
-   timestamp: {ISO8601}
-   outcome: success | failed — {reason}
+10. Log to .crux/bus/kubernetes-admin/
+    action: network-policy-apply
+    namespace: {namespace}
+    policies: {list}
+    manifest-path: {policy_path}
+    iac-mode: {mode}
+    approver: user
+    timestamp: {ISO8601}
+    outcome: success | failed — {reason}
 ```
 
 ---

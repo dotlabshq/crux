@@ -60,12 +60,15 @@ Requires already loaded:
       grafana-integration         (enabled | disabled)
       default-quota-tier          (small | medium | large)
       monitoring-stack-namespace  (for allow-monitoring NetworkPolicy)
+      iac-mode                    (kustomize | cicd | direct)
+      cicd-tool                   (argocd | flux | github-actions | etc | none)
+      kustomize-base-path         (e.g. k8s/)
 
   .crux/docs/tenant-standards.md   (quota tiers, label requirements)
 
 Does NOT preload docs/tenants.md — reads it only when updating.
 
-Estimated token cost: ~400 tokens
+Estimated token cost: ~450 tokens
 Unloaded after: docs/tenants.md updated and bus event written
 ```
 
@@ -109,68 +112,124 @@ PRE-FLIGHT
         Run in reconcile mode to re-apply standards without recreating? (yes / no)"
      IF exists AND --reconcile set → skip to RECONCILE mode
 
-  3. Approval gate — namespace creation
-     Present to user:
-       "I will create the following namespace(s): {list}
+  3. Derive manifest path
+     base_path = MEMORY.md → kustomize-base-path  (e.g. k8s/)
+     tenant_path = {base_path}/tenants/{tenant-id}/{env}/
+     e.g. k8s/tenants/acme/prod/
 
-        Labels that will be applied:
-          tenant={tenant-id}
-          env={env}
-          managed-by=kubernetes-admin
-          owner-email={email}
+WRITE MANIFESTS
 
-        Quota tier: {tier}
-          CPU:     {cpu}
-          Memory:  {mem}
-          Storage: {storage}
-          Pods:    {pods}
+  4. Write tenant Kustomize overlay
+     Create directory: {tenant_path}
 
-        Network policies: default-deny-ingress, allow-same-namespace, allow-monitoring
-        RBAC: RoleBinding for {team-group} (edit role) — {skipped if not provided}
-        Grafana folder: {tenant-id} at {grafana-url} — {skipped if disabled}
+     Write {tenant_path}/kustomization.yaml:
+       apiVersion: kustomize.config.k8s.io/v1beta1
+       kind: Kustomization
+       namespace: {namespace}
+       resources:
+         - ../../base
+       patches:
+         - path: namespace-patch.yaml
+         - path: quota-patch.yaml  (only if tier differs from base)
+
+     Write {tenant_path}/namespace-patch.yaml:
+       apiVersion: v1
+       kind: Namespace
+       metadata:
+         name: {namespace}
+         labels:
+           tenant: {tenant-id}
+           env: {env}
+           managed-by: kubernetes-admin
+           owner-email: {email}
+
+     Write {tenant_path}/quota-patch.yaml (tier values — see Manifests section):
+       apiVersion: v1
+       kind: ResourceQuota
+       metadata:
+         name: tenant-quota
+       spec:
+         hard:
+           requests.cpu: "{cpu}"
+           requests.memory: {mem}
+           limits.cpu: "{cpu}"
+           limits.memory: {mem}
+           requests.storage: {storage}
+           count/pods: "{pods}"
+
+     IF team-group provided:
+       Write {tenant_path}/rbac.yaml:
+         apiVersion: rbac.authorization.k8s.io/v1
+         kind: RoleBinding
+         metadata:
+           name: {tenant-id}-team-edit
+           namespace: {namespace}
+         subjects:
+           - kind: Group
+             name: {team-group}
+             apiGroup: rbac.authorization.k8s.io
+         roleRef:
+           kind: ClusterRole
+           name: edit
+           apiGroup: rbac.authorization.k8s.io
+       Add rbac.yaml to kustomization.yaml resources list
+
+APPROVAL GATE
+
+  5. Show what will be applied
+     Run: kubectl diff -k {tenant_path}
+     Display diff output to user.
+
+     Present:
+       "Manifest files written to: {tenant_path}
+        kubectl diff output: (above)
+
+        Namespace(s) to create: {list}
+        Labels: tenant={tenant-id}, env={env}, managed-by=kubernetes-admin
+        Quota tier: {tier} — CPU: {cpu}, Memory: {mem}, Storage: {storage}
+        Network policies: deny-all-ingress, allow-same-namespace, allow-monitoring (from base)
+        RBAC: {team-group} → edit role | skipped
+        Grafana folder: {tenant-id} | skipped
 
         Proceed? (yes / no)"
 
      Wait for explicit "yes". Do not proceed on ambiguous responses.
 
-NAMESPACE CREATION
+APPLY
 
-  4. Create namespace
-     kubectl create namespace {namespace} --dry-run=client -o yaml | kubectl apply -f -
+  6. Apply based on iac-mode
 
-  5. Apply labels
-     kubectl label namespace {namespace} \
-       tenant={tenant-id} \
-       env={env} \
-       managed-by=kubernetes-admin \
-       "owner-email={email}"
+     IF iac-mode == kustomize:
+       kubectl apply -k {tenant_path}
+       Capture output. Check for errors. Stop if any resource fails.
 
-  6. Apply ResourceQuota
-     Build quota manifest from tier preset (see Manifests section).
-     kubectl apply -f - <<EOF
-     {quota-manifest}
-     EOF
-     kubectl apply -f - <<EOF
-     {limitrange-manifest}
-     EOF
+     IF iac-mode == cicd:
+       DO NOT run kubectl apply.
+       Show:
+         "Manifests written to {tenant_path}
+          Your {cicd-tool} pipeline will apply these changes.
+          If you need to trigger it manually: {relevant command per tool}
+            ArgoCD:          argocd app sync {app-name}
+            Flux:            flux reconcile kustomization {name}
+            GitHub Actions:  push to trigger workflow
+            GitLab CI:       push or trigger pipeline"
+       Skip to INTEGRATIONS step.
 
-  7. Apply NetworkPolicies
-     Apply three policies (see Manifests section):
-       default-deny-ingress
-       allow-same-namespace
-       allow-monitoring
-     kubectl apply -f - (for each)
+     IF iac-mode == direct:
+       Warn:
+         "iac-mode is set to 'direct'. Changes will be applied without a pipeline.
+          Manifests have been written to {tenant_path} for reference."
+       kubectl apply -k {tenant_path}
 
-  8. Apply RBAC (if team-group provided)
-     kubectl create rolebinding {tenant-id}-team-edit \
-       --clusterrole=edit \
-       --group={team-group} \
-       --namespace={namespace} \
-       --dry-run=client -o yaml | kubectl apply -f -
+  7. Verify (kustomize and direct modes only)
+     kubectl get namespace {namespace} --no-headers
+     kubectl get resourcequota -n {namespace} --no-headers
+     kubectl get networkpolicy -n {namespace} --no-headers
+     All expected resources must be present. Report any missing.
 
 INTEGRATIONS
 
-  9. Grafana registration (if grafana-integration: enabled)
+  8. Grafana registration (if grafana-integration: enabled)
      POST to Grafana API: create folder named {tenant-id}
      Endpoint: {grafana-url}/api/folders
      Body: { "title": "{tenant-id}", "uid": "{tenant-id}" }
@@ -179,15 +238,16 @@ INTEGRATIONS
 
 DOCUMENTATION
 
-  10. Update docs/tenants.md
-      IF file does not exist → create with header.
-      Append or update row in Tenant Registry table.
-      Append or update Tenant Detail section.
+  9. Update docs/tenants.md
+     IF file does not exist → create with header.
+     Append or update row in Tenant Registry table.
+     Append or update Tenant Detail section.
+     Add: manifest-path: {tenant_path}
 
-  11. Update MANIFEST.md
+  10. Update MANIFEST.md
       Update docs/tenants.md last-updated timestamp.
 
-  12. Log to bus
+  11. Log to bus
       Write to .crux/bus/kubernetes-admin/to-coordinator.jsonl:
       {
         "type": "tenant.onboarded",
@@ -195,12 +255,16 @@ DOCUMENTATION
         "tenant": "{tenant-id}",
         "namespaces": ["{namespace}", ...],
         "tier": "{tier}",
+        "manifest-path": "{tenant_path}",
+        "iac-mode": "{iac-mode}",
         "ts": "{ISO-8601}"
       }
 
-  13. Notify user
+  12. Notify user
       "Tenant {tenant-id} onboarded.
        Namespace(s): {list}
+       Manifests: {tenant_path}
+       Applied: {yes — kubectl apply -k | pending — pipeline will apply | yes — direct}
        Grafana folder: {url | skipped}
        Entry added to docs/tenants.md"
 ```
@@ -218,19 +282,16 @@ Reconcile does NOT:
   - Change the namespace name
 
 Reconcile DOES:
-  - Re-apply all required labels (kubectl label --overwrite)
-  - Re-apply ResourceQuota and LimitRange (idempotent apply)
-  - Re-apply NetworkPolicies (idempotent apply)
-  - Re-apply RBAC RoleBinding (idempotent apply)
+  - Update manifest files in {kustomize-base-path}/tenants/{tenant-id}/{env}/
+  - Re-apply via kubectl apply -k (or show git instructions if iac-mode: cicd)
   - Update docs/tenants.md entry
   - Log reconcile event to bus
 
 Approval gate for reconcile:
-  "I will reconcile namespace {namespace}:
-   - Re-apply labels: {list}
-   - Re-apply quota tier: {tier}
-   - Re-apply {n} NetworkPolicies
-   - Re-apply RBAC: {group | skipped}
+  Run: kubectl diff -k {tenant_path}
+  Show diff output.
+  "Manifest path: {tenant_path}
+   diff output above shows what will change.
    No resources will be deleted. Proceed? (yes / no)"
 ```
 

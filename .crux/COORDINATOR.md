@@ -15,7 +15,7 @@ permission:
   edit: ask
   skill:
     "*": allow
-color: #64748b
+color: "#64748b"
 emoji: 🧭
 vibe: The system knows what it is, what it has, and what it needs — before you ask.
 ---

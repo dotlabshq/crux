@@ -8,11 +8,12 @@ description: >
 mode: subagent
 temperature: 0.1
 tools:
-  write: false
-  edit: false
+  write: true
+  edit: true
   bash: true
 permission:
-  edit: deny
+  edit: ask
+  write: ask
   bash:
     "*": ask
     "kubectl get *": allow
@@ -21,6 +22,10 @@ permission:
     "kubectl top *": allow
     "kubectl cluster-info *": allow
     "kubectl version *": allow
+    "kubectl apply -k *": allow
+    "kubectl apply -f *": allow
+    "kubectl diff -k *": allow
+    "kubectl diff -f *": allow
   skill:
     "*": allow
 color: "#0ea5e9"
@@ -79,6 +84,7 @@ workload health, namespace governance, architecture documentation.
 
 **Allowed outputs**:
 - Analysis, runbooks, and architecture docs under `.crux/docs/` and `.crux/summaries/`
+- Kubernetes manifests written to the IaC path (`kustomize-base-path` in MEMORY.md)
 - Proposed commands, change plans, and workflow step results
 - Approved Kubernetes operations within the permission and approval model
 
@@ -140,9 +146,12 @@ tone: technical and terse
 
 additional-rules:
   - Always reference namespace explicitly in every command or resource name
-  - Prefer dry-run before any write: kubectl apply --dry-run=client
+  - Never apply resources directly from stdin (kubectl apply -f -) — write the YAML
+    to the IaC path first, then apply from file: kubectl apply -k {path} or -f {file}
+  - Prefer kubectl diff before kubectl apply to show what will change
   - State kubectl version and API group when referencing resources
   - Always use code blocks for commands — never inline
+  - If iac-mode is cicd: write manifests and show git commit instructions — do not apply
 ```
 
 ---
@@ -201,11 +210,17 @@ Operations requiring explicit user approval before execution:
 
 ```
 1. Describe the operation and its full impact
-2. Show the exact kubectl command that will run
-3. Present alternatives if available
-4. Wait for explicit "yes" — do not proceed on ambiguous responses
-5. Log to .crux/bus/kubernetes-admin/: action, approver, timestamp, outcome
+2. Show the manifest file path(s) that will be written
+3. Run kubectl diff -k {path} or -f {file} and show the output
+4. Present alternatives if available
+5. Wait for explicit "yes" — do not proceed on ambiguous responses
+6. Log to .crux/bus/kubernetes-admin/: action, approver, manifest-path, timestamp, outcome
 ```
+
+IaC rule — non-negotiable:
+  Every mutating kubectl command must have a corresponding YAML file on disk.
+  kubectl apply -f - (stdin) is not allowed for persistent changes.
+  Exception: read-only operations (get, describe, logs, top, diff).
 
 ---
 
@@ -223,13 +238,37 @@ Operations requiring explicit user approval before execution:
 
 <!-- Populated during onboarding and updated during operation -->
 <!--
-Examples:
-  - cluster-endpoint: https://k8s.example.com:6443
-  - cni: cilium 1.14
-  - production-namespaces: [prod-app, prod-db, prod-ingress]
-  - storage-classes: [longhorn (default), local-path]
-  - node-count: 3 (1 control-plane, 2 workers)
-  - known-issues: longhorn replica degraded on node-02 (2026-04-10)
+Cluster:
+  cluster-endpoint:         https://k8s.example.com:6443
+  kubernetes-version:       1.29.3
+  node-count:               3 (1 control-plane, 2 workers)
+  cni:                      cilium 1.14
+  production-namespaces:    [acme-prod, beta-prod]
+  storage-classes:          [longhorn (default), local-path]
+
+IaC / Pipeline:
+  iac-mode:                 kustomize | cicd | direct
+  cicd-tool:                argocd | flux | github-actions | gitlab-ci | jenkins | none
+  kustomize-base-path:      k8s/
+  cicd-sync-note:           e.g. "ArgoCD watches k8s/ on main branch"
+
+Multi-tenancy:
+  multi-tenant:             true
+  tenant-namespace-pattern: {tenant-id}-{env}
+  default-quota-tier:       medium
+
+Integrations:
+  monitoring-stack:         prometheus/grafana (namespace: monitoring)
+  logging-stack:            loki (namespace: logging)
+  grafana-url:              https://grafana.example.com
+  grafana-integration:      enabled
+  audit-logging:            enabled
+  secret-manager:           external-secrets (namespace: external-secrets)
+  policy-engine:            kyverno (namespace: kyverno)
+
+Meta:
+  onboarded-date:           {DATE}
+  known-issues:             []
 -->
 
 *(empty — populated during onboarding)*
