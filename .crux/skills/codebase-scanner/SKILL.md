@@ -44,7 +44,7 @@ a token-efficient summary at `.crux/summaries/backend.md`.
 
 ```
 Requires already loaded:
-  .crux/agents/backend-developer/MEMORY.md   (language if already known)
+  .crux/workspace/backend-developer/MEMORY.md   (language if already known)
 
 Does not load additional docs.
 

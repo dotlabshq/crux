@@ -44,7 +44,7 @@ vulnerability scanner, and produces a prioritised list of dependency issues
 
 ```
 Requires already loaded:
-  .crux/agents/backend-developer/MEMORY.md
+  .crux/workspace/backend-developer/MEMORY.md
     Fields needed:
       language    (go | node | python | rust | unknown)
       framework   (optional — for context in report)

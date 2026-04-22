@@ -58,7 +58,9 @@ Active development. Core architecture is stable.
 **Agents:**
 - `agents/kubernetes-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, multi-tenant setup, Kustomize IaC)
 - `agents/postgresql-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, schema/role governance, tenant provisioning)
-- `agents/backend-developer/` — AGENT.md only (onboarding.md not yet written)
+- `agents/backend-developer/` — AGENT.md + onboarding.md (backend implementation, API review, backend tests, schema-sensitive review)
+- `agents/frontend-developer/` — AGENT.md + onboarding.md (UI implementation, component structure, state-flow review, frontend tests)
+- `agents/platform-engineer/` — AGENT.md + onboarding.md (environments, CI/CD, deployment review, observability, runtime summaries)
 - `agents/compliance-governance-lead/` — AGENT.md + onboarding.md (ISO 27001, GDPR/KVKK/PCI-DSS, policy/procedure pack, procurement security evaluation)
 - `agents/personal-productivity-coach/` — AGENT.md + onboarding.md (task triage, daily planning, weekly reviews, Obsidian-compatible markdown structure)
 - `agents/team-operations-coach/` — AGENT.md + onboarding.md (team structure, weekly planning, weekly reviews, blocker tracking, leadership summaries under `operations/`)
@@ -82,13 +84,28 @@ Active development. Core architecture is stable.
 - `skills/task-triage/` — classifies tasks into priorities, waiting, blocked, and clarification buckets
 - `skills/today-plan-writer/` — writes a practical daily markdown plan
 - `skills/follow-up-questioner/` — asks short clarification questions before making weak prioritisation assumptions
+- `skills/api-surface-analyser/` — analyses backend routes, handlers, and contract surfaces before implementation or review
+- `skills/service-implementation/` — implements or refactors backend service logic while respecting existing boundaries
+- `skills/backend-test-writer/` — writes backend tests or focused backend validation for changed behaviour
+- `skills/schema-change-review/` — reviews persistence-sensitive backend changes for compatibility and rollout risk
+- `skills/backend-doc-writer/` — writes backend architecture notes, contract notes, or implementation summaries
+- `skills/ui-structure-analyser/` — analyses frontend routes, components, and UI structure and writes `.crux/docs/frontend.md`
+- `skills/component-implementation/` — implements or refactors frontend components and UI behaviour
+- `skills/frontend-test-writer/` — writes frontend tests for changed interaction and UI behaviour
+- `skills/state-flow-review/` — reviews shared state, provider, hook, and interaction-heavy frontend paths
+- `skills/frontend-doc-writer/` — writes frontend notes, UI docs, or architecture summaries
+- `skills/environment-setup-review/` — reviews environment boundaries, config layout, and runtime prerequisites
+- `skills/ci-pipeline-implementation/` — implements or refactors CI/CD and release automation config
+- `skills/deployment-config-review/` — reviews deploy config, rollout risk, and release readiness
+- `skills/observability-check/` — reviews logs, metrics, traces, dashboards, alerts, and visibility gaps
+- `skills/runtime-incident-summary/` — writes short runtime incident summaries and follow-up notes
 - `skills/team-roster-manager/` — creates and updates team cards, member cards, and ownership notes under `operations/`
 - `skills/weekly-team-planner/` — writes short weekly team plans with focus, owners, blockers, and risks
 - `skills/weekly-team-review/` — writes short weekly team reviews, carry-over notes, and team health signals
 - `skills/cross-team-summary-writer/` — writes short org-level weekly summaries across teams
 - `skills/blocker-dependency-tracker/` — extracts blockers, dependencies, and ownership gaps into a coordination view
 - `skills/leadership-style-mapper/` — maps natural management answers into internal `G/S/T` signals without asking users to use the codes directly
-- `skills/codebase-scanner/` — directory scan → docs/backend.md
+- `skills/codebase-scanner/` — directory scan → `.crux/docs/backend.md`
 - `skills/doc-summariser/` — docs/ → summaries/, updates MANIFEST.md
 
 **Workflows:**
@@ -99,8 +116,8 @@ Active development. Core architecture is stable.
 - `bus/protocol.md` — transport-agnostic message schema (filesystem → Redis → NATS)
 
 ### Not Yet Written
-- `agents/backend-developer/onboarding.md` — not yet written
 - Additional platform agents: `finance-agent`, `xxxapp-agent`, `security-agent`, `devops-lead`
+- Additional domain agents: `finance-agent`, `xxxapp-agent`, `security-agent`
 - Additional workflow steps: `finance-tenant-onboarding`, `xxxapp-tenant-onboarding`
 
 ---

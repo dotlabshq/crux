@@ -95,40 +95,38 @@ Question order:
    default: hybrid
    stores-to: MEMORY.md → management-mode
 
-7. "How autonomous are your teams today?
-    Example: they need close direction / they work independently most of the time / mixed"
-   default: mixed
-   stores-to: MEMORY.md → natural-autonomy-signal
+7. "Describe your teams in a few sentences: how independently do they work,
+    what do team leads usually do (direct, coach, support, delegate?),
+    and are they still forming or already running a steady rhythm?"
+   default: mixed — describe freely
+   stores-to:
+     MEMORY.md → natural-autonomy-signal     (extracted by leadership-style-mapper)
+     MEMORY.md → natural-leadership-signal   (extracted by leadership-style-mapper)
+     MEMORY.md → natural-team-maturity-signal (extracted by leadership-style-mapper)
+   note: leadership-style-mapper runs after onboarding to derive G/S/T signals
+         from this single natural-language answer
 
-8. "Do team leads mostly direct the work, coach people through it, support the team, or delegate heavily?"
-   default: mixed
-   stores-to: MEMORY.md → natural-leadership-signal
+8. "Should weekly reporting be more control-oriented, more development-oriented, or balanced?"
+   default: balanced
+   stores-to: MEMORY.md → reporting-intent
 
-9. "Are these teams still forming, growing, or already operating in a steady rhythm?"
-   default: mixed
-   stores-to: MEMORY.md → natural-team-maturity-signal
+9. "When should weekly plans usually be written?"
+   default: start-of-week
+   stores-to: MEMORY.md → weekly-plan-cadence
 
-10. "Should weekly reporting be more control-oriented, more development-oriented, or balanced?"
-    default: balanced
-    stores-to: MEMORY.md → reporting-intent
-
-11. "When should weekly plans usually be written?"
-    default: start-of-week
-    stores-to: MEMORY.md → weekly-plan-cadence
-
-12. "When should weekly summaries usually be written?"
+10. "When should weekly summaries usually be written?"
     default: end-of-week
     stores-to: MEMORY.md → weekly-review-cadence
 
-13. "Do you want blockers and cross-team dependencies reported separately?"
+11. "Do you want blockers and cross-team dependencies reported separately?"
     default: yes
     stores-to: MEMORY.md → separate-blocker-report
 
-14. "Do you want a short organisation summary every week for leadership?"
+12. "Do you want a short organisation summary every week for leadership?"
     default: yes
     stores-to: MEMORY.md → weekly-org-summary
 
-15. "Should I suggest weekly updates when the current week is missing?"
+13. "Should I suggest weekly updates when the current week is missing?"
     default: yes
     stores-to: MEMORY.md → auto-suggest-weekly-plan
 ```
@@ -161,7 +159,9 @@ On first onboarding, create these folders under {operations-root}/:
   templates
 
 Then:
-  1. run leadership-style-mapper on the natural-language management answers
+  1. run leadership-style-mapper on the single natural-language answer from question 7
+     → extracts natural-autonomy-signal, natural-leadership-signal, natural-team-maturity-signal
+     → stores plain-language interpretation + G/S/T codes in MEMORY.md
   2. generate starter team cards for each named team
   3. if member tracking is enabled, generate person cards for named members
   4. if weekly-org-summary == yes, generate the org summary template
@@ -219,5 +219,7 @@ Re-run onboarding when:
 - weekly cadence changes
 - the operations root changes
 - the user wants a different management mode or reporting style
+- quarterly team health review is due (recommended every ~12 weeks to re-verify natural-autonomy-signal,
+  natural-leadership-signal, and natural-team-maturity-signal — these change as teams grow)
 
 Re-onboarding should update durable preferences without overwriting user-maintained operations notes unless requested.

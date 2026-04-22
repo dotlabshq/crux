@@ -47,7 +47,14 @@ Loads during execution (lazy):
   {operations-root}/weekly/
   {operations-root}/reports/
 
-Estimated token cost: ~450 tokens
+Load strategy (context budget):
+  → prefer {operations-root}/summaries/YYYY-Www-{team-name}.md if doc-summariser has run
+  → load full weekly note only when summary is missing
+  → hard cap: ~300 tokens per team when loading full notes
+  → if total team count > 5: process teams in two passes (batch A then B), combine in final output
+  → never load all team weekly notes simultaneously when team count > 8
+
+Estimated token cost: ~450 tokens base + ~300 tokens per team (full) or ~100 per team (summary)
 Unloaded after: task completion
 ```
 
@@ -65,13 +72,17 @@ Unloaded after: task completion
 ## Steps
 
 ```
-1. Load the relevant weekly team notes for the requested teams
-2. Build a short executive summary
-3. Add team-by-team snapshots
-4. Surface major blockers, cross-team dependencies, and leadership attention items
-5. Save the weekly org summary
-6. Return a concise summary preview
-7. Skill complete — unload
+1. Resolve team list from MEMORY.md → tracked-teams or user input
+2. For each team:
+   IF summaries/YYYY-Www-{team-name}.md exists → load summary (~100 tokens)
+   ELSE load {operations-root}/weekly/YYYY-Www/{team-name}.md capped at ~300 tokens
+   IF team count > 5 → process in two batches; combine outputs before step 3
+3. Build a short executive summary across all teams
+4. Add team-by-team snapshots (key result + main blocker per team, max 3 lines each)
+5. Surface major blockers, cross-team dependencies, and leadership attention items
+6. Save the weekly org summary
+7. Return a concise summary preview
+8. Skill complete — unload
 ```
 
 ---
@@ -89,4 +100,5 @@ Unloaded after: task completion
 |---|---|
 | Some team notes are missing | Summarise available teams and mark missing coverage explicitly |
 | Weekly data looks stale | Surface stale status in the report |
+| Team count > 8 and context is tight | Warn user, offer a subset summary or per-team pass |
 | Unexpected failure | Stop. Write error to bus. Notify user. |

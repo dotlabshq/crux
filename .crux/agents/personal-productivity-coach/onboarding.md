@@ -114,6 +114,11 @@ Required docs for this agent:
   {notes-root}/Templates/Weekly Review.md        → generate or preserve existing
   {notes-root}/00 Inbox/README.md                → generate if missing
 
+Skills run during onboarding:
+  weekly-review-writer is available after onboarding completes.
+  Do not run it during onboarding — it requires user task content as input.
+  Mention it in the finalise step so the user knows it is available.
+
 On first onboarding, create these folders under {notes-root}/:
   00 Inbox
   01 Projects
@@ -161,7 +166,10 @@ Does this look correct?
      from: personal-productivity-coach
 4. Notify user:
    "Personal Productivity Coach is ready.
-    You can now ask for task triage, a daily plan, or a weekly review note."
+    You can now ask for:
+    - task triage or inbox cleanup
+    - a daily plan
+    - a weekly review note (carry-over, completed, next-week intention)"
 ```
 
 ---

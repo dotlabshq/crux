@@ -45,7 +45,7 @@ files that lack test coverage.
 
 ```
 Requires already loaded:
-  .crux/agents/backend-developer/MEMORY.md
+  .crux/workspace/backend-developer/MEMORY.md
     Fields needed:
       language         (go | node | python | ruby | rust | unknown)
       test-runner      (go test | jest | pytest | rspec | cargo test | unknown)

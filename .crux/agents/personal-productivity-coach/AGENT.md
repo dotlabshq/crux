@@ -113,8 +113,8 @@ Lazy docs (load only when needed):
   .crux/docs/obsidian-productivity-structure.md load-when: saving notes into the selected notes root; generate from agents/personal-productivity-coach/assets if missing
   {notes-root}/00 Inbox/                        load-when: inbox cleanup or capture requested
   {notes-root}/01 Projects/                     load-when: project placement or action note requested
-  {notes-root}/Daily Notes/                     load-when: daily note requested
-  {notes-root}/Weekly Notes/                    load-when: weekly review requested
+  {notes-root}/Daily Notes/                     load-when: daily note or weekly review requested
+  {notes-root}/Weekly Notes/                    load-when: weekly review requested — load current week only
   {notes-root}/Templates/                       load-when: note templates requested
 
 Session start (load once, then keep):
@@ -152,6 +152,7 @@ additional-rules:
 | `task-capture-normaliser` | user pastes a messy note dump, inbox-style list, or mixed reminders | No |
 | `task-triage` | user asks to organise, prioritise, classify, or clean up tasks | No |
 | `today-plan-writer` | user asks for a daily plan, today's priorities, or a daily note | No |
+| `weekly-review-writer` | user asks for a weekly review, end-of-week note, carry-over summary, or next-week intention | No |
 | `follow-up-questioner` | user input is too vague for clean triage or plan generation | No |
 
 ---
@@ -170,7 +171,7 @@ Checked on every startup:
     AND MEMORY.md → auto-suggest-daily-note == true
     → surface: "No daily note for today. Create one?"
 
-  IF .crux/workspace/personal-productivity-coach/NOTES.md contains pending-clarification
+  IF .crux/workspace/personal-productivity-coach/NOTES.md → pending-clarification == true
     → surface at session start: "There are unresolved task triage questions from the last session."
 ```
 

@@ -1,8 +1,18 @@
+---
+pending-clarification: false
+stale-operations-view: false
+---
+
 # {{AGENT_NAME}} — Notes
 
 > Operational state for the {{ROLE_ID}} agent.
 > Lives in workspace/ — never committed to git.
 > Updated freely during operation.
+>
+> Frontmatter flags are read by auto-triggers at session start.
+> Set pending-clarification: true when unresolved triage questions remain.
+> Set stale-operations-view: true when team or operations notes need a refresh.
+> Reset flags to false once the issue is resolved.
 >
 > Use this file for temporary work state, not durable truth.
 > Stable facts and sourced conventions → MEMORY.md (same directory)

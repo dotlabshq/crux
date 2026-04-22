@@ -174,7 +174,7 @@ Checked on every startup:
     AND MEMORY.md → auto-suggest-weekly-plan == true
     → surface: "No weekly team notes exist for this week. Create them?"
 
-  IF .crux/workspace/team-operations-coach/NOTES.md contains stale-operations-view
+  IF .crux/workspace/team-operations-coach/NOTES.md → stale-operations-view == true
     → surface at session start: "Some team notes look stale and may need a weekly refresh."
 ```
 
@@ -236,6 +236,33 @@ Examples:
     verified_by: team-operations-coach
     status: fresh
     scope: organisation
+
+  - key: natural-autonomy-signal
+    value: mixed, moderate independence
+    source: onboarding interview — question 7
+    verified_at: 2026-04-22
+    verified_by: team-operations-coach (via leadership-style-mapper)
+    status: fresh
+    scope: organisation
+    notes: re-verify when team structure changes materially or quarterly (~12 weeks)
+
+  - key: natural-leadership-signal
+    value: coaching and supporting
+    source: onboarding interview — question 7
+    verified_at: 2026-04-22
+    verified_by: team-operations-coach (via leadership-style-mapper)
+    status: fresh
+    scope: organisation
+    notes: re-verify when team structure changes materially or quarterly (~12 weeks)
+
+  - key: natural-team-maturity-signal
+    value: growing, basic rhythm exists
+    source: onboarding interview — question 7
+    verified_at: 2026-04-22
+    verified_by: team-operations-coach (via leadership-style-mapper)
+    status: fresh
+    scope: organisation
+    notes: re-verify when team structure changes materially or quarterly (~12 weeks)
 -->
 
 *(empty — populated during onboarding and operation)*

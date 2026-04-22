@@ -57,19 +57,24 @@ Unloaded after: task completion
 | Input | Source | Required |
 |---|---|---|
 | `team-name` | user | Yes |
-| `week-id` | user / system date | No — default: current week |
-| `weekly-status` | user / existing weekly note | Yes |
+| `week-id` | user / system date | No — default: current week (ISO 8601: YYYY-Www) |
+| `weekly-status` | {operations-root}/weekly/YYYY-Www/{team-name}.md / user | No — auto-loaded from existing weekly plan if present; ask user only if the file is missing |
 
 ---
 
 ## Steps
 
 ```
-1. Read the relevant weekly team plan and any status updates
+1. Resolve the weekly plan path:
+   {operations-root}/weekly/YYYY-Www/{team-name}.md
+   IF file exists → load it as weekly-status
+   IF file missing → ask the user for a brief status summary before continuing
+
 2. Summarise what moved and what did not
 3. Record carry-over, blockers, dependencies, and team health signal
 4. Keep the note short and useful for the next cycle
-5. Save review output without erasing the original weekly context
+5. Save review output without erasing the original weekly plan:
+   {operations-root}/weekly/YYYY-Www/{team-name}-review.md
 6. Return a concise team review summary
 7. Skill complete — unload
 ```
