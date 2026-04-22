@@ -7,6 +7,11 @@
 # ---------------------------------------------------------------------------
 .crux/workspace/
 
+# ---------------------------------------------------------------------------
+# Pentest engagements — client data, evidence, reports — never committed
+# ---------------------------------------------------------------------------
+engagements/
+
 # Generated vector embeddings
 .crux/vectors/
 

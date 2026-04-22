@@ -48,9 +48,14 @@ Active development. Core architecture is stable.
 - `onboarding.template.md` — 7-step: intro → discovery → questions → docs → SOC2 gaps → confirm → finalise
 
 **Agents:**
-- `agents/kubernetes-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, multi-tenant setup)
+- `agents/kubernetes-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, multi-tenant setup, Kustomize IaC)
 - `agents/postgresql-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, schema/role governance, tenant provisioning)
 - `agents/backend-developer/` — AGENT.md only (onboarding.md not yet written)
+- `agents/red-team-lead/` — AGENT.md + onboarding.md (engagement lifecycle, scope gate, passive recon, reporting) — primary
+- `agents/web-pentester/` — AGENT.md + onboarding.md (OWASP Web Top 10) — subagent
+- `agents/api-pentester/` — AGENT.md + onboarding.md (OWASP API Top 10 2023, JWT, GraphQL) — subagent
+- `agents/mobile-pentester/` — AGENT.md + onboarding.md (OWASP MASVS, Android/iOS, Frida) — subagent
+- `agents/network-pentester/` — AGENT.md + onboarding.md (MITRE ATT&CK, nmap, CVE verification) — subagent
 
 **Skills:**
 - `skills/kubernetes-architecture-analyser/` — live cluster scan → docs/kubernetes.md
@@ -63,6 +68,7 @@ Active development. Core architecture is stable.
 
 **Workflows:**
 - `workflows/tenant-onboarding.md` — coordinator orchestrates: Kubernetes → PostgreSQL → finance (future) → xxxapp (future)
+- `workflows/pentest-engagement.md` — coordinator orchestrates: setup → passive-recon → [web|api|mobile|network] → findings → report
 
 **Bus:**
 - `bus/protocol.md` — transport-agnostic message schema (filesystem → Redis → NATS)
@@ -72,8 +78,7 @@ Active development. Core architecture is stable.
 - `SOUL.md` — real file (generated at install from template)
 - `workspace/MANIFEST.md` — real file (generated at install from template)
 - `agents/backend-developer/onboarding.md` — not yet written
-- `skills/postgresql-schema-analyser/SKILL.md` — not yet written
-- Additional agents: `finance-agent`, `xxxapp-agent`, `security-agent`, `devops-lead`
+- Additional platform agents: `finance-agent`, `xxxapp-agent`, `security-agent`, `devops-lead`
 - Additional workflow steps: `finance-tenant-onboarding`, `xxxapp-tenant-onboarding`
 
 ---
