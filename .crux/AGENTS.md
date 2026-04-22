@@ -61,6 +61,7 @@ Active development. Core architecture is stable.
 - `agents/backend-developer/` — AGENT.md only (onboarding.md not yet written)
 - `agents/compliance-governance-lead/` — AGENT.md + onboarding.md (ISO 27001, GDPR/KVKK/PCI-DSS, policy/procedure pack, procurement security evaluation)
 - `agents/personal-productivity-coach/` — AGENT.md + onboarding.md (task triage, daily planning, weekly reviews, Obsidian-compatible markdown structure)
+- `agents/team-operations-coach/` — AGENT.md + onboarding.md (team structure, weekly planning, weekly reviews, blocker tracking, leadership summaries under `operations/`)
 - `agents/red-team-lead/` — AGENT.md + onboarding.md (engagement lifecycle, scope gate, passive recon, reporting) — primary
 - `agents/web-pentester/` — AGENT.md + onboarding.md (OWASP Web Top 10) — subagent
 - `agents/api-pentester/` — AGENT.md + onboarding.md (OWASP API Top 10 2023, JWT, GraphQL) — subagent
@@ -81,6 +82,12 @@ Active development. Core architecture is stable.
 - `skills/task-triage/` — classifies tasks into priorities, waiting, blocked, and clarification buckets
 - `skills/today-plan-writer/` — writes a practical daily markdown plan
 - `skills/follow-up-questioner/` — asks short clarification questions before making weak prioritisation assumptions
+- `skills/team-roster-manager/` — creates and updates team cards, member cards, and ownership notes under `operations/`
+- `skills/weekly-team-planner/` — writes short weekly team plans with focus, owners, blockers, and risks
+- `skills/weekly-team-review/` — writes short weekly team reviews, carry-over notes, and team health signals
+- `skills/cross-team-summary-writer/` — writes short org-level weekly summaries across teams
+- `skills/blocker-dependency-tracker/` — extracts blockers, dependencies, and ownership gaps into a coordination view
+- `skills/leadership-style-mapper/` — maps natural management answers into internal `G/S/T` signals without asking users to use the codes directly
 - `skills/codebase-scanner/` — directory scan → docs/backend.md
 - `skills/doc-summariser/` — docs/ → summaries/, updates MANIFEST.md
 
