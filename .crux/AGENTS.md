@@ -51,6 +51,7 @@ Active development. Core architecture is stable.
 - `agents/kubernetes-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, multi-tenant setup, Kustomize IaC)
 - `agents/postgresql-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, schema/role governance, tenant provisioning)
 - `agents/backend-developer/` — AGENT.md only (onboarding.md not yet written)
+- `agents/compliance-governance-lead/` — AGENT.md + onboarding.md (ISO 27001, GDPR/KVKK/PCI-DSS, policy/procedure pack, procurement security evaluation)
 - `agents/red-team-lead/` — AGENT.md + onboarding.md (engagement lifecycle, scope gate, passive recon, reporting) — primary
 - `agents/web-pentester/` — AGENT.md + onboarding.md (OWASP Web Top 10) — subagent
 - `agents/api-pentester/` — AGENT.md + onboarding.md (OWASP API Top 10 2023, JWT, GraphQL) — subagent
@@ -63,6 +64,10 @@ Active development. Core architecture is stable.
 - `skills/postgresql-schema-analyser/` — live DB scan → docs/postgresql.md *(not yet written)*
 - `skills/postgresql-tenant-provisioning/` — PostgreSQL step of tenant onboarding: schema/database, role, grants, updates docs/db-tenants.md
 - `skills/postgresql-table-audit/` — tenant-aware table naming audit: snake_case, required columns, PKs, RLS, index naming → docs/db-table-audit.md
+- `skills/iso27001-isms-consulting/` — builds ISO 27001 scope, SoA, risk treatment, and audit-readiness deliverables under docs/compliance/iso27001/
+- `skills/policy-procedure-pack/` — bootstraps governance document pack: policies, procedures, registers, and review plan
+- `skills/regulatory-gap-assessment/` — maps GDPR, KVKK, PCI-DSS obligations to controls and produces remediation roadmap
+- `skills/vendor-security-evaluation/` — writes product / vendor procurement security evaluation report with approve / conditional approve / reject outcome
 - `skills/codebase-scanner/` — directory scan → docs/backend.md
 - `skills/doc-summariser/` — docs/ → summaries/, updates MANIFEST.md
 
