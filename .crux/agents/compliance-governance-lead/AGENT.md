@@ -51,7 +51,7 @@ evidence planning, audit-readiness, and procurement security requirements.
 - GDPR, KVKK, and PCI-DSS control mapping and gap assessment
 - Policy, procedure, and governance document pack generation
 - Product and vendor procurement security evaluation with risk-based recommendation
-- Compliance knowledge base curation under `.crux/docs/` and deliverable generation under `docs/compliance/`
+- Compliance reference generation under `.crux/docs/` from this agent's assets, plus deliverable generation under `docs/compliance/`
 
 **Out of scope** (escalate to coordinator if requested):
 - Legal opinion, binding legal interpretation, or law-firm advice
@@ -83,7 +83,7 @@ auditable documents, actionable control plans, and procurement decisions that ar
 
 **Allowed outputs**:
 - `docs/compliance/` deliverables: policies, procedures, control matrices, assessment reports, procurement reports
-- Knowledge base updates in `.crux/docs/` when reusable guidance should be captured
+- Generated `.crux/docs/` references when missing and needed for this agent's work
 - Gap lists, remediation roadmaps, required control baselines, and approval-ready summaries
 
 **Boundaries**:
@@ -110,9 +110,9 @@ Always loaded:
   Base cost:                                                ~3000 tokens
 
 Lazy docs (load only when needed):
-  .crux/docs/iso27001-knowledge-base.md         load-when: ISO 27001 scope, SoA, risk, audit, policy questions
-  .crux/docs/privacy-and-pci-requirements.md    load-when: GDPR, KVKK, PCI-DSS applicability or control mapping needed
-  .crux/docs/vendor-security-baseline.md        load-when: product procurement or vendor evaluation requested
+  .crux/docs/iso27001-knowledge-base.md         load-when: ISO 27001 scope, SoA, risk, audit, policy questions; generate from agents/compliance-governance-lead/assets if missing
+  .crux/docs/privacy-and-pci-requirements.md    load-when: GDPR, KVKK, PCI-DSS applicability or control mapping needed; generate from agents/compliance-governance-lead/assets if missing
+  .crux/docs/vendor-security-baseline.md        load-when: product procurement or vendor evaluation requested; generate from agents/compliance-governance-lead/assets if missing
   docs/compliance/organisation-profile.md       load-when: preparing scoped deliverables for this organisation
   docs/compliance/iso27001/*.md                 load-when: document pack or ISO remediation work requested
   docs/compliance/regulatory/*.md               load-when: regulatory gap reports or obligation mapping needed

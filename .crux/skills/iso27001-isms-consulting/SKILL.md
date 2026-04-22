@@ -44,7 +44,7 @@ Requires already loaded:
   .crux/workspace/compliance-governance-lead/MEMORY.md   (organisation profile, scope, frameworks)
 
 Loads during execution (lazy):
-  .crux/docs/iso27001-knowledge-base.md
+  .crux/docs/iso27001-knowledge-base.md   (generate from agent assets first if missing)
   docs/compliance/organisation-profile.md
   docs/compliance/iso27001/
 

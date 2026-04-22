@@ -111,9 +111,9 @@ Always loaded:
   Base cost:                               ~2700 tokens
 
 Lazy docs (load only when needed):
-  .crux/docs/{{DOC_1}}        load-when: {{CONDITION_1}}
+  .crux/docs/{{DOC_1}}        load-when: {{CONDITION_1}}; generate from agents/{{ROLE_ID}}/assets or local templates if missing
   .crux/summaries/{{DOC_1}}   load-when: overview sufficient, avoid full doc
-  .crux/docs/{{DOC_2}}        load-when: {{CONDITION_2}}
+  .crux/docs/{{DOC_2}}        load-when: {{CONDITION_2}}; generate from agents/{{ROLE_ID}}/assets or local templates if missing
 
 Session start (load once, then keep):
   .crux/workspace/{{ROLE_ID}}/NOTES.md     surface pending tasks and known issues
@@ -154,7 +154,7 @@ Skills live at: .crux/skills/<skill-name>/SKILL.md
 Loaded on demand via the skill tool — not preloaded at startup.
 
 Examples:
-  kubernetes-architecture-analyser   .crux/docs/kubernetes.md missing   No
+  kubernetes-architecture-analyser   .crux/docs/kubernetes.md missing → generate from owning agent assets, then continue   No
   secret-rotate                      user requests rotation              Yes — security-director
 -->
 

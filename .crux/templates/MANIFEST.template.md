@@ -24,7 +24,7 @@ Status values:
   degraded          → running but missing optional docs
   disabled          → manually disabled by user
 
-Docs column: ✓ all required .crux/docs/ files present, ✗ any missing
+Docs column: ✓ all required generated .crux/docs/ files present, ✗ any missing and still not generated
 Last Session: ULID of last session under .crux/workspace/{role}/sessions/
 -->
 
@@ -48,6 +48,7 @@ Last Session: ULID of last session under .crux/workspace/{role}/sessions/
 
 <!--
 Tokens (est.) helps agents respect context budget before loading.
+If a doc is missing → generate it from the owning agent's assets or local templates first.
 If summary is missing → agent loads full doc and triggers doc-summariser skill.
 -->
 

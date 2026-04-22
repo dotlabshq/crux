@@ -44,7 +44,8 @@ regulatory scope, document expectations, and procurement review criteria.
 Run the following checks silently:
   1. List existing compliance files under docs/compliance/ if the folder exists
   2. Check whether root docs/ exists and whether any policy/procedure files already exist
-  3. Check whether .crux/docs/ already contains compliance knowledge base files
+  3. Check whether .crux/docs/ contains generated compliance references
+     If missing, note that they must be generated from this agent's assets during Step 4
 
 For each check:
   IF successful   → record result in .crux/workspace/current/scratch.md
@@ -116,6 +117,9 @@ Run the appropriate skills to produce the initial compliance artefacts.
 
 ```
 Required docs for this agent:
+  .crux/docs/iso27001-knowledge-base.md                       → generate from agents/compliance-governance-lead/assets/iso27001-knowledge-base.template.md if missing
+  .crux/docs/privacy-and-pci-requirements.md                  → generate from agents/compliance-governance-lead/assets/privacy-and-pci-requirements.template.md if missing
+  .crux/docs/vendor-security-baseline.md                      → generate from agents/compliance-governance-lead/assets/vendor-security-baseline.template.md if missing
   docs/compliance/organisation-profile.md                     → generate from onboarding answers
   docs/compliance/iso27001/isms-scope.md                      → skill: iso27001-isms-consulting
   docs/compliance/regulatory/applicability-matrix.md          → skill: regulatory-gap-assessment

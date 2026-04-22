@@ -196,6 +196,11 @@ User types: @{role-id}
    .crux/workspace/{role-id}/MEMORY.md     (create from template if missing)
    .crux/workspace/{role-id}/NOTES.md      (create from template if missing)
 
+   If the agent expects `.crux/docs/` references and they are missing:
+     a. check agent-local assets or templates under .crux/agents/{role-id}/
+     b. generate the missing `.crux/docs/` file from that agent-local source
+     c. continue without requiring the repo to contain pre-generated `.crux/docs/`
+
 6. Hand off to agent.
 ```
 

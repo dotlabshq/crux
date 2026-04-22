@@ -45,8 +45,8 @@ Requires already loaded:
   .crux/workspace/compliance-governance-lead/MEMORY.md
 
 Loads during execution (lazy):
-  .crux/docs/vendor-security-baseline.md
-  .crux/docs/privacy-and-pci-requirements.md
+  .crux/docs/vendor-security-baseline.md      (generate from agent assets first if missing)
+  .crux/docs/privacy-and-pci-requirements.md  (generate from agent assets first if missing)
   docs/compliance/organisation-profile.md
   docs/compliance/procurement/
 
