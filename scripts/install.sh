@@ -367,18 +367,22 @@ step "Converting agent definitions to tool format..."
 
 CONVERT_SCRIPT="./scripts/convert.sh"
 
-# If running via curl (no local scripts/), download convert.sh
-if [[ ! -f "$CONVERT_SCRIPT" ]]; then
-  info "Downloading convert.sh..."
-  if $DRY_RUN; then
-    info "[dry-run] would download and run convert.sh"
+# Install all scripts from archive (convert.sh, install.sh, update.sh)
+for _script in convert.sh install.sh update.sh; do
+  _src="$EXTRACTED/scripts/${_script}"
+  _dest="./scripts/${_script}"
+  [[ ! -f "$_src" ]] && continue
+  if [[ -f "$_dest" ]] && ! $FORCE; then
+    info "Exists, skipping (--force to overwrite): scripts/${_script}"
+  elif $DRY_RUN; then
+    info "[dry-run] would install: scripts/${_script}"
   else
     mkdir -p "./scripts"
-    cp "$EXTRACTED/scripts/convert.sh" "$CONVERT_SCRIPT"
-    chmod +x "$CONVERT_SCRIPT"
-    ok "scripts/convert.sh installed"
+    cp "$_src" "$_dest"
+    chmod +x "$_dest"
+    ok "scripts/${_script}"
   fi
-fi
+done
 
 CONVERT_ARGS=("--tool" "$TOOL")
 $DRY_RUN && CONVERT_ARGS+=("--dry-run")

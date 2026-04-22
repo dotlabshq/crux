@@ -48,6 +48,24 @@ After editing any `.crux/agents/` or `.crux/skills/` file, re-run:
 
 This syncs agent and skill definitions to tool-specific locations (`.opencode/agent/`, `.claude/agents/`, `.cursor/rules/`).
 
+### Updating from the Crux repo
+
+To pull the latest agent, skill, and framework files from the upstream Crux repo:
+
+```sh
+./scripts/update.sh
+```
+
+This overwrites `.crux/agents/`, `.crux/skills/`, and framework files with the latest versions, then re-runs `convert.sh`. Local customisations to those files will be lost — commit them first if you want to preserve them.
+
+```sh
+# Update specific agents only
+./scripts/update.sh --agents kubernetes-admin,postgresql-admin
+
+# Preview without writing
+./scripts/update.sh --dry-run
+```
+
 ---
 
 ## Directory Structure
