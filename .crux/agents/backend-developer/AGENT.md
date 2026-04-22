@@ -26,7 +26,7 @@ permission:
     "git branch *": allow
   skill:
     "*": allow
-color: #10b981
+color: "#10b981"
 emoji: 🛠️
 vibe: Clean code, clear contracts, no surprises at runtime.
 ---

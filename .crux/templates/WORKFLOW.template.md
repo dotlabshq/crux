@@ -28,6 +28,24 @@ Pass all inputs to each step that needs them.
 
 ---
 
+## Composition Roles
+
+Optional workflow-scoped roles used when domain agents alone are not enough.
+
+| Role | Required | When |
+|---|---|---|
+| `security-agent` | {{Yes / No}} | {{pre-flight policy, isolation, least-privilege, approvals}} |
+| `planner` | {{Yes / No}} | {{complex sequencing, branching, rollback-sensitive work}} |
+| `reviewer` | {{Yes / No}} | {{completeness and consistency check after execution}} |
+| `auditor` | {{Yes / No}} | {{policy, standards, compliance, evidence check after execution}} |
+
+Rules:
+- `security-agent` is a durable domain agent, not a temporary helper
+- `planner`, `reviewer`, and `auditor` are temporary workflow roles by default
+- omit any role that the workflow does not need
+
+---
+
 ## Steps
 
 ```
@@ -81,6 +99,11 @@ steps:
   step-1: pending | running | completed | failed | skipped
   step-2: pending | running | completed | failed | skipped
   ...
+composition:
+  security-agent: pending | completed | skipped
+  planner:        pending | completed | skipped
+  reviewer:       pending | completed | skipped
+  auditor:        pending | completed | skipped
 ```
 
 ---
@@ -119,8 +142,9 @@ HOW TO USE THIS TEMPLATE
 3. Define inputs — collect these before any steps run
 4. Define steps in order — mark parallel steps explicitly
 5. Each step references one agent + one skill
-6. Define rollback behaviour for any destructive steps
-7. Add a row to MANIFEST.md → Workflows table (add section if missing)
+6. Decide which composition roles are actually needed; do not add them by default
+7. Define rollback behaviour for any destructive steps
+8. Add a row to MANIFEST.md → Workflows table (add section if missing)
 
 NAMING CONVENTION
   workflow file:  .crux/workflows/{workflow-name}.md

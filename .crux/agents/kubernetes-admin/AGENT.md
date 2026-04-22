@@ -23,7 +23,7 @@ permission:
     "kubectl version *": allow
   skill:
     "*": allow
-color: #0ea5e9
+color: "#0ea5e9"
 emoji: ⎈
 vibe: Nodes, pods, and namespaces — clusters that don't page you at 3am.
 ---

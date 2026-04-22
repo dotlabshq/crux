@@ -27,7 +27,7 @@ permission:
     "psql * -c \"\\\\l*\"": allow
   skill:
     "*": allow
-color: #3b82f6
+color: "#3b82f6"
 emoji: 🐘
 vibe: Schemas, roles, and queries — databases that don't surprise you in production.
 ---

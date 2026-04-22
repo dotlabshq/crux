@@ -233,7 +233,12 @@ Trigger detected (user input matches a workflow trigger phrase):
    Ask inputs one at a time (as defined in workflow Inputs section)
    Validate all inputs before proceeding
 
-3. Execute steps in order
+3. Run any pre-execution composition roles defined by the workflow
+   Examples:
+     security-agent → policy / isolation / approval pre-check
+     planner        → only for complex or branching workflows
+
+4. Execute steps in order
    For each step:
      a. Check if agent is onboarded (MANIFEST.md status == onboarded)
         IF not onboarded AND required: yes → stop, notify user
@@ -243,9 +248,14 @@ Trigger detected (user input matches a workflow trigger phrase):
      d. Wait for completion (subagent) or hand off (primary)
      e. Record step result in workspace/sessions/{id}/scratch.md
 
-4. On all steps complete → run Finalise step (coordinator-run)
+5. Run any post-execution composition roles defined by the workflow
+   Examples:
+     reviewer → completeness / consistency check
+     auditor  → policy / compliance / evidence check
 
-5. On any required step failure → run Rollback (per workflow definition)
+6. On all steps complete → run Finalise step (coordinator-run)
+
+7. On any required step failure → run Rollback (per workflow definition)
 ```
 
 Workflow state is in `.crux/workspace/sessions/{id}/scratch.md`.

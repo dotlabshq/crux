@@ -431,6 +431,82 @@ Principle:
 
 ---
 
+## Agent Composition Rules
+
+Crux is domain-first by default.
+Persistent domain ownership belongs to durable agents under `.crux/agents/`.
+Task-pattern roles may be introduced temporarily inside workflows without becoming permanent agents.
+
+### 1. Durable Domain Agents
+
+Use a permanent agent when the role has:
+- clear domain ownership
+- repeatable responsibility across many sessions
+- meaningful long-term memory
+- onboarding, policy, and boundary needs
+
+Current direction:
+- `kubernetes-admin`
+- `postgresql-admin`
+- `backend-developer`
+- `security-agent`
+- future domain agents such as `finance-agent` and `xxxapp-agent`
+
+### 2. Temporary Composition Roles
+
+Use temporary workflow-scoped roles when the role is a work pattern rather than a domain.
+
+Composition roles start as temporary:
+- `planner`
+- `reviewer`
+- `auditor`
+- optional helper roles such as `executor` or `summariser`
+
+Rules:
+- composition roles do not own a domain
+- composition roles do not replace domain agents
+- composition roles are invoked only when a workflow needs their perspective
+- if a composition role gains stable domain ownership, memory, and policy scope, it should be promoted to a real agent
+
+### 3. Role Meanings
+
+- `planner` — decomposes or sequences complex multi-step work before execution
+- `reviewer` — checks completeness, consistency, and quality of outputs after execution
+- `auditor` — checks policy, compliance, standards, and approval trace after execution
+- `security-agent` — not a composition role; it is a permanent domain authority for security, risk, secrets, and least-privilege concerns
+
+### 4. Default Composition Policy
+
+- single-domain tasks: no composition role by default
+- deterministic multi-agent workflows: `reviewer` and `auditor` may be added after execution
+- high-risk or rollback-sensitive workflows: consider `planner` before execution
+- incident response: use `planner` when coordination is complex; defer `auditor` to post-incident review unless compliance risk is immediate
+
+### 5. Tenant-Onboarding Policy
+
+`tenant-onboarding` is the reference workflow for composition in Crux.
+
+Recommended execution pattern:
+1. `coordinator` collects and validates inputs
+2. `security-agent` performs pre-flight policy and isolation checks
+3. domain agents execute in workflow order
+4. `reviewer` checks completeness and cross-step consistency
+5. `auditor` checks naming, isolation, approvals, and policy compliance
+6. `coordinator` finalises, updates state, and surfaces any inbox items
+
+Required vs optional roles for `tenant-onboarding`:
+- `planner` — optional for now; add only when the workflow becomes materially more dynamic or branched
+- `reviewer` — required
+- `auditor` — required
+- `security-agent` — required as a permanent participating agent, not as a temporary role
+
+Purpose split:
+- `security-agent` asks: "Is this safe and policy-aligned before execution?"
+- `reviewer` asks: "Is this complete and internally consistent after execution?"
+- `auditor` asks: "Does this actually comply with approved rules and evidence requirements?"
+
+---
+
 ## Future Phase Recommendations
 
 These are product-direction notes for later phases.
@@ -537,12 +613,6 @@ Prevent silent knowledge drift as the workspace grows.
 
 The current model is role-first.
 A later phase should evaluate when task-first composition is a better fit.
-
-Candidate additions:
-- planner / executor / reviewer / auditor split for complex tasks
-- temporary specialist agents for bounded runs
-- workflow-level review gates between execution phases
-- agent composition rules for parallel vs sequential delegation
 
 Goal:
 Support both durable domain roles and temporary task-oriented coordination patterns.

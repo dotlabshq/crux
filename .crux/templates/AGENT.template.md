@@ -15,7 +15,7 @@ permission:
     "{{specific-command}} *": allow
   skill:
     "*": allow
-color: {{COLOR}}
+color: "{{COLOR}}"
 emoji: {{EMOJI}}
 vibe: {{ONE_LINE_VIBE}}
 ---
@@ -36,8 +36,8 @@ opencode fields:
                 skill: pattern-based access to .crux/skills/
 
 openclaw fields (visual + personality):
-  color         red orange amber yellow lime green emerald teal
-                cyan sky blue indigo violet purple fuchsia pink rose
+  color         named: primary secondary accent success warning error info
+                hex:   "#FF5733"  — MUST be quoted (# starts a YAML comment)
   emoji         agent's visual identity
   vibe          one punchy line — what this agent lives and breathes
 -->
