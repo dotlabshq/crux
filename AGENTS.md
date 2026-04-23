@@ -65,6 +65,7 @@ Active development. Core architecture is stable.
 - `agents/compliance-governance-lead/` — AGENT.md + onboarding.md (ISO 27001, GDPR/KVKK/PCI-DSS, policy/procedure pack, procurement security evaluation)
 - `agents/personal-productivity-coach/` — AGENT.md + onboarding.md (task triage, daily planning, weekly reviews, Obsidian-compatible markdown structure)
 - `agents/team-operations-coach/` — AGENT.md + onboarding.md (team structure, weekly planning, weekly reviews, blocker tracking, leadership summaries under `operations/`)
+- `agents/mailbox-operator/` — AGENT.md + onboarding.md (read-only Himalaya mailbox triage, email summaries, task extraction, Crux routing)
 - `agents/red-team-lead/` — AGENT.md + onboarding.md (engagement lifecycle, scope gate, passive recon, reporting) — primary
 - `agents/web-pentester/` — AGENT.md + onboarding.md (OWASP Web Top 10) — subagent
 - `agents/api-pentester/` — AGENT.md + onboarding.md (OWASP API Top 10 2023, JWT, GraphQL) — subagent
@@ -84,6 +85,7 @@ Active development. Core architecture is stable.
 - `skills/task-capture-normaliser/` — cleans up messy note dumps into task candidates and inbox capture notes
 - `skills/task-triage/` — classifies tasks into priorities, waiting, blocked, and clarification buckets
 - `skills/today-plan-writer/` — writes a practical daily markdown plan
+- `skills/weekly-review-writer/` — writes personal weekly review notes: completed, carry-over, blockers, and next-week intention
 - `skills/follow-up-questioner/` — asks short clarification questions before making weak prioritisation assumptions
 - `skills/api-surface-analyser/` — analyses backend routes, handlers, and contract surfaces before implementation or review
 - `skills/service-implementation/` — implements or refactors backend service logic while respecting existing boundaries
@@ -106,6 +108,7 @@ Active development. Core architecture is stable.
 - `skills/cross-team-summary-writer/` — writes short org-level weekly summaries across teams
 - `skills/blocker-dependency-tracker/` — extracts blockers, dependencies, and ownership gaps into a coordination view
 - `skills/leadership-style-mapper/` — maps natural management answers into internal `G/S/T` signals without asking users to use the codes directly
+- `skills/mailbox-triage/` — reads configured mailboxes through Himalaya in read-only mode, classifies messages, summarizes threads, extracts actions, and routes outputs to inbox/notes/memory
 - `skills/codebase-scanner/` — directory scan → `.crux/docs/backend.md`
 - `skills/doc-summariser/` — docs/ → summaries/, updates MANIFEST.md
 
