@@ -2,8 +2,9 @@
 # Requires bash 3.2+ (macOS default)
 # =============================================================================
 # Crux — convert.sh
-# Syncs .crux/ agent/skill definitions → tool-specific locations.
-# Run this after editing any .crux/agents/ or .crux/skills/ file.
+# Syncs Crux agent/skill definitions → tool-specific locations.
+# Run this after editing source-repo `agents/` or `skills/`, or installed
+# `.crux/agents/` / `.crux/skills/` in a user project.
 #
 # Usage:
 #   ./scripts/convert.sh                     # auto-detect tools
@@ -32,12 +33,12 @@ hdr()  { echo -e "\n${BOLD}${BLUE}$*${RESET}"; }
 # ---------------------------------------------------------------------------
 TOOL="auto"
 DRY_RUN=false
-CRUX_DIR=".crux"
+SOURCE_DIR="auto"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --tool)    TOOL="$2"; shift 2 ;;
-    --crux)    CRUX_DIR="$2"; shift 2 ;;
+    --crux|--source) SOURCE_DIR="$2"; shift 2 ;;
     --dry-run) DRY_RUN=true; shift ;;
     --help|-h)
       echo "Usage: $0 [--tool opencode|claude-code|cursor|all] [--dry-run]"
@@ -49,14 +50,20 @@ done
 # ---------------------------------------------------------------------------
 # Validate
 # ---------------------------------------------------------------------------
-if [[ ! -d "$CRUX_DIR" ]]; then
-  err ".crux/ not found. Run from project root or pass --crux <path>."
-  exit 1
+if [[ "$SOURCE_DIR" == "auto" ]]; then
+  if [[ -f "COORDINATOR.md" && -d "agents" && -d "skills" ]]; then
+    SOURCE_DIR="."
+  elif [[ -f ".crux/COORDINATOR.md" && -d ".crux/agents" && -d ".crux/skills" ]]; then
+    SOURCE_DIR=".crux"
+  else
+    err "No Crux source found. Run from the framework repo root or a project containing .crux/."
+    exit 1
+  fi
 fi
 
-COORDINATOR="$CRUX_DIR/COORDINATOR.md"
-AGENTS_DIR="$CRUX_DIR/agents"
-SKILLS_DIR="$CRUX_DIR/skills"
+COORDINATOR="$SOURCE_DIR/COORDINATOR.md"
+AGENTS_DIR="$SOURCE_DIR/agents"
+SKILLS_DIR="$SOURCE_DIR/skills"
 
 if [[ ! -f "$COORDINATOR" ]]; then
   err "$COORDINATOR not found."
@@ -131,7 +138,7 @@ SKILL_FILES=()
 while IFS= read -r f; do SKILL_FILES+=("$f"); done < <(find "$SKILLS_DIR" -name "SKILL.md" 2>/dev/null | sort)
 
 echo -e "\n${BOLD}Crux convert${RESET}"
-echo -e "Source:  ${CYAN}$CRUX_DIR/${RESET}"
+echo -e "Source:  ${CYAN}$SOURCE_DIR/${RESET}"
 echo -e "Agents:  ${#AGENT_FILES[@]}"
 echo -e "Skills:  ${#SKILL_FILES[@]}"
 echo -e "Tools:   ${TOOLS[*]}"
@@ -190,7 +197,7 @@ On every session start:
 2. Read `.crux/CONSTITUTION.md` — universal rules (if it exists)
 3. Read `.crux/SOUL.md` — identity and tone defaults (if it exists)
 4. Read `.crux/workspace/MANIFEST.md` — current system state (if it exists)
-   - If workspace/ does not exist → run installation as described in COORDINATOR.md
+   - If `.crux/workspace/` does not exist → run workspace initialisation as described in COORDINATOR.md
 5. Surface any pending items (agents pending onboard, amendments, open sessions)
 
 ## Agents
@@ -275,7 +282,8 @@ done
 echo ""
 if [[ $CONVERTED -gt 0 ]]; then
   echo -e "${GREEN}${BOLD}Done.${RESET} ${CONVERTED} tool(s) converted."
-  echo -e "Re-run after editing any ${CYAN}.crux/agents/${RESET} or ${CYAN}.crux/skills/${RESET} file."
+  echo -e "Re-run after editing any ${CYAN}agents/${RESET} or ${CYAN}skills/${RESET} source file,"
+  echo -e "or installed ${CYAN}.crux/agents/${RESET} / ${CYAN}.crux/skills/${RESET} in a user project."
 else
   warn "Nothing converted."
 fi

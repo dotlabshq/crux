@@ -31,7 +31,7 @@ curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install
 
 ### After install
 
-Start your AI tool in the project directory. The coordinator boots automatically and runs workspace initialisation on first launch — asking a few questions to configure your workspace.
+Start your AI tool in the project directory. The install script places the framework under `.crux/`. On first launch, the coordinator runs workspace initialisation and onboarding to generate project-specific files from user answers.
 
 ```
 @kubernetes-admin   cluster health, namespaces, tenant provisioning
@@ -70,6 +70,9 @@ This overwrites `.crux/agents/`, `.crux/skills/`, and framework files with the l
 
 ## Directory Structure
 
+This section describes the installed runtime shape inside a user project.
+If you are working on the Crux framework repository itself, see [docs/source-layout.md](docs/source-layout.md) for source-layout vs installed-layout rules.
+
 ```
 .crux/
 │
@@ -107,9 +110,9 @@ This overwrites `.crux/agents/`, `.crux/skills/`, and framework files with the l
 │   └── {name}.md          Each step delegates to one agent + one skill.
 │
 ├── decisions/             Generated project decisions (ADR-lite).
-│   └── {id}.md            Created after install or approval flow.
+│   └── {id}.md            Created during onboarding or approval flow.
 │
-├── docs/                  Generated on demand after install / onboarding.
+├── docs/                  Generated on demand after onboarding.
 │                         Created from owning agent assets or local templates.
 │   └── {topic}.md
 │
@@ -122,13 +125,14 @@ This overwrites `.crux/agents/`, `.crux/skills/`, and framework files with the l
 │   └── {role-id}/
 │       └── to-{target}.jsonl
 │
-│   ── Generated after install / onboarding ──────────────────
-├── CONSTITUTION.md        Generated at install from template.
-├── SOUL.md                Generated at install from template.
+│   ── Generated during onboarding / first boot ──────────────
+├── CONSTITUTION.md        Generated from template + user answers.
+├── SOUL.md                Generated from template + user answers.
 │
 │   ── Dynamic (gitignored) ───────────────────────────────────
 └── workspace/
     ├── MANIFEST.md        Live system state — agent status, pending amendments.
+    ├── inbox.md           Human approvals, handoffs, and pending operator decisions.
     ├── MEMORY.md          Coordinator persistent memory.
     ├── current            Symlink → sessions/{active-ulid}/
     ├── sessions/          Coordinator sessions.
@@ -155,8 +159,8 @@ This overwrites `.crux/agents/`, `.crux/skills/`, and framework files with the l
 
 | Path | Type | Git | Created by |
 |---|---|---|---|
-| `CONSTITUTION.md` | generated static | after install | coordinator at installation |
-| `SOUL.md` | generated static | after install | coordinator at installation |
+| `CONSTITUTION.md` | generated static | after onboarding | coordinator during workspace initialisation |
+| `SOUL.md` | generated static | after onboarding | coordinator during workspace initialisation |
 | `COORDINATOR.md` | static | ✓ | manual — always present |
 | `AGENTS.md` | static | ✓ | manual — always present |
 | `../README.md` | static | ✓ | manual — project root, human docs |
@@ -165,17 +169,18 @@ This overwrites `.crux/agents/`, `.crux/skills/`, and framework files with the l
 | `agents/{role}/onboarding.md` | static | ✓ | manual from template |
 | `skills/{name}/SKILL.md` | static | ✓ | manual from template |
 | `workflows/{name}.md` | static | ✓ | manual from template |
-| `decisions/{id}.md` | generated static | after install | agent proposes + user approves, OR coordinator generates at install |
-| `.crux/docs/{topic}.md` | generated static | after install | onboarding, lazy-loading, or skills from owning agent assets |
+| `decisions/{id}.md` | generated static | after onboarding | agent proposes + user approves, OR coordinator generates during onboarding |
+| `.crux/docs/{topic}.md` | generated static | after onboarding | onboarding, lazy-loading, or skills from owning agent assets |
 | `summaries/{topic}.md` | static | ✓ | doc-summariser skill |
 | `bus/protocol.md` | static | ✓ | manual — always present |
-| `workspace/` | dynamic | ✗ | coordinator at boot |
-| `workspace/MANIFEST.md` | dynamic | ✗ | coordinator at installation |
-| `workspace/MEMORY.md` | dynamic | ✗ | coordinator at installation |
-| `workspace/sessions/{ulid}/` | dynamic | ✗ | coordinator at session start |
-| `workspace/{role}/MEMORY.md` | dynamic | ✗ | onboarding |
-| `workspace/{role}/NOTES.md` | dynamic | ✗ | onboarding |
-| `workspace/{role}/sessions/{ulid}/` | dynamic | ✗ | coordinator at session start |
+| `.crux/workspace/` | dynamic | ✗ | coordinator during workspace initialisation |
+| `.crux/workspace/MANIFEST.md` | dynamic | ✗ | coordinator during onboarding / workspace initialisation |
+| `.crux/workspace/MEMORY.md` | dynamic | ✗ | coordinator during onboarding / workspace initialisation |
+| `.crux/workspace/inbox.md` | dynamic | ✗ | coordinator during onboarding / workspace initialisation |
+| `.crux/workspace/sessions/{ulid}/` | dynamic | ✗ | coordinator at session start |
+| `.crux/workspace/{role}/MEMORY.md` | dynamic | ✗ | onboarding |
+| `.crux/workspace/{role}/NOTES.md` | dynamic | ✗ | onboarding |
+| `.crux/workspace/{role}/sessions/{ulid}/` | dynamic | ✗ | coordinator at session start |
 
 ---
 
@@ -211,25 +216,25 @@ Hard limit: **8000 tokens** before execution begins.
 
 ```
 .crux/              static      who we are        committed, versioned
-workspace/          dynamic     what we know      gitignored, live state
-workspace/sessions/ ephemeral   what coord did    gitignored, coordinator sessions
-workspace/{role}/sessions/ ephemeral  what agents did   gitignored, per-agent sessions
+.crux/workspace/    dynamic     what we know      gitignored, live state
+.crux/workspace/sessions/ ephemeral   what coord did    gitignored, coordinator sessions
+.crux/workspace/{role}/sessions/ ephemeral  what agents did   gitignored, per-agent sessions
 ```
 
 ---
 
 ## Onboarding Flow
 
-When an agent starts and `workspace/MANIFEST.md` shows `status: pending-onboard`:
+When an agent starts and `.crux/workspace/MANIFEST.md` shows `status: pending-onboard`:
 
 ```
 1. Run environment discovery (silent checks)
 2. Ask user only what could not be discovered
 3. Generate missing `.crux/docs/` references from the agent's assets if needed
 4. Run required skills → generate project docs, decisions, or notes-root content
-5. Write facts to workspace/{role}/MEMORY.md
-6. Create workspace/{role}/NOTES.md from template
-7. Update workspace/MANIFEST.md status → onboarded
+5. Write facts to `.crux/workspace/{role}/MEMORY.md`
+6. Create `.crux/workspace/{role}/NOTES.md` from template
+7. Update `.crux/workspace/MANIFEST.md` status → onboarded
 8. Broadcast agent.onboarded event
 ```
 
@@ -243,12 +248,12 @@ When the coordinator detects a workflow trigger phrase:
 1. Load .crux/workflows/{name}.md
 2. Collect inputs from user (one at a time, validate before proceeding)
 3. For each step:
-     a. Check owning agent is onboarded (MANIFEST.md status == onboarded)
+     a. Check owning agent is onboarded (`.crux/workspace/MANIFEST.md` status == onboarded)
         not onboarded + required: yes  → stop
         not onboarded + required: no   → skip, continue
      b. Delegate to agent via @mention, passing inputs
-     c. Record step result in workspace/sessions/{id}/scratch.md
-4. Coordinator runs Finalise: update MANIFEST.md, broadcast event, notify user
+     c. Record step result in `.crux/workspace/sessions/{id}/scratch.md`
+4. Coordinator runs Finalise: update `.crux/workspace/MANIFEST.md`, broadcast event, notify user
 5. On required step failure → run rollback as defined in workflow file
 ```
 
@@ -257,7 +262,7 @@ When the coordinator detects a workflow trigger phrase:
 ## Amendment Flow
 
 ```
-1. Agent writes AMD-{id} to workspace/MANIFEST.md → Pending Amendments
+1. Agent writes AMD-{id} to `.crux/workspace/MANIFEST.md` → Pending Amendments
 2. Agent pauses and notifies user
 3. User approves → .crux/CONSTITUTION.md updated, version incremented
 4. User rejects → agent continues under current rule
@@ -280,8 +285,8 @@ When the coordinator detects a workflow trigger phrase:
 .crux/workspace/
 ```
 
-Everything under `workspace/` is gitignored. All static `.crux/` files are committed.
-Generated `.crux/docs/`, `decisions/`, project `docs/`, and any user-selected notes root are created after install or onboarding, not pre-populated in the repo.
+Everything under `.crux/workspace/` is gitignored. All static `.crux/` files are committed.
+Generated `.crux/docs/`, `decisions/`, project `docs/`, and any user-selected notes root are created during onboarding or lazy-loading, not pre-populated in the repo.
 
 ---
 
@@ -297,7 +302,7 @@ Skill:    copy templates/SKILL.template.md      → skills/{name}/SKILL.md
           run: ./scripts/convert.sh
 
 Workflow: copy templates/WORKFLOW.template.md   → workflows/{name}.md
-          update workspace/MANIFEST.md Workflows table
+          update `.crux/workspace/MANIFEST.md` Workflows table
 ```
 
 ## Three-Layer Model
@@ -308,4 +313,15 @@ Workflow: copy templates/WORKFLOW.template.md   → workflows/{name}.md
 | **Workflow** | `workflows/{name}.md` | Coordinator + multiple agents | ✓ |
 | **Decision** | `decisions/{id}.md` | Human-approved, permanent record | ✓ |
 | **Doc** | `docs/{topic}.md` | Generated knowledge, replaceable | ✓ |
-| **Memory** | `workspace/{role}/MEMORY.md` | Agent runtime state | ✗ |
+| **Memory** | `.crux/workspace/{role}/MEMORY.md` | Agent runtime state | ✗ |
+## Source vs Installed
+
+Crux keeps a strict separation between framework source and project runtime:
+
+- Source repo layout is for framework development only.
+- Installed layout is the only valid runtime/documentation model.
+- All architecture documents must reference installed paths.
+- Install script maps source layout into installed `.crux/`.
+- Generated docs, summaries, workspace, and user outputs must never be committed as source framework content.
+
+See [docs/source-layout.md](docs/source-layout.md) for the explicit mapping table and generation rules.

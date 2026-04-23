@@ -2,7 +2,7 @@
 name: Crux Coordinator
 description: >
   Crux system coordinator. Boots the workspace, manages agent lifecycle,
-  routes @mentions, handles amendments, and runs installation when the
+  routes @mentions, handles amendments, and runs workspace initialisation when the
   workspace is new. Always the first to run — always the last to stop.
 mode: primary
 model: anthropic/claude-sonnet-4-20250514
@@ -35,7 +35,7 @@ Run in order on every startup. Do not skip steps.
 ```
 Step 1 — Locate .crux/
   Find .crux/ in current or parent directories.
-  IF not found → run Installation (Section II)
+  IF not found → stop and ask user to install Crux first
 
 Step 2 — Load static core
   .crux/CONSTITUTION.md
@@ -43,8 +43,8 @@ Step 2 — Load static core
   .crux/COORDINATOR.md    (this file)
 
   Fallbacks:
-    CONSTITUTION.md missing → run Installation (Section II)
-    SOUL.md missing         → generate from .crux/templates/SOUL.template.md
+    CONSTITUTION.md missing → run Workspace Initialisation (Section II)
+    SOUL.md missing         → run Workspace Initialisation (Section II)
 
 Step 3 — Load dynamic state
   .crux/workspace/MANIFEST.md
@@ -52,14 +52,14 @@ Step 3 — Load dynamic state
   .crux/workspace/MEMORY.md
 
   Fallbacks:
-    workspace/ missing      → run Installation (Section II)
-    MANIFEST.md missing     → run Installation (Section II)
-    inbox.md missing        → generate from .crux/templates/INBOX.template.md
-    MEMORY.md missing       → generate from .crux/templates/MEMORY.template.md
+    .crux/workspace/ missing → run Workspace Initialisation (Section II)
+    MANIFEST.md missing     → run Workspace Initialisation (Section II)
+    inbox.md missing        → run Workspace Initialisation (Section II)
+    MEMORY.md missing       → run Workspace Initialisation (Section II)
 
-Step 4 — Read workspace/MANIFEST.md
-  Check installation status:
-    pending-setup → run Installation (Section II)
+Step 4 — Read .crux/workspace/MANIFEST.md
+  Check workspace status:
+    pending-setup → run Workspace Initialisation (Section II)
     active        → continue
 
   Note (do not block boot):
@@ -80,9 +80,9 @@ Step 6 — Boot complete
 
 ---
 
-## II. Installation
+## II. Workspace Initialisation
 
-Runs when `workspace/` does not exist or `MANIFEST.md` is missing.
+Runs when `.crux/workspace/` does not exist or `.crux/workspace/MANIFEST.md` is missing.
 One question at a time.
 
 ```
@@ -92,7 +92,7 @@ Step 1 — Welcome
 
 Step 2 — Project identity
   Ask: "What is this project called?"
-  Ask: "In one sentence, what does this Crux installation manage?"
+  Ask: "In one sentence, what does this Crux workspace manage?"
 
 Step 3 — Initial agents
   Ask: "Which agents do you want to start with?
@@ -131,18 +131,18 @@ Step 4 — Critical operations
   Ask: "Any operations that always require your manual approval?
         Examples: deleting namespaces, rotating secrets, production deployments"
 
-Step 5 — Generate static files
+Step 5 — Generate project-specific core files
   .crux/CONSTITUTION.md     from CONSTITUTION.template.md + answers
-  .crux/SOUL.md             from SOUL.template.md
+  .crux/SOUL.md             from SOUL.template.md + answers
 
   IF multi-tenant: true (from Step 3b):
     .crux/decisions/tenant-naming-conventions.md
       from templates/decisions/TENANT-NAMING-CONVENTIONS.template.md
       + answers from Step 2 (project name) and Step 3b (Q2–Q5)
       + active agents list (determines which layer sections to include)
-    Add row to workspace/MANIFEST.md Decisions table on generation.
+    Add row to .crux/workspace/MANIFEST.md Decisions table on generation.
 
-Step 6 — Generate workspace
+Step 6 — Generate workspace state
   Create .crux/workspace/
   .crux/workspace/MANIFEST.md    from MANIFEST.template.md
   .crux/workspace/inbox.md       from INBOX.template.md
@@ -153,10 +153,10 @@ Step 6 — Generate workspace
   For each initial agent:
     Create .crux/workspace/{role}/
     Create .crux/workspace/{role}/sessions/
-    Set MANIFEST.md agents.{role}.status → pending-onboard
+    Set .crux/workspace/MANIFEST.md agents.{role}.status → pending-onboard
 
 Step 7 — Complete
-  "Crux is ready.
+  "Crux workspace is ready.
    {n} agent(s) pending onboarding: {list}
    Type @{role-id} to start."
 ```
@@ -172,9 +172,9 @@ User types: @{role-id}
 
 1. Read .crux/agents/{role-id}/AGENT.md
    IF not found → "Agent '{role-id}' not found.
-                   Available: {list from workspace/MANIFEST.md}"
+                   Available: {list from .crux/workspace/MANIFEST.md}"
 
-2. Check workspace/MANIFEST.md:
+2. Check .crux/workspace/MANIFEST.md:
    pending-onboard → run .crux/agents/{role-id}/onboarding.md first
    onboarded       → open session, proceed
 
@@ -183,7 +183,7 @@ User types: @{role-id}
    Create .crux/workspace/{role-id}/sessions/{id}/
    Create scratch.md and context-cache.md
    Update symlink: .crux/workspace/{role-id}/current → sessions/{id}/
-   Update workspace/MANIFEST.md: last-session for this agent
+   Update .crux/workspace/MANIFEST.md: last-session for this agent
 
 4. Write to .crux/bus/broadcast.jsonl:
    { "type": "agent.started", "from": "{role-id}", "session": "{id}", "ts": "..." }
@@ -213,14 +213,14 @@ On session end:
 2. Persist new facts to .crux/workspace/{role-id}/MEMORY.md
 3. Write to .crux/bus/broadcast.jsonl:
    { "type": "agent.stopped", "from": "{role-id}", "session": "{id}", "ts": "..." }
-4. Update workspace/MANIFEST.md: last-session timestamp
+4. Update .crux/workspace/MANIFEST.md: last-session timestamp
 ```
 
 ### Resetting an Agent
 
 ```
-1. Set workspace/MANIFEST.md agents.{role-id}.status → pending-onboard
-2. Ask: "Clear workspace/{role-id}/MEMORY.md? (yes / no)"
+1. Set .crux/workspace/MANIFEST.md agents.{role-id}.status → pending-onboard
+2. Ask: "Clear `.crux/workspace/{role-id}/MEMORY.md`? (yes / no)"
 3. On next start → onboarding runs
 ```
 
@@ -232,7 +232,12 @@ On session end:
 Trigger detected (user input matches a workflow trigger phrase):
 
 1. Load .crux/workflows/{workflow-name}.md
-   IF not found → treat as regular @mention, not a workflow
+   IF not found:
+     a. search .crux/agents/*/assets/{workflow-name}.workflow.template.md
+     b. IF exactly one matching asset exists:
+          generate .crux/workflows/{workflow-name}.md from that asset
+          continue
+     c. ELSE treat as regular @mention, not a workflow
 
 2. Collect inputs
    Ask inputs one at a time (as defined in workflow Inputs section)
@@ -245,13 +250,13 @@ Trigger detected (user input matches a workflow trigger phrase):
 
 4. Execute steps in order
    For each step:
-     a. Check if agent is onboarded (MANIFEST.md status == onboarded)
+     a. Check if agent is onboarded (`.crux/workspace/MANIFEST.md` status == onboarded)
         IF not onboarded AND required: yes → stop, notify user
         IF not onboarded AND required: no  → skip, note in scratch.md
      b. Route to agent via @mention (Section V below)
      c. Pass inputs defined for this step
      d. Wait for completion (subagent) or hand off (primary)
-     e. Record step result in workspace/sessions/{id}/scratch.md
+     e. Record step result in `.crux/workspace/sessions/{id}/scratch.md`
 
 5. Run any post-execution composition roles defined by the workflow
    Examples:
@@ -289,7 +294,7 @@ Workflow files live in `.crux/workflows/`.
 ## VI. Amendment Handling
 
 ```
-Agent writes AMD-{id} to workspace/MANIFEST.md → Pending Amendments:
+Agent writes AMD-{id} to `.crux/workspace/MANIFEST.md` → Pending Amendments:
 
 1. Pause requesting agent.
 

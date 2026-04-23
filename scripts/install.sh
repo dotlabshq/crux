@@ -2,8 +2,8 @@
 # Requires bash 3.2+ (macOS default)
 # =============================================================================
 # Crux — install.sh
-# Downloads the Crux framework skeleton into the current project
-# and converts agent definitions for the specified AI tool.
+# Downloads the Crux framework source, maps it into `.crux/` in the current
+# project, and converts agent definitions for the specified AI tool.
 #
 # Quick start:
 #   curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | bash
@@ -40,7 +40,6 @@ BRANCH="main"
 AGENTS_ARG=""
 TOOL="auto"
 PROJECT_NAME=""
-CRUX_DIR=".crux"
 DRY_RUN=false
 FORCE=false
 
@@ -152,7 +151,52 @@ download_stdout() {
 }
 
 # ---------------------------------------------------------------------------
-# Step 1: Download .crux/ skeleton
+# Helpers
+# ---------------------------------------------------------------------------
+install_file() {
+  local src="$1"
+  local dest="$2"
+
+  if [[ ! -f "$src" ]]; then
+    warn "Not found in archive: ${src#$EXTRACTED/}"
+    return
+  fi
+
+  if [[ -f "$dest" ]] && ! $FORCE; then
+    info "Exists, skipping (--force to overwrite): ${dest#./}"
+    SKIPPED=$((SKIPPED+1))
+    return
+  fi
+
+  if $DRY_RUN; then
+    info "[dry-run] would install: ${dest#./}"
+  else
+    mkdir -p "$(dirname "$dest")"
+    cp "$src" "$dest"
+    ok "${dest#./}"
+  fi
+  INSTALLED=$((INSTALLED+1))
+}
+
+install_tree() {
+  local src_root="$1"
+  local dest_root="$2"
+
+  if [[ ! -d "$src_root" ]]; then
+    warn "Not found in archive: ${src_root#$EXTRACTED/}"
+    return
+  fi
+
+  while IFS= read -r src_file; do
+    local rel dest
+    rel="${src_file#$src_root/}"
+    dest="$dest_root/$rel"
+    install_file "$src_file" "$dest"
+  done < <(find "$src_root" -type f | sort)
+}
+
+# ---------------------------------------------------------------------------
+# Step 1: Download framework source
 # ---------------------------------------------------------------------------
 step "Downloading Crux framework..."
 
@@ -168,54 +212,14 @@ mkdir -p "$EXTRACTED"
 tar xzf "$ARCHIVE" --strip-components=1 -C "$EXTRACTED"
 ok "Downloaded"
 
-# Files to install from framework (not user-specific files like agents/)
-FRAMEWORK_FILES=(
-  ".crux/COORDINATOR.md"
-  ".crux/AGENTS.md"
-  "README.md"
-  ".crux/bus/protocol.md"
-  ".crux/templates/CONSTITUTION.template.md"
-  ".crux/templates/SOUL.template.md"
-  ".crux/templates/MANIFEST.template.md"
-  ".crux/templates/INBOX.template.md"
-  ".crux/templates/MEMORY.template.md"
-  ".crux/templates/NOTES.template.md"
-  ".crux/templates/AGENT.template.md"
-  ".crux/templates/SKILL.template.md"
-  ".crux/templates/WORKFLOW.template.md"
-  ".crux/templates/DECISION.template.md"
-  ".crux/templates/onboarding.template.md"
-  ".crux/templates/decisions/TENANT-NAMING-CONVENTIONS.template.md"
-  ".crux/templates/skills/example-skill/SKILL.md"
-)
-
 INSTALLED=0
 SKIPPED=0
 
-for rel in "${FRAMEWORK_FILES[@]}"; do
-  src="$EXTRACTED/$rel"
-  dest="./$rel"
-
-  if [[ ! -f "$src" ]]; then
-    warn "Not found in archive: $rel"
-    continue
-  fi
-
-  if [[ -f "$dest" ]] && ! $FORCE; then
-    info "Exists, skipping (--force to overwrite): $rel"
-    SKIPPED=$((SKIPPED+1))
-    continue
-  fi
-
-  if $DRY_RUN; then
-    info "[dry-run] would install: $rel"
-  else
-    mkdir -p "$(dirname "$dest")"
-    cp "$src" "$dest"
-    ok "$rel"
-  fi
-  INSTALLED=$((INSTALLED+1))
-done
+install_file "$EXTRACTED/COORDINATOR.md" "./.crux/COORDINATOR.md"
+install_file "$EXTRACTED/AGENTS.md" "./.crux/AGENTS.md"
+install_tree "$EXTRACTED/bus" "./.crux/bus"
+install_tree "$EXTRACTED/templates" "./.crux/templates"
+install_tree "$EXTRACTED/workflows" "./.crux/workflows"
 
 ok "${INSTALLED} framework files installed, ${SKIPPED} skipped"
 
@@ -232,7 +236,7 @@ else
   while IFS= read -r role; do
     AGENT_LIST+=("$role")
   done < <(
-    find "$EXTRACTED/.crux/agents" -name "AGENT.md" 2>/dev/null \
+    find "$EXTRACTED/agents" -name "AGENT.md" 2>/dev/null \
     | while IFS= read -r f; do basename "$(dirname "$f")"; done \
     | sort
   )
@@ -240,10 +244,10 @@ fi
 
 for role in "${AGENT_LIST[@]}"; do
   role=$(echo "$role" | xargs)  # trim whitespace
-  src_agent="$EXTRACTED/.crux/agents/${role}/AGENT.md"
-  src_onboarding="$EXTRACTED/.crux/agents/${role}/onboarding.md"
-  dest_agent=".crux/agents/${role}/AGENT.md"
-  dest_onboarding=".crux/agents/${role}/onboarding.md"
+  src_agent_dir="$EXTRACTED/agents/${role}"
+  dest_agent_dir=".crux/agents/${role}"
+  src_agent="$src_agent_dir/AGENT.md"
+  dest_agent="$dest_agent_dir/AGENT.md"
 
   if [[ ! -f "$src_agent" ]]; then
     warn "Agent not found in Crux framework: ${role}"
@@ -259,14 +263,10 @@ for role in "${AGENT_LIST[@]}"; do
   if $DRY_RUN; then
     info "[dry-run] would install agent: ${role}"
   else
-    mkdir -p ".crux/agents/${role}"
-    cp "$src_agent" "$dest_agent"
-    ok "Agent: ${role}"
-    if [[ -f "$src_onboarding" ]]; then
-      cp "$src_onboarding" "$dest_onboarding"
-      ok "  onboarding.md"
-    fi
+    info "Installing agent directory: ${role}"
   fi
+
+  install_tree "$src_agent_dir" "$dest_agent_dir"
 done
 
 # ---------------------------------------------------------------------------
@@ -282,8 +282,10 @@ for role in "${AGENT_LIST[@]}"; do
   # Extract skill names from the Skills table
   while IFS= read -r skill_name; do
     skill_name=$(echo "$skill_name" | xargs)
-    src_skill="$EXTRACTED/.crux/skills/${skill_name}/SKILL.md"
-    dest_skill=".crux/skills/${skill_name}/SKILL.md"
+    src_skill_dir="$EXTRACTED/skills/${skill_name}"
+    src_skill="$src_skill_dir/SKILL.md"
+    dest_skill_dir=".crux/skills/${skill_name}"
+    dest_skill="$dest_skill_dir/SKILL.md"
 
     if [[ ! -f "$src_skill" ]]; then
       continue  # Custom or future skill — not bundled
@@ -296,10 +298,10 @@ for role in "${AGENT_LIST[@]}"; do
     if $DRY_RUN; then
       info "[dry-run] would install skill: ${skill_name}"
     else
-      mkdir -p ".crux/skills/${skill_name}"
-      cp "$src_skill" "$dest_skill"
-      ok "Skill: ${skill_name}"
+      info "Installing skill directory: ${skill_name}"
     fi
+
+    install_tree "$src_skill_dir" "$dest_skill_dir"
   done < <(
     awk '/## V\. Skills/,/^---/' "$agent_file" \
     | grep '^\| `' \
@@ -313,13 +315,7 @@ done
 step "Creating directory structure..."
 
 DIRS=(
-  ".crux/agents"
-  ".crux/decisions"
-  ".crux/docs"
-  ".crux/summaries"
-  ".crux/workflows"
-  ".crux/skills"
-  ".crux/bus"
+  ".crux"
 )
 
 for d in "${DIRS[@]}"; do
@@ -406,14 +402,14 @@ echo -e "  ${BOLD}Next steps:${RESET}"
 echo ""
 echo -e "  1. Start your AI tool in this project directory"
 if [[ ${#AGENT_LIST[@]} -gt 0 ]]; then
-  echo -e "  2. The coordinator will run installation on first boot"
+  echo -e "  2. The coordinator will run workspace initialisation on first boot"
   echo -e "     and ask a few questions to set up your workspace"
   echo -e "  3. Activate an agent:"
   for role in "${AGENT_LIST[@]}"; do
     echo -e "       ${CYAN}@${role}${RESET}"
   done
 else
-  echo -e "  2. The coordinator boots automatically and runs workspace installation"
+  echo -e "  2. The coordinator boots automatically and runs workspace initialisation"
 fi
 echo ""
 echo -e "  ${BOLD}When you update agents or skills:${RESET}"

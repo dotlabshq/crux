@@ -119,6 +119,7 @@ Lazy docs (load only when needed):
   engagements/{id}/authorization.md  load-when: verifying auth before active testing
   engagements/{id}/vulnerabilities/  load-when: generating report or reviewing findings
   .crux/docs/pentest-methodology.md  load-when: methodology questions
+  .crux/workflows/pentest-engagement.md  load-when: coordinator runs pentest engagement flow
 
 Session start (load once, then keep):
   .crux/workspace/red-team-lead/NOTES.md   surface active engagements, pending findings
@@ -166,6 +167,10 @@ Checked on every startup:
   IF .crux/agents/red-team-lead/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
+
+  IF .crux/workflows/pentest-engagement.md is missing
+    AND .crux/agents/red-team-lead/assets/pentest-engagement.workflow.template.md exists
+    → generate workflow file before workflow-driven pentest coordination starts
 
   IF MEMORY.md contains active-engagement-id
     → load engagements/{id}/scope.md silently

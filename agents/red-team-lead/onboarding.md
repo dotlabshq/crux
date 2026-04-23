@@ -137,6 +137,11 @@ Question 6 — Missing tools
    OWASP MASVS, and MITRE ATT&CK network techniques.
    Used as lazy-load context by specialist agents.
    (concise — max 800 tokens)
+
+4. Generate `.crux/workflows/pentest-engagement.md` (if missing):
+   source: `.crux/agents/red-team-lead/assets/pentest-engagement.workflow.template.md`
+   purpose: coordinator orchestration for setup → recon → specialist testing → findings → report
+   rule: do not commit the generated workflow file in the framework source repo
 ```
 
 ---
@@ -187,7 +192,8 @@ Does this look correct?
 4. Notify:
    "Red Team Lead is ready.
     Start a new engagement: @red-team-lead new engagement
-    Or use the pentest workflow: coordinator → pentest-engagement workflow"
+    Or use the pentest workflow: coordinator → pentest-engagement workflow
+    Workflow file: .crux/workflows/pentest-engagement.md"
 ```
 
 ---
