@@ -157,6 +157,7 @@ additional-rules:
 | `cross-team-summary-writer` | user wants an org summary, leadership brief, or cross-team weekly report | No |
 | `blocker-dependency-tracker` | user wants blockers, dependencies, ownership gaps, or escalation items tracked | No |
 | `leadership-style-mapper` | onboarding or review needs natural language mapped to G/S/T signals | No |
+| `jira-workflow-manager` | user wants team work searched, created, updated, transitioned, or coordinated in Jira | Yes — user approval required before Jira write operations |
 
 ---
 

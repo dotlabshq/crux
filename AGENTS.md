@@ -125,6 +125,7 @@ Active development. Core architecture is stable.
 - `skills/cross-team-summary-writer/` — writes short org-level weekly summaries across teams
 - `skills/blocker-dependency-tracker/` — extracts blockers, dependencies, and ownership gaps into a coordination view
 - `skills/leadership-style-mapper/` — maps natural management answers into internal `G/S/T` signals without asking users to use the codes directly
+- `skills/jira-workflow-manager/` — Jira issue search, creation, updates, transitions, comments, and sprint coordination through Atlassian MCP with explicit approval before write actions
 - `skills/mailbox-triage/` — reads configured mailboxes through Himalaya in read-only mode, classifies messages, summarizes threads, extracts actions, and routes outputs to inbox/notes/memory
 - `skills/codebase-scanner/` — directory scan → `.crux/docs/backend.md`
 - `skills/doc-summariser/` — docs/ → summaries/, updates MANIFEST.md
