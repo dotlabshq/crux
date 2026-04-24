@@ -62,6 +62,7 @@ Active development. Core architecture is stable.
 - `agents/eligibility-risk-analyst/` — AGENT.md + onboarding.md (preliminary eligibility matrices, document checks, risk review)
 - `agents/project-application-writer/` — AGENT.md + onboarding.md (project framing, novelty, work packages, application drafts)
 - `agents/client-delivery-manager/` — AGENT.md + onboarding.md (proposals, executive summaries, client delivery communication)
+- `agents/ledger-finance-manager/` — AGENT.md + onboarding.md (hledger-backed finance reporting, ledger health, transaction drafting, journal writeback)
 - `agents/kubernetes-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, multi-tenant setup, Kustomize IaC)
 - `agents/postgresql-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, schema/role governance, tenant provisioning)
 - `agents/backend-developer/` — AGENT.md + onboarding.md (backend implementation, API review, backend tests, schema-sensitive review)
@@ -90,6 +91,13 @@ Active development. Core architecture is stable.
 - `skills/proposal-writer/` — advisory case → client proposal / scope note
 - `skills/executive-summary-writer/` — specialist outputs → decision-ready summary
 - `skills/client-email-writer/` — case context → client-facing email draft
+- `skills/hledger-balance-report/` — hledger balances by period, account, or group
+- `skills/hledger-income-statement/` — hledger profit/loss and operating performance view
+- `skills/hledger-cashflow-report/` — hledger cash flow and liquidity movement analysis
+- `skills/hledger-register-review/` — detailed transaction, posting, payee, and account activity review
+- `skills/hledger-ledger-health-check/` — ledger hygiene, structure, and reporting quality review
+- `skills/hledger-transaction-draft/` — business event → candidate hledger journal entry draft
+- `skills/hledger-journal-writeback/` — validated journal mutations applied through hledger MCP
 - `skills/kubernetes-architecture-analyser/` — live cluster scan → docs/kubernetes.md
 - `skills/kubernetes-tenant-onboarding/` — Kubernetes step of tenant onboarding: namespace, quota, NetworkPolicy, RBAC, Grafana, updates docs/tenants.md
 - `skills/postgresql-schema-analyser/` — live DB scan → docs/postgresql.md *(not yet written)*

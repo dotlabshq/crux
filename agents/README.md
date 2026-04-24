@@ -46,6 +46,7 @@ These are good direct entry points for most users:
 - `eligibility-risk-analyst`
 - `project-application-writer`
 - `client-delivery-manager`
+- `ledger-finance-manager`
 - `backend-developer`
 - `frontend-developer`
 - `platform-engineer`
@@ -86,6 +87,7 @@ Reason:
 | `eligibility-risk-analyst` | `primary` | `Public Primary` | Preliminary eligibility review, document requirement analysis, and submission/compliance risk review | `eligibility-matrix-builder`, `document-requirements-check`, `compliance-review` |
 | `project-application-writer` | `primary` | `Public Primary` | Project framing, novelty/uncertainty writing, work-package planning, and application-ready project drafts | `grant-project-writer` |
 | `client-delivery-manager` | `primary` | `Public Primary` | Client-facing proposals, executive summaries, document requests, and process-update communication | `proposal-writer`, `executive-summary-writer`, `client-email-writer` |
+| `ledger-finance-manager` | `primary` | `Public Primary` | hledger-backed financial reporting, ledger review, transaction drafting, and journal writeback management | `hledger-balance-report`, `hledger-income-statement`, `hledger-cashflow-report`, `hledger-register-review`, `hledger-ledger-health-check`, `hledger-transaction-draft`, `hledger-journal-writeback` |
 | `frontend-developer` | `primary` | `Public Primary` | UI implementation, component structure, state-flow review, frontend tests, frontend docs | `ui-structure-analyser`, `component-implementation`, `frontend-test-writer`, `state-flow-review`, `frontend-doc-writer` |
 | `platform-engineer` | `primary` | `Public Primary` | Environments, CI/CD, deployment review, observability, runtime summaries | `environment-setup-review`, `ci-pipeline-implementation`, `deployment-config-review`, `observability-check`, `runtime-incident-summary` |
 | `kubernetes-admin` | `subagent` | `Routed Subagent` | Kubernetes cluster operations, namespace governance, workload triage, storage and network policy work | `kubernetes-architecture-analyser`, `kubernetes-tenant-onboarding`, `kubernetes-namespace-audit`, `kubernetes-network-policy-apply`, `kubernetes-storage-health`, `workload-triage` |
