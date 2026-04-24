@@ -41,6 +41,11 @@ Rule of thumb:
 ### Public Primary
 
 These are good direct entry points for most users:
+- `advisory-orchestrator`
+- `incentive-program-analyst`
+- `eligibility-risk-analyst`
+- `project-application-writer`
+- `client-delivery-manager`
 - `backend-developer`
 - `frontend-developer`
 - `platform-engineer`
@@ -76,6 +81,11 @@ Reason:
 | Role ID | Current Mode | Recommended Exposure | What It Does | Core Skills |
 |---|---|---|---|---|
 | `backend-developer` | `primary` | `Public Primary` | Server-side implementation, API review, backend tests, schema-sensitive review, backend docs | `api-surface-analyser`, `service-implementation`, `backend-test-writer`, `schema-change-review`, `backend-doc-writer`, `codebase-scanner`, `test-coverage-check`, `dependency-audit` |
+| `advisory-orchestrator` | `primary` | `Public Primary` | Advisory intake, client profiling, service-line selection, task routing, and executive action planning | `lead-intake-triage`, `missing-info-questioner`, `advisory-roadmap-writer` |
+| `incentive-program-analyst` | `primary` | `Public Primary` | Incentive and support-program mapping, preliminary support-fit analysis, and support landscape scans | `incentive-eligibility-check`, `program-landscape-scan` |
+| `eligibility-risk-analyst` | `primary` | `Public Primary` | Preliminary eligibility review, document requirement analysis, and submission/compliance risk review | `eligibility-matrix-builder`, `document-requirements-check`, `compliance-review` |
+| `project-application-writer` | `primary` | `Public Primary` | Project framing, novelty/uncertainty writing, work-package planning, and application-ready project drafts | `grant-project-writer` |
+| `client-delivery-manager` | `primary` | `Public Primary` | Client-facing proposals, executive summaries, document requests, and process-update communication | `proposal-writer`, `executive-summary-writer`, `client-email-writer` |
 | `frontend-developer` | `primary` | `Public Primary` | UI implementation, component structure, state-flow review, frontend tests, frontend docs | `ui-structure-analyser`, `component-implementation`, `frontend-test-writer`, `state-flow-review`, `frontend-doc-writer` |
 | `platform-engineer` | `primary` | `Public Primary` | Environments, CI/CD, deployment review, observability, runtime summaries | `environment-setup-review`, `ci-pipeline-implementation`, `deployment-config-review`, `observability-check`, `runtime-incident-summary` |
 | `kubernetes-admin` | `subagent` | `Routed Subagent` | Kubernetes cluster operations, namespace governance, workload triage, storage and network policy work | `kubernetes-architecture-analyser`, `kubernetes-tenant-onboarding`, `kubernetes-namespace-audit`, `kubernetes-network-policy-apply`, `kubernetes-storage-health`, `workload-triage` |

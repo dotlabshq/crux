@@ -21,6 +21,11 @@ engagements/
 .opencode/
 .claude/
 .cursor/
+.acp/
+acp/.venv/
+acp/.pytest_cache/
+acp/**/__pycache__/
+acp/**/*.pyc
 
 
 # ---------------------------------------------------------------------------
@@ -44,3 +49,6 @@ engagements/
 *.swp
 *.swo
 *~
+
+acp/
+scripts/run-acp.sh

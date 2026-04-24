@@ -57,6 +57,11 @@ Active development. Core architecture is stable.
 - `onboarding.template.md` — 7-step: intro → discovery → questions → docs → SOC2 gaps → confirm → finalise
 
 **Agents:**
+- `agents/advisory-orchestrator/` — AGENT.md + onboarding.md (advisory intake, service-line selection, task routing, executive action planning)
+- `agents/incentive-program-analyst/` — AGENT.md + onboarding.md (support-program mapping, incentive screening, landscape scans)
+- `agents/eligibility-risk-analyst/` — AGENT.md + onboarding.md (preliminary eligibility matrices, document checks, risk review)
+- `agents/project-application-writer/` — AGENT.md + onboarding.md (project framing, novelty, work packages, application drafts)
+- `agents/client-delivery-manager/` — AGENT.md + onboarding.md (proposals, executive summaries, client delivery communication)
 - `agents/kubernetes-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, multi-tenant setup, Kustomize IaC)
 - `agents/postgresql-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, schema/role governance, tenant provisioning)
 - `agents/backend-developer/` — AGENT.md + onboarding.md (backend implementation, API review, backend tests, schema-sensitive review)
@@ -73,6 +78,18 @@ Active development. Core architecture is stable.
 - `agents/network-pentester/` — AGENT.md + onboarding.md (MITRE ATT&CK, nmap, CVE verification) — subagent
 
 **Skills:**
+- `skills/lead-intake-triage/` — raw client brief → structured advisory intake note
+- `skills/missing-info-questioner/` — intake gaps → concise clarification question list
+- `skills/advisory-roadmap-writer/` — advisory case → 30/60/90 day roadmap
+- `skills/incentive-eligibility-check/` — client profile → preliminary support-fit analysis
+- `skills/program-landscape-scan/` — client profile → categorized support opportunity landscape
+- `skills/eligibility-matrix-builder/` — case + target path → preliminary eligibility matrix
+- `skills/document-requirements-check/` — target path → required and missing document checklist
+- `skills/compliance-review/` — advisory or support file → risk and control review
+- `skills/grant-project-writer/` — project brief → application-ready project structure
+- `skills/proposal-writer/` — advisory case → client proposal / scope note
+- `skills/executive-summary-writer/` — specialist outputs → decision-ready summary
+- `skills/client-email-writer/` — case context → client-facing email draft
 - `skills/kubernetes-architecture-analyser/` — live cluster scan → docs/kubernetes.md
 - `skills/kubernetes-tenant-onboarding/` — Kubernetes step of tenant onboarding: namespace, quota, NetworkPolicy, RBAC, Grafana, updates docs/tenants.md
 - `skills/postgresql-schema-analyser/` — live DB scan → docs/postgresql.md *(not yet written)*
