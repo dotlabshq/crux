@@ -62,7 +62,7 @@ Active development. Core architecture is stable.
 - `agents/eligibility-risk-analyst/` — AGENT.md + onboarding.md (preliminary eligibility matrices, document checks, risk review)
 - `agents/project-application-writer/` — AGENT.md + onboarding.md (project framing, novelty, work packages, application drafts)
 - `agents/client-delivery-manager/` — AGENT.md + onboarding.md (proposals, executive summaries, client delivery communication)
-- `agents/ledger-finance-manager/` — AGENT.md + onboarding.md (hledger-backed finance reporting, ledger health, transaction drafting, journal writeback)
+- `agents/ledger-finance-manager/` — AGENT.md + onboarding.md (hledger-backed or rustledger-backed finance reporting, ledger health, transaction drafting, and ledger writeback)
 - `agents/kubernetes-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, multi-tenant setup, Kustomize IaC)
 - `agents/postgresql-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, schema/role governance, tenant provisioning)
 - `agents/backend-developer/` — AGENT.md + onboarding.md (backend implementation, API review, backend tests, schema-sensitive review)
@@ -98,6 +98,13 @@ Active development. Core architecture is stable.
 - `skills/hledger-ledger-health-check/` — ledger hygiene, structure, and reporting quality review
 - `skills/hledger-transaction-draft/` — business event → candidate hledger journal entry draft
 - `skills/hledger-journal-writeback/` — validated journal mutations applied through hledger MCP
+- `skills/rustledger-balance-report/` — rustledger/Beancount balances by period, account, or group
+- `skills/rustledger-income-statement/` — rustledger/Beancount profit and loss view
+- `skills/rustledger-cashflow-report/` — rustledger/Beancount cash flow and liquidity movement analysis
+- `skills/rustledger-register-review/` — rustledger/Beancount transaction and posting drill-down
+- `skills/rustledger-ledger-health-check/` — rustledger validation, doctor, and ledger hygiene review
+- `skills/rustledger-transaction-draft/` — business event → candidate Beancount transaction draft
+- `skills/rustledger-ledger-writeback/` — validated Beancount ledger mutations with rustledger check/format validation
 - `skills/kubernetes-architecture-analyser/` — live cluster scan → docs/kubernetes.md
 - `skills/kubernetes-tenant-onboarding/` — Kubernetes step of tenant onboarding: namespace, quota, NetworkPolicy, RBAC, Grafana, updates docs/tenants.md
 - `skills/postgresql-schema-analyser/` — live DB scan → docs/postgresql.md *(not yet written)*

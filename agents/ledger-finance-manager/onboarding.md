@@ -1,7 +1,7 @@
 # Onboarding: Ledger Finance Manager
 
 > This file defines the onboarding sequence for the `ledger-finance-manager` agent.
-> Onboarding configures hledger-backed reporting defaults and safe journal operation rules.
+> Onboarding configures hledger-backed or rustledger-backed reporting defaults and safe ledger operation rules.
 
 ---
 
@@ -19,9 +19,9 @@ If any of these are missing, stop and notify the user.
 ## Step 1 — Introduce
 
 Explain that this agent:
-- reads finance data through hledger MCP
+- reads finance data through hledger MCP or rustledger-compatible Beancount workflows
 - produces balances, P&L, cash flow, and register views
-- drafts and can apply journal mutations
+- drafts and can apply ledger mutations
 - does not replace a licensed accountant or statutory filing process
 
 ---
@@ -31,12 +31,15 @@ Explain that this agent:
 ```
 Run the following checks silently:
   1. Check whether hledger MCP is configured and reachable
-  2. Check whether the primary journal path is known
-  3. Check whether read-only mode is enabled
-  4. Check whether backup skip is enabled
-  5. Check whether .crux/docs/finance-reporting-rules.md exists
-  6. Check whether .crux/docs/hledger-operating-playbook.md exists
-  7. Check whether .crux/docs/chart-of-accounts-guide.md exists
+  2. Check whether rustledger CLI is installed: rledger --version
+  3. Check whether the primary journal path is known
+  4. Check whether the primary Beancount ledger path is known
+  5. Check whether read-only mode is enabled
+  6. Check whether backup skip is enabled
+  7. Check whether .crux/docs/finance-reporting-rules.md exists
+  8. Check whether .crux/docs/hledger-operating-playbook.md exists
+  9. Check whether .crux/docs/rustledger-operating-playbook.md exists
+  10. Check whether .crux/docs/chart-of-accounts-guide.md exists
 ```
 
 Record missing items in scratch notes.
@@ -52,15 +55,20 @@ Ask one question at a time:
    default: current-month
    stores-to: MEMORY.md → default-report-period
 
-2. "Which currency should management summaries prioritize?"
+2. "Which ledger backend should be the default?
+    Options: hledger / rustledger / dual"
+   default: dual
+   stores-to: MEMORY.md → default-ledger-backend
+
+3. "Which currency should management summaries prioritize?"
    default: journal default currency
    stores-to: MEMORY.md → reporting-currency
 
-3. "Should journal write operations default to draft-first or direct writeback after validation?"
+4. "Should ledger write operations default to draft-first or direct writeback after validation?"
    default: draft-first
    stores-to: MEMORY.md → journal-write-mode
 
-4. "Should leadership summaries focus on detailed accounts or grouped account families by default?"
+5. "Should leadership summaries focus on detailed accounts or grouped account families by default?"
    default: grouped account families
    stores-to: MEMORY.md → default-report-granularity
 
@@ -71,6 +79,7 @@ Ask one question at a time:
 If missing, generate:
 - `.crux/docs/finance-reporting-rules.md`
 - `.crux/docs/hledger-operating-playbook.md`
+- `.crux/docs/rustledger-operating-playbook.md`
 - `.crux/docs/chart-of-accounts-guide.md`
 
 ---
@@ -79,6 +88,8 @@ If missing, generate:
 
 Summarise:
 - hledger MCP availability
+- rustledger CLI availability
+- default ledger backend
 - journal mode
 - default report period
 - reporting currency
