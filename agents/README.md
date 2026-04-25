@@ -46,7 +46,9 @@ These are good direct entry points for most users:
 - `eligibility-risk-analyst`
 - `project-application-writer`
 - `client-delivery-manager`
+- `arif`
 - `ledger-finance-manager`
+- `linux-admin`
 - `backend-developer`
 - `frontend-developer`
 - `platform-engineer`
@@ -87,7 +89,9 @@ Reason:
 | `eligibility-risk-analyst` | `primary` | `Public Primary` | Preliminary eligibility review, document requirement analysis, and submission/compliance risk review | `eligibility-matrix-builder`, `document-requirements-check`, `compliance-review` |
 | `project-application-writer` | `primary` | `Public Primary` | Project framing, novelty/uncertainty writing, work-package planning, and application-ready project drafts | `grant-project-writer` |
 | `client-delivery-manager` | `primary` | `Public Primary` | Client-facing proposals, executive summaries, document requests, and process-update communication | `proposal-writer`, `executive-summary-writer`, `client-email-writer` |
+| `arif` | `primary` | `Public Primary` | Pragmatic transformation advice, AI opportunity framing, architecture judgment, security-aware AI trade-offs, workflow simplification, and executive recommendations | `decision-clarifier`, `ai-usecase-prioritiser`, `cost-efficiency-analyser`, `architecture-thinking`, `security-aware-ai`, `workflow-simplifier`, `transformation-roadmap-advisor`, `executive-recommendation-writer` |
 | `ledger-finance-manager` | `primary` | `Public Primary` | hledger-backed or rustledger-backed financial reporting, ledger review, transaction drafting, and ledger writeback management | `hledger-balance-report`, `hledger-income-statement`, `hledger-cashflow-report`, `hledger-register-review`, `hledger-ledger-health-check`, `hledger-transaction-draft`, `hledger-journal-writeback`, `rustledger-balance-report`, `rustledger-income-statement`, `rustledger-cashflow-report`, `rustledger-register-review`, `rustledger-ledger-health-check`, `rustledger-transaction-draft`, `rustledger-ledger-writeback` |
+| `linux-admin` | `primary` | `Public Primary` | Linux host operations, SSH-based administration, service/package/access review, hardening checks, and Ansible inventory/playbook execution | `linux-host-audit`, `linux-service-triage`, `ssh-remote-operator`, `linux-package-manager`, `linux-user-access-review`, `linux-hardening-review`, `ansible-inventory-review`, `ansible-playbook-runner` |
 | `frontend-developer` | `primary` | `Public Primary` | UI implementation, component structure, state-flow review, frontend tests, frontend docs | `ui-structure-analyser`, `component-implementation`, `frontend-test-writer`, `state-flow-review`, `frontend-doc-writer` |
 | `platform-engineer` | `primary` | `Public Primary` | Environments, CI/CD, deployment review, observability, runtime summaries | `environment-setup-review`, `ci-pipeline-implementation`, `deployment-config-review`, `observability-check`, `runtime-incident-summary` |
 | `kubernetes-admin` | `subagent` | `Routed Subagent` | Kubernetes cluster operations, namespace governance, workload triage, storage and network policy work | `kubernetes-architecture-analyser`, `kubernetes-tenant-onboarding`, `kubernetes-namespace-audit`, `kubernetes-network-policy-apply`, `kubernetes-storage-health`, `workload-triage` |

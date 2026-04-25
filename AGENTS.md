@@ -62,7 +62,9 @@ Active development. Core architecture is stable.
 - `agents/eligibility-risk-analyst/` — AGENT.md + onboarding.md (preliminary eligibility matrices, document checks, risk review)
 - `agents/project-application-writer/` — AGENT.md + onboarding.md (project framing, novelty, work packages, application drafts)
 - `agents/client-delivery-manager/` — AGENT.md + onboarding.md (proposals, executive summaries, client delivery communication)
+- `agents/arif/` — AGENT.md + onboarding.md + SOUL.md (pragmatic transformation advice, AI opportunity framing, cost/risk trade-offs, workflow simplification, executive recommendations)
 - `agents/ledger-finance-manager/` — AGENT.md + onboarding.md (hledger-backed or rustledger-backed finance reporting, ledger health, transaction drafting, and ledger writeback)
+- `agents/linux-admin/` — AGENT.md + onboarding.md + SOUL.md (Linux host operations, SSH administration, Ansible automation, service/access/package/hardening review)
 - `agents/kubernetes-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, multi-tenant setup, Kustomize IaC)
 - `agents/postgresql-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, schema/role governance, tenant provisioning)
 - `agents/backend-developer/` — AGENT.md + onboarding.md (backend implementation, API review, backend tests, schema-sensitive review)
@@ -91,6 +93,22 @@ Active development. Core architecture is stable.
 - `skills/proposal-writer/` — advisory case → client proposal / scope note
 - `skills/executive-summary-writer/` — specialist outputs → decision-ready summary
 - `skills/client-email-writer/` — case context → client-facing email draft
+- `skills/decision-clarifier/` — fuzzy request → actual decision statement, constraints, and recommendation frame
+- `skills/ai-usecase-prioritiser/` — company context → practical AI use-case ranking and first-pilot recommendation
+- `skills/cost-efficiency-analyser/` — option set → cost/effort/risk/value trade-off analysis
+- `skills/architecture-thinking/` — architecture question → simplest structurally right system shape
+- `skills/security-aware-ai/` — AI use case → privacy, cloud/local, control, and risk-aware recommendation
+- `skills/workflow-simplifier/` — bloated process → leaner operating workflow
+- `skills/transformation-roadmap-advisor/` — transformation goal → phased prove/stabilise/scale roadmap
+- `skills/executive-recommendation-writer/` — analysis → short management-ready recommendation memo
+- `skills/linux-host-audit/` — Linux host baseline inspection: uptime, disk, memory, failed units, listeners
+- `skills/linux-service-triage/` — systemd/journal-based service diagnosis and restart risk review
+- `skills/ssh-remote-operator/` — scoped remote Linux inspection and approved host changes over SSH
+- `skills/linux-package-manager/` — Linux package install/upgrade/remove planning and execution
+- `skills/linux-user-access-review/` — Linux users, groups, sudo, and SSH access hygiene review
+- `skills/linux-hardening-review/` — practical Linux host hardening baseline review
+- `skills/ansible-inventory-review/` — inventory/group/vars/targeting validation before rollout
+- `skills/ansible-playbook-runner/` — explicit-scope Ansible playbook execution with check/apply posture
 - `skills/hledger-balance-report/` — hledger balances by period, account, or group
 - `skills/hledger-income-statement/` — hledger profit/loss and operating performance view
 - `skills/hledger-cashflow-report/` — hledger cash flow and liquidity movement analysis
