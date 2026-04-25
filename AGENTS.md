@@ -114,7 +114,15 @@ Active development. Core architecture is stable.
 - `skills/mysql-tenant-provisioning/` — MySQL step of tenant onboarding: database/user/grants, updates docs/mysql-tenants.md
 - `skills/mysql-table-audit/` — MySQL/MariaDB naming and structural hygiene review
 - `skills/mysql-backup-verify/` — MySQL/MariaDB backup posture and restore-readiness review
+- `skills/mysql-replication-review/` — MySQL/MariaDB replication lag, role, and failover-readiness review
+- `skills/mysql-recovery-readiness-review/` — MySQL/MariaDB recovery confidence review beyond backup existence
+- `skills/mysql-user-access-governance/` — MySQL/MariaDB user, grant, and least-privilege governance outside tenant provisioning
+- `skills/mysql-instance-health-review/` — MySQL/MariaDB instance-level health and config posture review
 - `skills/mysql-query-analyser/` — MySQL/MariaDB slow query and tuning analysis
+- `skills/postgresql-replication-review/` — PostgreSQL replication lag, role, and failover-readiness review
+- `skills/postgresql-recovery-readiness-review/` — PostgreSQL recovery confidence review beyond backup existence
+- `skills/postgresql-user-access-governance/` — PostgreSQL role, grant, and least-privilege governance outside tenant provisioning
+- `skills/postgresql-instance-health-review/` — PostgreSQL instance-level health and config posture review
 - `skills/hledger-balance-report/` — hledger balances by period, account, or group
 - `skills/hledger-income-statement/` — hledger profit/loss and operating performance view
 - `skills/hledger-cashflow-report/` — hledger cash flow and liquidity movement analysis

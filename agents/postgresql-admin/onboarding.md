@@ -195,6 +195,16 @@ Question 7 — Backup posture
   ELSE:
     "I detected {backup-tool}. Is the backup schedule documented somewhere I should know?"
   stores-to: workspace/postgresql-admin/MEMORY.md → backup-tool, backup-schedule
+
+Question 8 — Access method
+  "How do you usually reach PostgreSQL?
+   Examples:
+     direct host:port
+     bastion/jump host
+     kubectl exec into a PostgreSQL pod
+     kubectl port-forward to a service or pod
+   If a working method exists, I will store and reuse it."
+  stores-to: workspace/postgresql-admin/MEMORY.md → access-method-default
 ```
 
 ---
@@ -216,6 +226,8 @@ Run sequentially:
   3. doc-summariser              →  summaries/postgresql.md
      Trigger: after docs/postgresql.md is written
 ```
+
+If PostgreSQL is discovered inside Kubernetes, ask `kubernetes-admin` for the working namespace/pod/service access path, then store the verified method in `MEMORY.md` so future runs reuse it instead of rediscovering access.
 
 ---
 

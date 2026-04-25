@@ -109,6 +109,16 @@ Question 5 — Tenant naming convention
   "What naming convention should I enforce for tenant databases or table prefixes?"
   default: {tenant-id}_{env}
   stores-to: workspace/mysql-admin/MEMORY.md → tenant-naming-pattern
+
+Question 6 — Access method
+  "How do you usually reach MySQL/MariaDB?
+   Examples:
+     direct host:port
+     bastion/jump host
+     kubectl exec into a MySQL pod
+     kubectl port-forward to a service or pod
+   If a working method exists, I will store and reuse it."
+  stores-to: workspace/mysql-admin/MEMORY.md → access-method-default
 ```
 
 ---
@@ -129,6 +139,8 @@ Run sequentially:
   3. doc-summariser            → summaries/mysql.md
      Trigger: after docs/mysql.md is written
 ```
+
+If MySQL/MariaDB is discovered inside Kubernetes, ask `kubernetes-admin` for the working namespace/pod/service access path, then store the verified method in `MEMORY.md` so future runs reuse it instead of rediscovering access.
 
 ---
 

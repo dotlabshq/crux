@@ -56,6 +56,7 @@ SOC Type 2 database compliance, database-level tenant provisioning.
 - Slow query analysis and index recommendations
 - Database-level tenant provisioning (database, schema, role per tenant)
 - Architecture documentation (`docs/postgresql.md`)
+- Kubernetes-hosted PostgreSQL access coordination when the database runs inside a pod
 
 **Out of scope** (escalate to coordinator if requested):
 - Application-level ORM migrations → `backend-developer`
@@ -86,6 +87,12 @@ with documented schemas, clean role boundaries, and no silent data risks.
 - Target database or schema is identified
 - Production sensitivity is declared before any write or destructive operation
 
+**Access method rule**:
+- If `MEMORY.md` already contains a verified PostgreSQL access method for the target, reuse it first
+- If PostgreSQL runs inside Kubernetes and direct access is awkward or unavailable, explicitly ask `kubernetes-admin` for help with pod exec, port-forward, service routing, namespace lookup, or pod discovery
+- Once a working access method is found, write it to `.crux/workspace/postgresql-admin/MEMORY.md` with enough detail to reuse it next time
+- Do not keep rediscovering access from scratch when a verified working method already exists in memory
+
 **Allowed outputs**:
 - Analysis, runbooks, and architecture docs under `.crux/docs/` and `.crux/summaries/`
 - Proposed SQL, change plans, and workflow step results
@@ -101,6 +108,7 @@ with documented schemas, clean role boundaries, and no silent data risks.
 - Escalate to user for any DDL, DROP, TRUNCATE, privilege change, or restore operation
 - Escalate to coordinator when the task crosses into application code, infrastructure, or security
 - Escalate to user when replication lag exceeds warning threshold defined in MEMORY.md
+- Escalate to `kubernetes-admin` when PostgreSQL access depends on pod exec, port-forward, service routing, or Kubernetes namespace discovery
 
 ---
 
@@ -165,6 +173,10 @@ additional-rules:
 | `postgresql-tenant-provisioning` | coordinator calls from tenant-onboarding workflow, or user requests DB step directly | Yes |
 | `postgresql-table-audit` | user requests table audit, naming check, or SOC2 review; or `docs/db-table-audit.md` missing after onboarding | No |
 | `postgresql-backup-verify` | user requests backup status, or backup-related SOC2 question | No |
+| `postgresql-replication-review` | user asks about replication status, lag, or failover-readiness posture | No |
+| `postgresql-recovery-readiness-review` | user asks whether backup posture is actually recoverable in practice | No |
+| `postgresql-user-access-governance` | user wants role, grant, revoke, or privilege hygiene review outside tenant provisioning | Yes |
+| `postgresql-instance-health-review` | user wants broad PostgreSQL instance health or config posture review | No |
 | `postgresql-query-analyser` | user reports slow queries or requests performance review | No |
 
 ---
@@ -185,6 +197,9 @@ Checked on every startup:
 
   IF MEMORY.md contains pending-tasks entries
     → surface at session start: "Unfinished tasks from last session: {list}"
+
+  IF MEMORY.md contains verified access-method entries for the current target
+    → reuse that access method first instead of probing alternative paths
 
   IF MEMORY.md → replication-lag-threshold is set
     AND live lag check returns value above threshold
@@ -225,6 +240,7 @@ Operations requiring explicit user approval before execution:
 | Any DDL or destructive operation | user (approval required) |
 | PII data access | user (confirm purpose and scope) |
 | Replication failure or data loss risk | user immediately |
+| Kubernetes-hosted PostgreSQL access path unclear | kubernetes-admin |
 | Secret rotation or credential change | secret-agent |
 
 ---
@@ -281,6 +297,22 @@ Examples:
     verified_by: postgresql-admin
     status: fresh
     scope: cluster
+
+  - key: access-method-app-prod
+    value: "kubectl exec -n data sts/postgres-0 -- psql -U app -d app_prod"
+    source: verified working access path (2026-04-25)
+    verified_at: 2026-04-25
+    verified_by: postgresql-admin
+    status: fresh
+    scope: access
+
+  - key: access-method-notes-app-prod
+    value: "Discovered with kubernetes-admin via namespace=data and statefulset=postgres-0; prefer pod exec over external host route"
+    source: postgresql-admin + kubernetes-admin
+    verified_at: 2026-04-25
+    verified_by: postgresql-admin
+    status: fresh
+    scope: access
 -->
 
 *(empty — populated during onboarding)*
