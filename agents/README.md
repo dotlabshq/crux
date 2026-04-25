@@ -63,6 +63,7 @@ These are good direct entry points for most users:
 These are strong specialist agents, but direct entry should usually be limited to technical operators:
 - `kubernetes-admin`
 - `postgresql-admin`
+- `mysql-admin`
 
 ### Private Specialist
 
@@ -96,6 +97,7 @@ Reason:
 | `platform-engineer` | `primary` | `Public Primary` | Environments, CI/CD, deployment review, observability, runtime summaries | `environment-setup-review`, `ci-pipeline-implementation`, `deployment-config-review`, `observability-check`, `runtime-incident-summary` |
 | `kubernetes-admin` | `subagent` | `Routed Subagent` | Kubernetes cluster operations, namespace governance, workload triage, storage and network policy work | `kubernetes-architecture-analyser`, `kubernetes-tenant-onboarding`, `kubernetes-namespace-audit`, `kubernetes-network-policy-apply`, `kubernetes-storage-health`, `workload-triage` |
 | `postgresql-admin` | `subagent` | `Routed Subagent` | PostgreSQL schema, roles, backups, replication, tenant provisioning, query review | `postgresql-schema-analyser`, `postgresql-tenant-provisioning`, `postgresql-table-audit`, `postgresql-backup-verify`, `postgresql-query-analyser` |
+| `mysql-admin` | `subagent` | `Routed Subagent` | MySQL/MariaDB schema, users, backups, replication, tenant provisioning, and query review | `mysql-schema-analyser`, `mysql-tenant-provisioning`, `mysql-table-audit`, `mysql-backup-verify`, `mysql-query-analyser` |
 | `compliance-governance-lead` | `primary` | `Public Primary` | ISO 27001, GDPR, KVKK, PCI-DSS, policy/procedure work, procurement security evaluations | `iso27001-isms-consulting`, `policy-procedure-pack`, `regulatory-gap-assessment`, `vendor-security-evaluation` |
 | `personal-productivity-coach` | `primary` | `Public Primary` | Personal task triage, daily planning, weekly review notes, markdown note structure | `task-capture-normaliser`, `task-triage`, `today-plan-writer`, `weekly-review-writer`, `follow-up-questioner` |
 | `team-operations-coach` | `primary` | `Public Primary` | Team structure, weekly team plans, weekly reviews, blocker tracking, leadership summaries under `operations/`, and Jira-backed coordination | `team-roster-manager`, `weekly-team-planner`, `weekly-team-review`, `cross-team-summary-writer`, `blocker-dependency-tracker`, `leadership-style-mapper`, `jira-workflow-manager` |

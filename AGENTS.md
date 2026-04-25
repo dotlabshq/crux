@@ -67,6 +67,7 @@ Active development. Core architecture is stable.
 - `agents/linux-admin/` — AGENT.md + onboarding.md + SOUL.md (Linux host operations, SSH administration, Ansible automation, service/access/package/hardening review)
 - `agents/kubernetes-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, multi-tenant setup, Kustomize IaC)
 - `agents/postgresql-admin/` — AGENT.md + onboarding.md (SOC Type 2 checks, schema/role governance, tenant provisioning)
+- `agents/mysql-admin/` — AGENT.md + onboarding.md (MySQL/MariaDB operational checks, user/privilege governance, tenant provisioning)
 - `agents/backend-developer/` — AGENT.md + onboarding.md (backend implementation, API review, backend tests, schema-sensitive review)
 - `agents/frontend-developer/` — AGENT.md + onboarding.md (UI implementation, component structure, state-flow review, frontend tests)
 - `agents/platform-engineer/` — AGENT.md + onboarding.md (environments, CI/CD, deployment review, observability, runtime summaries)
@@ -109,6 +110,11 @@ Active development. Core architecture is stable.
 - `skills/linux-hardening-review/` — practical Linux host hardening baseline review
 - `skills/ansible-inventory-review/` — inventory/group/vars/targeting validation before rollout
 - `skills/ansible-playbook-runner/` — explicit-scope Ansible playbook execution with check/apply posture
+- `skills/mysql-schema-analyser/` — live MySQL/MariaDB scan → docs/mysql.md
+- `skills/mysql-tenant-provisioning/` — MySQL step of tenant onboarding: database/user/grants, updates docs/mysql-tenants.md
+- `skills/mysql-table-audit/` — MySQL/MariaDB naming and structural hygiene review
+- `skills/mysql-backup-verify/` — MySQL/MariaDB backup posture and restore-readiness review
+- `skills/mysql-query-analyser/` — MySQL/MariaDB slow query and tuning analysis
 - `skills/hledger-balance-report/` — hledger balances by period, account, or group
 - `skills/hledger-income-statement/` — hledger profit/loss and operating performance view
 - `skills/hledger-cashflow-report/` — hledger cash flow and liquidity movement analysis
