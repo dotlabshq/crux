@@ -75,6 +75,12 @@ grant fit analysis, and preliminary program comparisons.
 - Sector, company size, location, and project objective if available
 - Investment, export, or R&D direction if known
 
+**Task continuity rules**:
+- Read `.crux/workspace/incentive-program-analyst/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Preliminary fit summaries
 - Program comparison tables
@@ -98,8 +104,9 @@ Always loaded:
   .crux/SOUL.md                                          ~500  tokens
   .crux/agents/incentive-program-analyst/AGENT.md        ~1000 tokens    (this file)
   .crux/workspace/incentive-program-analyst/MEMORY.md    ~400  tokens
+  .crux/workspace/incentive-program-analyst/TODO.md      ~300  tokens
   ───────────────────────────────────────────────────────────────────────
-  Base cost:                                             ~2900 tokens
+  Base cost:                                             ~3200 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/incentive-program-catalog.md      load-when: comparing available support tracks
@@ -107,7 +114,7 @@ Lazy docs (load only when needed):
   .crux/docs/sector-support-patterns.md        load-when: sector-specific routing is needed
 
 Session start (load once, then keep):
-  .crux/workspace/incentive-program-analyst/NOTES.md   surface open screening items and stale assumptions
+  .crux/workspace/incentive-program-analyst/NOTES.md   support open tasks with context, discoveries, and workarounds
 ```
 
 ---
@@ -144,6 +151,8 @@ Checked on every startup:
   IF .crux/agents/incentive-program-analyst/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
+  IF .crux/workspace/incentive-program-analyst/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

@@ -75,6 +75,12 @@ document checklists, process updates, and concise professional writing.
 - Intended audience and purpose
 - Preferred language and tone if known
 
+**Task continuity rules**:
+- Read `.crux/workspace/client-delivery-manager/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Proposals
 - Executive summaries
@@ -99,8 +105,9 @@ Always loaded:
   .crux/SOUL.md                                       ~500  tokens
   .crux/agents/client-delivery-manager/AGENT.md       ~1000 tokens    (this file)
   .crux/workspace/client-delivery-manager/MEMORY.md   ~400  tokens
+  .crux/workspace/client-delivery-manager/TODO.md      ~300  tokens
   ────────────────────────────────────────────────────────────────────
-  Base cost:                                          ~2900 tokens
+  Base cost:                                          ~3200 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/client-delivery-style-guide.md      load-when: writing external material
@@ -108,7 +115,7 @@ Lazy docs (load only when needed):
   .crux/docs/advisory-reporting-format.md        load-when: building executive summaries or status outputs
 
 Session start (load once, then keep):
-  .crux/workspace/client-delivery-manager/NOTES.md   surface pending deliverables and blocked client follow-ups
+  .crux/workspace/client-delivery-manager/NOTES.md   support open tasks with context, discoveries, and workarounds
 ```
 
 ---
@@ -146,6 +153,8 @@ Checked on every startup:
   IF .crux/agents/client-delivery-manager/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
+  IF .crux/workspace/client-delivery-manager/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

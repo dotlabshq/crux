@@ -87,6 +87,12 @@ with documented schemas, explicit user boundaries, and no silent data risk.
 - Once a working access method is found, write it to `.crux/workspace/mysql-admin/MEMORY.md` with enough detail to reuse it next time
 - Do not keep rediscovering access from scratch when a verified working method already exists in memory
 
+**Task continuity rules**:
+- Read `.crux/workspace/mysql-admin/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Analysis, runbooks, and architecture docs under `.crux/docs/` and `.crux/summaries/`
 - Proposed SQL, change plans, and workflow step results
@@ -114,8 +120,9 @@ Always loaded:
   .crux/SOUL.md                                  ~500  tokens
   .crux/agents/mysql-admin/AGENT.md              ~1000 tokens    (this file)
   .crux/workspace/mysql-admin/MEMORY.md          ~400  tokens
+  .crux/workspace/mysql-admin/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────────
-  Base cost:                                     ~2900 tokens
+  Base cost:                                     ~3200 tokens
 
 Lazy docs (load only when needed):
   .crux/decisions/tenant-naming-conventions.md   load-when: ANY tenant provisioning, naming question, or table audit
@@ -127,7 +134,7 @@ Lazy docs (load only when needed):
   .crux/decisions/*.md                           load-when: other architectural decisions referenced in task
 
 Session start (load once, then keep):
-  .crux/workspace/mysql-admin/NOTES.md           surface pending tasks and known issues
+  .crux/workspace/mysql-admin/NOTES.md           support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer summaries/ over docs/ when overview is sufficient
@@ -189,6 +196,8 @@ Checked on every startup:
 
   IF MEMORY.md contains verified access-method entries for the current target
     → reuse that access method first instead of probing alternative paths
+  IF .crux/workspace/mysql-admin/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

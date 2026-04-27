@@ -17,6 +17,7 @@ stale-operations-view: false
 > Use this file for temporary work state, not durable truth.
 > Stable facts and sourced conventions → MEMORY.md (same directory)
 > Approved architectural or policy choices → .crux/decisions/
+> Canonical task state → TODO.md (same directory)
 
 ---
 
@@ -36,7 +37,7 @@ stale-operations-view: false
 
 ## Pending Tasks
 
-<!-- Started but not finished in a previous session -->
+<!-- Supporting context only. Canonical task state belongs in TODO.md. -->
 <!-- Example:
 - task: namespace audit
   scope: prod-app done, prod-db remaining

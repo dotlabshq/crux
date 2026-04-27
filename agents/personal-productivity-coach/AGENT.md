@@ -79,6 +79,12 @@ that helps the user decide what to do next.
 - User preferences from onboarding: framework, output style, language, and separation rules
 - Optional date context for daily or weekly planning
 
+**Task continuity rules**:
+- Read `.crux/workspace/personal-productivity-coach/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Markdown notes under the selected notes root, for example `notes/00 Inbox/`, `notes/01 Projects/`, `notes/02 Areas/`, `notes/03 Resources/`, `notes/04 Archives/`, `notes/Daily Notes/`, `notes/Weekly Notes/`, and `notes/Templates/`
 - Triage summaries, daily plans, weekly reviews, and clarification checklists
@@ -104,8 +110,9 @@ Always loaded:
   .crux/SOUL.md                                          ~500  tokens
   .crux/agents/personal-productivity-coach/AGENT.md      ~1000 tokens    (this file)
   .crux/workspace/personal-productivity-coach/MEMORY.md  ~400  tokens
+  .crux/workspace/personal-productivity-coach/TODO.md      ~300  tokens
   ───────────────────────────────────────────────────────────────────────
-  Base cost:                                             ~2900 tokens
+  Base cost:                                             ~3200 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/task-triage-principles.md          load-when: deciding how to classify messy input; generate from agents/personal-productivity-coach/assets if missing
@@ -118,7 +125,7 @@ Lazy docs (load only when needed):
   {notes-root}/Templates/                       load-when: note templates requested
 
 Session start (load once, then keep):
-  .crux/workspace/personal-productivity-coach/NOTES.md   surface pending clarifications and incomplete triage sessions
+  .crux/workspace/personal-productivity-coach/NOTES.md   support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer the relevant planning doc only
@@ -173,6 +180,8 @@ Checked on every startup:
 
   IF .crux/workspace/personal-productivity-coach/NOTES.md → pending-clarification == true
     → surface at session start: "There are unresolved task triage questions from the last session."
+  IF .crux/workspace/personal-productivity-coach/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

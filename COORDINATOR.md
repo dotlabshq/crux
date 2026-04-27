@@ -48,12 +48,14 @@ Step 2 — Load static core
 
 Step 3 — Load dynamic state
   .crux/workspace/MANIFEST.md
+  .crux/workspace/TODO.md
   .crux/workspace/inbox.md
   .crux/workspace/MEMORY.md
 
   Fallbacks:
     .crux/workspace/ missing → run Workspace Initialisation (Section II)
     MANIFEST.md missing     → run Workspace Initialisation (Section II)
+    TODO.md missing         → run Workspace Initialisation (Section II)
     inbox.md missing        → run Workspace Initialisation (Section II)
     MEMORY.md missing       → run Workspace Initialisation (Section II)
 
@@ -66,6 +68,7 @@ Step 4 — Read .crux/workspace/MANIFEST.md
     agents with status: pending-onboard
     amendments with status: pending
     inbox entries with status: pending
+    open coordinator tasks in TODO.md
 
 Step 5 — Check open sessions
   Coordinator: look for .crux/workspace/sessions/ with no summary.md
@@ -74,7 +77,7 @@ Step 5 — Check open sessions
 
 Step 6 — Boot complete
   Greet user (Section VI).
-  Surface pending items from Step 4, including inbox entries.
+  Surface pending items from Step 4, including inbox entries and open coordinator tasks.
   Wait for input.
 ```
 
@@ -145,6 +148,7 @@ Step 5 — Generate project-specific core files
 Step 6 — Generate workspace state
   Create .crux/workspace/
   .crux/workspace/MANIFEST.md    from MANIFEST.template.md
+  .crux/workspace/TODO.md        from TODO.template.md
   .crux/workspace/inbox.md       from INBOX.template.md
   .crux/workspace/MEMORY.md      from MEMORY.template.md
 
@@ -152,6 +156,7 @@ Step 6 — Generate workspace state
 
   For each initial agent:
     Create .crux/workspace/{role}/
+    Create .crux/workspace/{role}/TODO.md   from TODO.template.md
     Create .crux/workspace/{role}/sessions/
     Set .crux/workspace/MANIFEST.md agents.{role}.status → pending-onboard
 
@@ -194,6 +199,7 @@ User types: @{role-id}
    .crux/agents/{role-id}/SOUL.md          (if exists)
    .crux/agents/{role-id}/AGENT.md
    .crux/workspace/{role-id}/MEMORY.md     (create from template if missing)
+   .crux/workspace/{role-id}/TODO.md       (create from template if missing)
    .crux/workspace/{role-id}/NOTES.md      (create from template if missing)
 
    If the agent expects `.crux/docs/` references and they are missing:
@@ -201,7 +207,12 @@ User types: @{role-id}
      b. generate the missing `.crux/docs/` file from that agent-local source
      c. continue without requiring the repo to contain pre-generated `.crux/docs/`
 
-6. Hand off to agent.
+6. Before handoff:
+   read `.crux/workspace/{role-id}/TODO.md`
+   IF matching open task exists → resume it instead of creating a duplicate
+   ELSE → create a new task record before meaningful execution begins
+
+7. Hand off to agent.
 ```
 
 ### Stopping an Agent
@@ -210,10 +221,12 @@ User types: @{role-id}
 On session end:
 
 1. Write .crux/workspace/{role-id}/sessions/{id}/summary.md
-2. Persist new facts to .crux/workspace/{role-id}/MEMORY.md
-3. Write to .crux/bus/broadcast.jsonl:
+2. Update `.crux/workspace/{role-id}/TODO.md` so any active task is explicitly marked:
+   done | waiting | blocked | canceled
+3. Persist new facts to .crux/workspace/{role-id}/MEMORY.md
+4. Write to .crux/bus/broadcast.jsonl:
    { "type": "agent.stopped", "from": "{role-id}", "session": "{id}", "ts": "..." }
-4. Update .crux/workspace/MANIFEST.md: last-session timestamp
+5. Update .crux/workspace/MANIFEST.md: last-session timestamp and task summary counts
 ```
 
 ### Resetting an Agent
@@ -253,9 +266,13 @@ Trigger detected (user input matches a workflow trigger phrase):
      a. Check if agent is onboarded (`.crux/workspace/MANIFEST.md` status == onboarded)
         IF not onboarded AND required: yes → stop, notify user
         IF not onboarded AND required: no  → skip, note in scratch.md
+     a1. Check `.crux/workspace/{role}/TODO.md` for an existing open task matching this workflow step
+         IF matching open task exists → resume that task instead of creating a duplicate
+         ELSE → create a linked task in agent TODO and coordinator TODO
      b. Route to agent via @mention (Section V below)
      c. Pass inputs defined for this step
      d. Wait for completion (subagent) or hand off (primary)
+        Completion requires task state in TODO.md to reach `done`
      e. Record step result in `.crux/workspace/sessions/{id}/scratch.md`
 
 5. Run any post-execution composition roles defined by the workflow
@@ -269,6 +286,7 @@ Trigger detected (user input matches a workflow trigger phrase):
 ```
 
 Workflow state is in `.crux/workspace/sessions/{id}/scratch.md`.
+Canonical workflow task state is in `.crux/workspace/TODO.md` plus `.crux/workspace/{role}/TODO.md`.
 Workflow files live in `.crux/workflows/`.
 
 ---
@@ -334,6 +352,7 @@ With pending items:
    - {agent} waiting for onboarding
    - Amendment AMD-{id} needs review
    - Open session from {date} ({agent})
+   - Open tasks in coordinator or agent TODOs
 
    @{role-id} to start."
 
@@ -351,9 +370,10 @@ Always loaded:
   .crux/SOUL.md                 ~500  tokens
   .crux/COORDINATOR.md          ~1200 tokens    (this file)
   .crux/workspace/MANIFEST.md   ~600  tokens
+  .crux/workspace/TODO.md       ~400  tokens
   .crux/workspace/MEMORY.md     ~400  tokens
   ─────────────────────────────────────────────
-  Base cost:                    ~3700 tokens
+  Base cost:                    ~4100 tokens
 
 Never loaded by coordinator:
   docs/     skills/     agents/*/AGENT.md (only when routing)

@@ -82,6 +82,12 @@ finance operations, and safe ledger mutation workflows.
 - Primary journal path or primary Beancount ledger path exists
 - Target account, period, payee, or transaction context is known for the requested task
 
+**Task continuity rules**:
+- Read `.crux/workspace/ledger-finance-manager/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Finance reports under `docs/finance/`
 - Ledger review and anomaly summaries
@@ -107,8 +113,9 @@ Always loaded:
   .crux/SOUL.md                                       ~500  tokens
   .crux/agents/ledger-finance-manager/AGENT.md        ~1100 tokens    (this file)
   .crux/workspace/ledger-finance-manager/MEMORY.md    ~400  tokens
+  .crux/workspace/ledger-finance-manager/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────────────
-  Base cost:                                          ~3000 tokens
+  Base cost:                                          ~3300 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/finance-reporting-rules.md        load-when: reporting scope, period logic, or output interpretation is unclear
@@ -118,7 +125,7 @@ Lazy docs (load only when needed):
   docs/finance/                                load-when: prior financial reports or ledger notes must be referenced
 
 Session start (load once, then keep):
-  .crux/workspace/ledger-finance-manager/NOTES.md   surface open ledger actions and reporting follow-ups
+  .crux/workspace/ledger-finance-manager/NOTES.md   support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer current period and requested report scope only
@@ -185,6 +192,8 @@ Checked on every startup:
   IF MEMORY.md → default-ledger-backend exists
     AND a financial question arrives without a backend
     → use default-ledger-backend and state the assumption explicitly
+  IF .crux/workspace/ledger-finance-manager/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

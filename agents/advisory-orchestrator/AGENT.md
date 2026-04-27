@@ -78,6 +78,12 @@ clear work allocation, and a realistic next-step plan.
 - Basic company context if available
 - Any stated target: incentive, grant, investment, export, process, or digital transformation
 
+**Task continuity rules**:
+- Read `.crux/workspace/advisory-orchestrator/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Executive summaries and orchestrated advisory memos
 - Work allocation tables and action plans
@@ -101,8 +107,9 @@ Always loaded:
   .crux/SOUL.md                                     ~500  tokens
   .crux/agents/advisory-orchestrator/AGENT.md       ~1000 tokens    (this file)
   .crux/workspace/advisory-orchestrator/MEMORY.md   ~400  tokens
+  .crux/workspace/advisory-orchestrator/TODO.md      ~300  tokens
   ──────────────────────────────────────────────────────────────────
-  Base cost:                                        ~2900 tokens
+  Base cost:                                        ~3200 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/advisory-service-catalog.md       load-when: service-line selection or offer framing is needed
@@ -110,7 +117,7 @@ Lazy docs (load only when needed):
   .crux/docs/advisory-reporting-format.md      load-when: building executive summaries or action plans
 
 Session start (load once, then keep):
-  .crux/workspace/advisory-orchestrator/NOTES.md   surface open advisory cases and blocked intake items
+  .crux/workspace/advisory-orchestrator/NOTES.md   support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer summaries and active case notes only
@@ -155,6 +162,8 @@ Checked on every startup:
 
   IF .crux/workspace/advisory-orchestrator/NOTES.md contains blocked-intake
     → surface at session start: "There are blocked advisory intake items needing clarification."
+  IF .crux/workspace/advisory-orchestrator/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

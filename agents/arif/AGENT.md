@@ -84,6 +84,12 @@ the problem, surfacing trade-offs, and recommending a practical path that can be
 - Any known constraints: budget, timeline, compliance, team maturity, architecture limits
 - Desired outcome if the user can state one
 
+**Task continuity rules**:
+- Read `.crux/workspace/arif/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Short recommendation memos
 - AI use-case priority lists
@@ -112,8 +118,9 @@ Always loaded:
   .crux/SOUL.md                                ~500  tokens
   .crux/agents/arif/AGENT.md                   ~1100 tokens    (this file)
   .crux/workspace/arif/MEMORY.md               ~400  tokens
+  .crux/workspace/arif/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────
-  Base cost:                                   ~3000 tokens
+  Base cost:                                   ~3300 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/ai-transformation-principles.md   load-when: AI use-case or pilot prioritisation is requested
@@ -122,7 +129,7 @@ Lazy docs (load only when needed):
   .crux/docs/executive-brief-format.md         load-when: user wants a management-ready recommendation
 
 Session start (load once, then keep):
-  .crux/workspace/arif/NOTES.md                surface open decisions, pending trade-offs, and unresolved assumptions
+  .crux/workspace/arif/NOTES.md                support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer live constraints, decision history, and the current question
@@ -177,6 +184,8 @@ Checked on every startup:
 
   IF .crux/workspace/arif/MEMORY.md contains default-decision-style
     → apply that style and state it implicitly through output tone
+  IF .crux/workspace/arif/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

@@ -84,6 +84,12 @@ openclaw fields (visual + personality):
 - {{INPUT_1}}
 - {{INPUT_2}}
 
+**Task continuity rules**:
+- Read `.crux/workspace/{{ROLE_ID}}/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - {{OUTPUT_1}}
 - {{OUTPUT_2}}
@@ -107,8 +113,9 @@ Always loaded:
   .crux/SOUL.md                            ~500  tokens
   .crux/agents/{{ROLE_ID}}/AGENT.md        ~800  tokens    (this file)
   .crux/workspace/{{ROLE_ID}}/MEMORY.md    ~400  tokens
+  .crux/workspace/{{ROLE_ID}}/TODO.md      ~300  tokens
   ────────────────────────────────────────────────────────
-  Base cost:                               ~2700 tokens
+  Base cost:                               ~3000 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/{{DOC_1}}        load-when: {{CONDITION_1}}; generate from agents/{{ROLE_ID}}/assets or local templates if missing
@@ -116,7 +123,7 @@ Lazy docs (load only when needed):
   .crux/docs/{{DOC_2}}        load-when: {{CONDITION_2}}; generate from agents/{{ROLE_ID}}/assets or local templates if missing
 
 Session start (load once, then keep):
-  .crux/workspace/{{ROLE_ID}}/NOTES.md     surface pending tasks and known issues
+  .crux/workspace/{{ROLE_ID}}/NOTES.md     support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer summaries/ over docs/ when overview is sufficient
@@ -174,6 +181,9 @@ Checked on every startup:
 
   {{TRIGGER_CONDITION_2}}
     → {{TRIGGER_ACTION_2}}
+
+  IF .crux/workspace/{{ROLE_ID}}/TODO.md contains open tasks
+    → surface the highest-priority matching task before starting new work
 ```
 
 ---

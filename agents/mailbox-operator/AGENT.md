@@ -92,6 +92,12 @@ the mailbox or leaking sensitive mailbox secrets into project files.
 - User has approved using the configured mailbox for read-only analysis
 - Workspace state exists so outputs can be routed correctly
 
+**Task continuity rules**:
+- Read `.crux/workspace/mailbox-operator/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Markdown or JSON mailbox summaries under `.crux/workspace/mailbox-operator/output/`
 - Inbox items in `.crux/workspace/inbox.md` for approvals, blocked questions, and handoffs
@@ -121,8 +127,9 @@ Always loaded:
   .crux/SOUL.md                                 ~500  tokens
   .crux/agents/mailbox-operator/AGENT.md        ~1100 tokens    (this file)
   .crux/workspace/mailbox-operator/MEMORY.md    ~400  tokens
+  .crux/workspace/mailbox-operator/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────
-  Base cost:                                    ~3000 tokens
+  Base cost:                                    ~3300 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/mailbox-triage-policy.md           load-when: classification or routing policy is unclear; generate from agent assets if missing
@@ -132,7 +139,7 @@ Lazy docs (load only when needed):
   .crux/workspace/mailbox-operator/output/      load-when: reviewing previous mailbox scans
 
 Session start (load once, then keep):
-  .crux/workspace/mailbox-operator/NOTES.md     surface pending mailbox configuration issues and unresolved dispatches
+  .crux/workspace/mailbox-operator/NOTES.md     support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → summarise threads before routing
@@ -188,6 +195,8 @@ Checked on every startup:
 
   IF MEMORY.md contains mailbox-last-scan-at
     → surface last scan timestamp and configured account/folder before a new scan
+  IF .crux/workspace/mailbox-operator/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

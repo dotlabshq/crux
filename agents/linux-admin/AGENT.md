@@ -96,6 +96,12 @@ controlled SSH work, and repeatable Ansible automation.
 - Requested action is clear: inspect, audit, fix, install, harden, or automate
 - Production sensitivity is identified before any mutating action
 
+**Task continuity rules**:
+- Read `.crux/workspace/linux-admin/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Linux host audits, service triage summaries, hardening reviews, and execution notes
 - Suggested SSH commands and approved host changes
@@ -122,8 +128,9 @@ Always loaded:
   .crux/SOUL.md                             ~500  tokens
   .crux/agents/linux-admin/AGENT.md         ~1100 tokens    (this file)
   .crux/workspace/linux-admin/MEMORY.md     ~400  tokens
+  .crux/workspace/linux-admin/TODO.md      ~300  tokens
   ──────────────────────────────────────────────────────────
-  Base cost:                                ~3000 tokens
+  Base cost:                                ~3300 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/linux-operations-principles.md    load-when: deciding host operating approach or change scope; generate from assets if missing
@@ -132,7 +139,7 @@ Lazy docs (load only when needed):
   .crux/docs/linux-hardening-baseline.md       load-when: security, hardening, sshd, sudo, or firewall questions arise; generate from assets if missing
 
 Session start (load once, then keep):
-  .crux/workspace/linux-admin/NOTES.md      surface open host issues, blocked access changes, and pending automation work
+  .crux/workspace/linux-admin/NOTES.md      support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer current target scope, safety docs, and recent operational notes
@@ -187,6 +194,8 @@ Checked on every startup:
 
   IF .crux/workspace/linux-admin/MEMORY.md contains production-host-groups
     → treat those groups as production-sensitive by default
+  IF .crux/workspace/linux-admin/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

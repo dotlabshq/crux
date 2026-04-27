@@ -84,6 +84,12 @@ actionable findings to clients without causing unintended harm.
 - Authorization document or written confirmation
 - Engagement type: web / API / mobile / network / full
 
+**Task continuity rules**:
+- Read `.crux/workspace/red-team-lead/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - `engagements/{id}/` directory tree (scope, authorization, findings, report)
 - Passive recon data, finding documents, consolidated reports
@@ -111,8 +117,9 @@ Always loaded:
   .crux/SOUL.md                                ~500  tokens
   .crux/agents/red-team-lead/AGENT.md          ~900  tokens    (this file)
   .crux/workspace/red-team-lead/MEMORY.md      ~400  tokens
+  .crux/workspace/red-team-lead/TODO.md      ~300  tokens
   ────────────────────────────────────────────────────────────
-  Base cost:                                   ~2800 tokens
+  Base cost:                                   ~3100 tokens
 
 Lazy docs (load only when needed):
   engagements/{id}/scope.md          load-when: any active skill runs (scope gate)
@@ -122,7 +129,7 @@ Lazy docs (load only when needed):
   .crux/workflows/pentest-engagement.md  load-when: coordinator runs pentest engagement flow
 
 Session start (load once, then keep):
-  .crux/workspace/red-team-lead/NOTES.md   surface active engagements, pending findings
+  .crux/workspace/red-team-lead/NOTES.md   support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → unload finding files after consolidation
@@ -185,6 +192,8 @@ Checked on every startup:
     AND engagement status is in-progress
     AND findings exist with status: undocumented
     → surface: "Undocumented findings: {list}. Run finding-document skill?"
+  IF .crux/workspace/red-team-lead/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

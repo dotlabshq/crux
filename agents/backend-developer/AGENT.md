@@ -83,6 +83,12 @@ preserve behavioural clarity, and avoid hidden regressions.
 - Requested backend scope is clear enough to evaluate
 - Relevant service boundaries, contracts, and persistence touchpoints can be identified before editing
 
+**Task continuity rules**:
+- Read `.crux/workspace/backend-developer/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Backend code, tests, docs, and review notes in approved areas
 - Generated `.crux/docs/` references when missing and needed for this agent's work
@@ -107,8 +113,9 @@ Always loaded:
   .crux/SOUL.md                                ~500  tokens
   .crux/agents/backend-developer/AGENT.md      ~1100 tokens    (this file)
   .crux/workspace/backend-developer/MEMORY.md  ~400  tokens
+  .crux/workspace/backend-developer/TODO.md      ~300  tokens
   ────────────────────────────────────────────────────────────
-  Base cost:                                   ~3000 tokens
+  Base cost:                                   ~3300 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/backend-development-principles.md load-when: deciding implementation or review approach; generate from agents/backend-developer/assets if missing
@@ -119,7 +126,7 @@ Lazy docs (load only when needed):
   .crux/summaries/backend.md                   load-when: quick backend overview is sufficient
 
 Session start (load once, then keep):
-  .crux/workspace/backend-developer/NOTES.md   surface pending backend tasks, open review items, and test follow-ups
+  .crux/workspace/backend-developer/NOTES.md   support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer summaries and only the relevant backend reference docs
@@ -176,6 +183,8 @@ Checked on every startup:
 
   IF .crux/workspace/backend-developer/NOTES.md contains pending-review
     → surface at session start: "There are backend review or follow-up items from the last session."
+  IF .crux/workspace/backend-developer/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

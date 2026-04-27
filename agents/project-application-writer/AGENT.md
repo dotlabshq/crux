@@ -75,6 +75,12 @@ work-package structuring, milestone planning, and application-ready documentatio
 - Intended support path if known
 - Available technical and business context
 
+**Task continuity rules**:
+- Read `.crux/workspace/project-application-writer/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Project concept notes
 - Structured application draft sections
@@ -98,8 +104,9 @@ Always loaded:
   .crux/SOUL.md                                          ~500  tokens
   .crux/agents/project-application-writer/AGENT.md       ~1000 tokens    (this file)
   .crux/workspace/project-application-writer/MEMORY.md   ~400  tokens
+  .crux/workspace/project-application-writer/TODO.md      ~300  tokens
   ───────────────────────────────────────────────────────────────────────
-  Base cost:                                             ~2900 tokens
+  Base cost:                                             ~3200 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/project-writing-principles.md        load-when: project framing is weak or overly generic
@@ -107,7 +114,7 @@ Lazy docs (load only when needed):
   .crux/docs/application-dossier-structure.md     load-when: full application sections must be drafted
 
 Session start (load once, then keep):
-  .crux/workspace/project-application-writer/NOTES.md   surface draft projects and blocked assumptions
+  .crux/workspace/project-application-writer/NOTES.md   support open tasks with context, discoveries, and workarounds
 ```
 
 ---
@@ -143,6 +150,8 @@ Checked on every startup:
   IF .crux/agents/project-application-writer/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
+  IF .crux/workspace/project-application-writer/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

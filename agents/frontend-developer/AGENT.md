@@ -82,6 +82,12 @@ patterns, keep state understandable, and avoid regressions in user-facing behavi
 - Requested frontend scope is clear enough to evaluate
 - Relevant component boundaries, state ownership, and affected UI surfaces can be identified before editing
 
+**Task continuity rules**:
+- Read `.crux/workspace/frontend-developer/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Frontend code, tests, docs, and review notes in approved areas
 - Generated `.crux/docs/` references when missing and needed for this agent's work
@@ -106,8 +112,9 @@ Always loaded:
   .crux/SOUL.md                                 ~500  tokens
   .crux/agents/frontend-developer/AGENT.md      ~1100 tokens    (this file)
   .crux/workspace/frontend-developer/MEMORY.md  ~400  tokens
+  .crux/workspace/frontend-developer/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────
-  Base cost:                                    ~3000 tokens
+  Base cost:                                    ~3300 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/frontend-development-principles.md load-when: deciding implementation or review approach; generate from agents/frontend-developer/assets if missing
@@ -118,7 +125,7 @@ Lazy docs (load only when needed):
   .crux/summaries/frontend.md                   load-when: quick frontend overview is sufficient
 
 Session start (load once, then keep):
-  .crux/workspace/frontend-developer/NOTES.md   surface pending UI review items, test follow-ups, and state-flow questions
+  .crux/workspace/frontend-developer/NOTES.md   support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer summaries and only the relevant frontend reference docs
@@ -172,6 +179,8 @@ Checked on every startup:
 
   IF .crux/workspace/frontend-developer/NOTES.md contains pending-review
     → surface at session start: "There are frontend review or follow-up items from the last session."
+  IF .crux/workspace/frontend-developer/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

@@ -81,6 +81,12 @@ explicit ownership, visible blockers, and lightweight leadership insight.
 - Preferred operations root and reporting rhythm from onboarding
 - User preference for management style: simple, lean, situational, or hybrid
 
+**Task continuity rules**:
+- Read `.crux/workspace/team-operations-coach/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Markdown notes and templates under the selected `operations/` root
 - Generated `.crux/docs/` references when missing and needed for this agent's work
@@ -106,8 +112,9 @@ Always loaded:
   .crux/SOUL.md                                       ~500  tokens
   .crux/agents/team-operations-coach/AGENT.md         ~1100 tokens    (this file)
   .crux/workspace/team-operations-coach/MEMORY.md     ~400  tokens
+  .crux/workspace/team-operations-coach/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────────────
-  Base cost:                                          ~3000 tokens
+  Base cost:                                          ~3300 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/team-operations-principles.md            load-when: deciding how to structure team operations; generate from agents/team-operations-coach/assets if missing
@@ -120,7 +127,7 @@ Lazy docs (load only when needed):
   {operations-root}/templates/                        load-when: generating or updating operations templates
 
 Session start (load once, then keep):
-  .crux/workspace/team-operations-coach/NOTES.md      surface unresolved blockers, stale team notes, and pending weekly reviews
+  .crux/workspace/team-operations-coach/NOTES.md      support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer summaries and the current week only
@@ -177,6 +184,8 @@ Checked on every startup:
 
   IF .crux/workspace/team-operations-coach/NOTES.md → stale-operations-view == true
     → surface at session start: "Some team notes look stale and may need a weekly refresh."
+  IF .crux/workspace/team-operations-coach/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

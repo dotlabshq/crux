@@ -46,6 +46,7 @@ Active development. Core architecture is stable.
 - `CONSTITUTION.template.md` — universal rules skeleton
 - `SOUL.template.md` — root identity, CSS cascade inheritance model
 - `MANIFEST.template.md` — live system state, lives in `.crux/workspace/`
+- `TODO.template.md` — canonical task state, lives in `.crux/workspace/` and `.crux/workspace/{role}/`
 - `INBOX.template.md` — human approvals, operator handoffs, and pending decisions
 - `MEMORY.template.md` — agent persistent memory, lives in `.crux/workspace/{role}/`
 - `NOTES.template.md` — operational state, lives in `.crux/workspace/{role}/`
@@ -204,6 +205,7 @@ Active development. Core architecture is stable.
 │   ├── CONSTITUTION.template.md
 │   ├── SOUL.template.md
 │   ├── MANIFEST.template.md
+│   ├── TODO.template.md
 │   ├── INBOX.template.md
 │   ├── MEMORY.template.md
 │   ├── NOTES.template.md
@@ -250,6 +252,7 @@ Active development. Core architecture is stable.
 │
 └── workspace/               generated during onboarding, gitignored — all live state
     ├── MANIFEST.md          system index — agent status, docs, amendments
+    ├── TODO.md              coordinator canonical task state — open, waiting, blocked, done
     ├── inbox.md             human approvals, handoffs, and pending operator decisions
     ├── MEMORY.md            coordinator memory
     ├── current              symlink → sessions/{ulid}/
@@ -260,6 +263,7 @@ Active development. Core architecture is stable.
     │       └── summary.md
     └── {role-id}/
         ├── MEMORY.md        agent persistent memory — facts, decisions, conventions
+        ├── TODO.md          agent canonical task state — source of truth for task continuity
         ├── NOTES.md         operational state — issues, pending tasks, discoveries
         ├── output/          generated files, persistent
         ├── current          symlink → sessions/{ulid}/
@@ -340,6 +344,11 @@ Lives in `.crux/workspace/inbox.md`, not in agent notes.
 Approvals, operator handoffs, blocked questions, and unresolved human checkpoints
 should be visible there rather than buried inside session-local state.
 
+**TODO.md is the task continuity surface**
+Lives in `.crux/workspace/TODO.md` for coordinator work and `.crux/workspace/{role}/TODO.md`
+for agent work. It is the source of truth for whether work is open, in progress,
+waiting, blocked, done, or canceled. `NOTES.md` supports the work; it does not close the task.
+
 **CONSTITUTION.md is static and formal**
 Committed, versioned. Agents cannot modify it directly.
 Amendment process: agent → MANIFEST.md pending → user approves → version increments.
@@ -357,13 +366,14 @@ agents/{role}/SOUL.md    agent overrides tone/language only
 2. SOUL.md                      always (~500 tokens)
 3. .crux/agents/{role}/AGENT.md       always (~800 tokens)
 4. .crux/workspace/{role}/MEMORY.md   always (~400 tokens)
+5. .crux/workspace/{role}/TODO.md     always (~300 tokens)
 ──────────────────────────────────────────────────
-Base cost: ~2700 tokens / Hard limit: 8000 tokens
+Base cost: ~3000 tokens / Hard limit: 8000 tokens
 
-5. .crux/workspace/{role}/NOTES.md    session start
-6. .crux/summaries/{doc}.md           on demand
-7. .crux/docs/{doc}.md                on demand, generate if missing
-8. .crux/skills/{name}/SKILL.md       on trigger, unloaded after
+6. .crux/workspace/{role}/NOTES.md    session start
+7. .crux/summaries/{doc}.md           on demand
+8. .crux/docs/{doc}.md                on demand, generate if missing
+9. .crux/skills/{name}/SKILL.md       on trigger, unloaded after
 ```
 
 **doc-summariser keeps context lean**
@@ -468,6 +478,7 @@ Crux separates identity, working state, reusable facts, generated knowledge, and
 - `decisions/` — approved, normative knowledge; what the system has chosen and why
 - `docs/` — generated or maintained domain knowledge; inventory, analysis, runbooks, architecture notes
 - `.crux/workspace/{role}/MEMORY.md` — durable operational facts the agent should retain across sessions
+- `.crux/workspace/{role}/TODO.md` — canonical task state for one agent: open work, blocked work, waiting work, and completion state
 - `.crux/workspace/{role}/NOTES.md` — temporary operational state; open questions, pending tasks, current risks
 - `.crux/workspace/inbox.md` — human decisions, approvals, or handoffs that must not be silently buried in notes
 
@@ -479,15 +490,30 @@ When sources disagree, use this priority order:
 2. live inspection / direct verification
 3. `docs/`
 4. `MEMORY.md`
-5. `NOTES.md`
+5. `TODO.md` for task state
+6. `NOTES.md`
 
 Rules:
 - `NOTES.md` is never a final source of truth
 - `MEMORY.md` stores reusable facts, not unverified hypotheses
+- `TODO.md` is the source of truth for task continuity and completion state
 - `docs/` may be detailed but can become stale
 - `decisions/` governs architecture, policy, and approved operating choices
 
-### 3. Memory vs Notes
+### 3. Memory vs Todo vs Notes
+
+Write to `TODO.md` when the information is:
+- a task that has been created, started, paused, blocked, completed, or canceled
+- something the coordinator or an agent may need to resume after restart
+- something whose completion state should prevent duplicate execution
+
+`TODO.md` status values should be:
+- `todo`
+- `in_progress`
+- `waiting`
+- `blocked`
+- `done`
+- `canceled`
 
 Write to `MEMORY.md` only if the information is:
 - likely to be reused in future sessions
@@ -502,11 +528,20 @@ Keep information in `NOTES.md` if it is:
 - a short-lived workaround
 - a session-scoped risk, discovery, or follow-up
 
+Important:
+- `NOTES.md` may describe a task, but it must not be the authority for whether that task is finished
+- agents must read `TODO.md` before starting new work
+- if a matching open task exists in `TODO.md`, agents should resume it instead of creating duplicate work
+
 At session end, notes should be:
 - promoted to `MEMORY.md` if they became verified reusable facts
 - moved into `docs/` if they became broader domain knowledge or a runbook
 - moved into `decisions/` if they became approved policy or architecture
 - removed or archived if they are no longer active
+
+At session end, task state should be:
+- updated in `TODO.md` to `done`, `waiting`, `blocked`, or `canceled`
+- linked to evidence such as `scratch.md`, `summary.md`, docs, or outputs where useful
 
 ### 4. Freshness States
 

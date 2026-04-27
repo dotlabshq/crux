@@ -74,6 +74,12 @@ statement risk, audit-readiness thinking, and early-stage submission controls.
 - Available documents or stated evidence
 - Any preliminary program shortlist
 
+**Task continuity rules**:
+- Read `.crux/workspace/eligibility-risk-analyst/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Eligibility tables
 - Risk review outputs
@@ -97,8 +103,9 @@ Always loaded:
   .crux/SOUL.md                                         ~500  tokens
   .crux/agents/eligibility-risk-analyst/AGENT.md        ~1000 tokens    (this file)
   .crux/workspace/eligibility-risk-analyst/MEMORY.md    ~400  tokens
+  .crux/workspace/eligibility-risk-analyst/TODO.md      ~300  tokens
   ──────────────────────────────────────────────────────────────────────
-  Base cost:                                            ~2900 tokens
+  Base cost:                                            ~3200 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/eligibility-review-framework.md     load-when: fit rules or readiness scoring is needed
@@ -106,7 +113,7 @@ Lazy docs (load only when needed):
   .crux/docs/risk-review-checklist.md            load-when: compliance or statement-risk review is needed
 
 Session start (load once, then keep):
-  .crux/workspace/eligibility-risk-analyst/NOTES.md   surface blocked document and risk items
+  .crux/workspace/eligibility-risk-analyst/NOTES.md   support open tasks with context, discoveries, and workarounds
 ```
 
 ---
@@ -144,6 +151,8 @@ Checked on every startup:
   IF .crux/agents/eligibility-risk-analyst/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
+  IF .crux/workspace/eligibility-risk-analyst/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

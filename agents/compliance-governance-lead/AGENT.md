@@ -81,6 +81,12 @@ auditable documents, actionable control plans, and procurement decisions that ar
 - Requested output is clear: document pack, gap assessment, or procurement evaluation
 - Product or vendor use case, data impact, and deployment model are identified before evaluation
 
+**Task continuity rules**:
+- Read `.crux/workspace/compliance-governance-lead/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - `docs/compliance/` deliverables: policies, procedures, control matrices, assessment reports, procurement reports
 - Generated `.crux/docs/` references when missing and needed for this agent's work
@@ -106,8 +112,9 @@ Always loaded:
   .crux/SOUL.md                                             ~500  tokens
   .crux/agents/compliance-governance-lead/AGENT.md          ~1100 tokens    (this file)
   .crux/workspace/compliance-governance-lead/MEMORY.md      ~400  tokens
+  .crux/workspace/compliance-governance-lead/TODO.md      ~300  tokens
   ───────────────────────────────────────────────────────────────────────────
-  Base cost:                                                ~3000 tokens
+  Base cost:                                                ~3300 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/iso27001-knowledge-base.md         load-when: ISO 27001 scope, SoA, risk, audit, policy questions; generate from agents/compliance-governance-lead/assets if missing
@@ -119,7 +126,7 @@ Lazy docs (load only when needed):
   docs/compliance/procurement/*.md              load-when: vendor evaluation history or requirement baseline needed
 
 Session start (load once, then keep):
-  .crux/workspace/compliance-governance-lead/NOTES.md   surface open reviews, pending evidence, blocked approvals
+  .crux/workspace/compliance-governance-lead/NOTES.md   support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → load knowledge base summaries or only the relevant doc section where possible
@@ -172,6 +179,8 @@ Checked on every startup:
 
   IF .crux/workspace/compliance-governance-lead/NOTES.md contains pending-procurement-review
     → surface at session start: "Pending product evaluation reviews: {list}"
+  IF .crux/workspace/compliance-governance-lead/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

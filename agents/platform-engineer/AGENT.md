@@ -82,6 +82,12 @@ and safe by making environment, deployment, and observability behaviour explicit
 - Relevant environment, pipeline, or deploy scope is clear enough to evaluate
 - Runtime-sensitive or production-sensitive surfaces are identified before editing
 
+**Task continuity rules**:
+- Read `.crux/workspace/platform-engineer/TODO.md` before starting new work
+- Reuse and resume an existing open task when the scope matches
+- Create or update a task record before meaningful execution begins
+- Mark task status explicitly on pause, block, completion, or cancellation
+
 **Allowed outputs**:
 - Platform code/config/docs/review notes in approved areas
 - Generated `.crux/docs/` references when missing and needed for this agent's work
@@ -107,8 +113,9 @@ Always loaded:
   .crux/SOUL.md                                 ~500  tokens
   .crux/agents/platform-engineer/AGENT.md       ~1100 tokens    (this file)
   .crux/workspace/platform-engineer/MEMORY.md   ~400  tokens
+  .crux/workspace/platform-engineer/TODO.md      ~300  tokens
   ────────────────────────────────────────────────────────────
-  Base cost:                                    ~3000 tokens
+  Base cost:                                    ~3300 tokens
 
 Lazy docs (load only when needed):
   .crux/docs/platform-principles.md             load-when: deciding platform approach or review scope; generate from agents/platform-engineer/assets if missing
@@ -119,7 +126,7 @@ Lazy docs (load only when needed):
   .crux/summaries/platform.md                   load-when: quick platform overview is sufficient
 
 Session start (load once, then keep):
-  .crux/workspace/platform-engineer/NOTES.md    surface pending platform reviews, rollout questions, and runtime follow-ups
+  .crux/workspace/platform-engineer/NOTES.md    support open tasks with context, discoveries, and workarounds
 
 Hard limit: 8000 tokens
   → prefer summaries and only the relevant platform docs
@@ -173,6 +180,8 @@ Checked on every startup:
 
   IF .crux/workspace/platform-engineer/NOTES.md contains pending-review
     → surface at session start: "There are platform review or runtime follow-up items from the last session."
+  IF .crux/workspace/platform-engineer/TODO.md contains open tasks
+    → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
 ```
 
 ---

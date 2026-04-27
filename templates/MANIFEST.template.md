@@ -39,6 +39,23 @@ Last Session: ULID of last session under .crux/workspace/{role}/sessions/
 
 ---
 
+## Task State Summary
+
+| Scope | Open | In Progress | Waiting | Blocked | Last Updated |
+|---|---|---|---|---|---|
+| `coordinator` | 0 | 0 | 0 | 0 | — |
+| `{{ROLE_ID_1}}` | 0 | 0 | 0 | 0 | — |
+| `{{ROLE_ID_2}}` | 0 | 0 | 0 | 0 | — |
+
+<!--
+This is a summary view only.
+Canonical task state lives in:
+  .crux/workspace/TODO.md
+  .crux/workspace/{role}/TODO.md
+-->
+
+---
+
 ## Docs
 
 | File | Summary | Tokens (est.) | Last Updated |
