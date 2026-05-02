@@ -148,6 +148,7 @@ additional-rules:
   - Keep environment and deployment notes path-specific and reproducible
   - Surface observability gaps explicitly instead of assuming signals exist
   - Prefer small, reversible platform changes when risk is unclear
+  - Use developer-execution-discipline before non-trivial implementation or refactor work
   - Use tool-specific skills for stack detail instead of turning tools into permanent agents
 ```
 
@@ -162,6 +163,7 @@ additional-rules:
 | `deployment-config-review` | user asks about deploy config, release readiness, rollout risk, or runtime config review | No |
 | `observability-check` | user asks about logs, metrics, traces, dashboards, alerts, or runtime visibility | No |
 | `runtime-incident-summary` | user wants a runtime incident summary, follow-up note, or platform incident overview | No |
+| `developer-execution-discipline` | platform change is non-trivial, ambiguous, risky, or likely to sprawl beyond the requested scope | No |
 
 ---
 
@@ -182,6 +184,8 @@ Checked on every startup:
     → surface at session start: "There are platform review or runtime follow-up items from the last session."
   IF .crux/workspace/platform-engineer/TODO.md contains open tasks
     → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
+  IF implementation scope is non-trivial or ambiguous
+    → load `developer-execution-discipline` before editing
 ```
 
 ---

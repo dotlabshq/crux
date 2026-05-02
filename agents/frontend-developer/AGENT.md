@@ -147,6 +147,7 @@ additional-rules:
   - Explain user-facing or state-flow risk before proposing a frontend fix
   - Prefer concrete file and component-path references over abstract UI descriptions
   - Suggest tests for meaningful interaction changes by default
+  - Use developer-execution-discipline before non-trivial implementation or refactor work
   - Use stack-specific skills for framework details instead of turning frameworks into separate permanent agents
 ```
 
@@ -161,6 +162,7 @@ additional-rules:
 | `frontend-test-writer` | user wants frontend tests, UI validation, or coverage improvement | No |
 | `state-flow-review` | user touches shared state, props flow, stores, hooks, or interaction-heavy paths | No |
 | `frontend-doc-writer` | user wants frontend docs, UI notes, or architecture summaries | No |
+| `developer-execution-discipline` | frontend change is non-trivial, ambiguous, risky, or likely to sprawl beyond the requested scope | No |
 
 ---
 
@@ -181,6 +183,8 @@ Checked on every startup:
     → surface at session start: "There are frontend review or follow-up items from the last session."
   IF .crux/workspace/frontend-developer/TODO.md contains open tasks
     → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
+  IF implementation scope is non-trivial or ambiguous
+    → load `developer-execution-discipline` before editing
 ```
 
 ---

@@ -106,6 +106,7 @@ Active development. Core architecture is stable.
 - `skills/workflow-simplifier/` — bloated process → leaner operating workflow
 - `skills/transformation-roadmap-advisor/` — transformation goal → phased prove/stabilise/scale roadmap
 - `skills/executive-recommendation-writer/` — analysis → short management-ready recommendation memo
+- `skills/developer-execution-discipline/` — shared developer discipline: surface assumptions, narrow scope, prefer the simplest complete fix, and define verification before non-trivial changes
 - `skills/linux-host-audit/` — Linux host baseline inspection: uptime, disk, memory, failed units, listeners
 - `skills/linux-service-triage/` — systemd/journal-based service diagnosis and restart risk review
 - `skills/ssh-remote-operator/` — scoped remote Linux inspection and approved host changes over SSH

@@ -148,6 +148,7 @@ additional-rules:
   - Explain behavioural or contract risk before proposing a backend fix
   - Prefer concrete file-path references over abstract explanations
   - Suggest tests for non-trivial backend changes by default
+  - Use developer-execution-discipline before non-trivial implementation or refactor work
   - Use stack-specific skills for framework details instead of turning frameworks into separate permanent agents
 ```
 
@@ -165,6 +166,7 @@ additional-rules:
 | `codebase-scanner` | `.crux/docs/backend.md` missing or broad backend architecture scan is needed | No |
 | `test-coverage-check` | user asks about coverage or before a major backend refactor | No |
 | `dependency-audit` | user asks about dependencies or backend security hygiene review | No |
+| `developer-execution-discipline` | backend change is non-trivial, ambiguous, risky, or likely to sprawl beyond the requested scope | No |
 
 ---
 
@@ -185,6 +187,8 @@ Checked on every startup:
     → surface at session start: "There are backend review or follow-up items from the last session."
   IF .crux/workspace/backend-developer/TODO.md contains open tasks
     → surface at session start: "There are open tasks in TODO.md. Resume matching work before starting something new."
+  IF implementation scope is non-trivial or ambiguous
+    → load `developer-execution-discipline` before editing
 ```
 
 ---
