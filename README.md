@@ -14,6 +14,12 @@
 curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | bash
 ```
 
+### Windows PowerShell
+
+```powershell
+irm https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.ps1 | iex
+```
+
 ### With options
 
 ```sh
@@ -24,7 +30,7 @@ curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install
 | Option | Description | Default |
 |---|---|---|
 | `--agents` | Comma-separated agent IDs to install | all available |
-| `--tool` | Target AI tool: `opencode` · `claude-code` · `cursor` · `all` | auto-detect |
+| `--tool` | Target AI tool: `opencode` · `claude-code` · `cursor` · `codex` · `all` | auto-detect |
 | `--project` | Project name used during workspace initialisation | — |
 | `--force` | Overwrite existing `.crux/` files | false |
 | `--dry-run` | Preview without writing files | false |
@@ -46,7 +52,13 @@ After editing any `.crux/agents/` or `.crux/skills/` file, re-run:
 ./scripts/convert.sh
 ```
 
-This syncs agent and skill definitions to tool-specific locations (`.opencode/agent/`, `.claude/agents/`, `.cursor/rules/`).
+On Windows PowerShell:
+
+```powershell
+.\scripts\convert.ps1
+```
+
+This syncs agent and skill definitions to tool-specific locations (`.opencode/agent/`, `.claude/agents/`, `.cursor/rules/`, Codex wrapper skills under `$CODEX_HOME/skills/crux/<project>/agents/`).
 
 ### Updating from the Crux repo
 
@@ -54,6 +66,12 @@ To pull the latest agent, skill, and framework files from the upstream Crux repo
 
 ```sh
 ./scripts/update.sh
+```
+
+On Windows PowerShell:
+
+```powershell
+.\scripts\update.ps1
 ```
 
 This overwrites `.crux/agents/`, `.crux/skills/`, and framework files with the latest versions, then re-runs `convert.sh`. Local customisations to those files will be lost — commit them first if you want to preserve them.
@@ -276,6 +294,11 @@ Crux separates task state from notes:
 - `.crux/workspace/{role}/NOTES.md` = supporting context, discoveries, and workarounds
 - `.crux/workspace/inbox.md` = human approvals and operator decisions
 - `.crux/workspace/MANIFEST.md` = system summary
+
+Coordinator write scope:
+- may write: `.crux/workspace/MANIFEST.md`, `.crux/workspace/TODO.md`, `.crux/workspace/inbox.md`, `.crux/workspace/MEMORY.md`, coordinator sessions, bus files, and task stubs/status in `.crux/workspace/{role}/TODO.md`
+- must not write: `.crux/workspace/{role}/MEMORY.md`, `.crux/workspace/{role}/NOTES.md`, `.crux/workspace/{role}/output/**`, `.crux/docs/**`, `decisions/**`, or domain-owned project files
+- if work requires a forbidden write, coordinator delegates instead of completing it directly
 
 Agents and coordinator should:
 - read `TODO.md` before starting new work

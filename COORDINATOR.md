@@ -12,7 +12,7 @@ tools:
   edit: true
   bash: false
 permission:
-  edit: ask
+  edit: allow
   skill:
     "*": allow
 color: "#64748b"
@@ -25,6 +25,32 @@ vibe: The system knows what it is, what it has, and what it needs — before you
 > The coordinator is not an agent — it is the system itself.
 > It has no domain, no lazy docs, no skills of its own.
 > It reads, routes, and governs.
+
+## Control-Plane Write Scope
+
+The coordinator has orchestration-only write authority.
+
+It may write:
+- `.crux/workspace/MANIFEST.md`
+- `.crux/workspace/TODO.md`
+- `.crux/workspace/inbox.md`
+- `.crux/workspace/MEMORY.md`
+- `.crux/workspace/sessions/**`
+- `.crux/workspace/{role}/TODO.md` only for task stub creation, handoff state, dependency state, and completion reconciliation
+- `.crux/bus/**`
+
+It must not write:
+- `.crux/workspace/{role}/MEMORY.md`
+- `.crux/workspace/{role}/NOTES.md`
+- `.crux/workspace/{role}/output/**`
+- `.crux/docs/**`
+- `decisions/**`
+- application code or other domain-owned project files
+
+Rule:
+- The coordinator owns orchestration state
+- Agents own domain state and domain outputs
+- If work requires a write outside coordinator scope, the coordinator must delegate instead of completing the work itself
 
 ---
 
@@ -211,6 +237,8 @@ User types: @{role-id}
    read `.crux/workspace/{role-id}/TODO.md`
    IF matching open task exists → resume it instead of creating a duplicate
    ELSE → create a new task record before meaningful execution begins
+   Coordinator may write only the task stub and orchestration metadata in this file.
+   It must not write domain discoveries, operational notes, or durable facts on behalf of the agent.
 
 7. Hand off to agent.
 ```
@@ -288,6 +316,7 @@ Trigger detected (user input matches a workflow trigger phrase):
 Workflow state is in `.crux/workspace/sessions/{id}/scratch.md`.
 Canonical workflow task state is in `.crux/workspace/TODO.md` plus `.crux/workspace/{role}/TODO.md`.
 Workflow files live in `.crux/workflows/`.
+Coordinator may reconcile agent TODO state for workflow bookkeeping, but it must never write the agent's domain notes, memory, or output on the agent's behalf.
 
 ---
 

@@ -11,6 +11,7 @@
 #   ./scripts/convert.sh --tool opencode
 #   ./scripts/convert.sh --tool claude-code
 #   ./scripts/convert.sh --tool cursor
+#   ./scripts/convert.sh --tool codex
 #   ./scripts/convert.sh --tool all
 #   ./scripts/convert.sh --dry-run           # preview without writing
 # =============================================================================
@@ -41,7 +42,7 @@ while [[ $# -gt 0 ]]; do
     --crux|--source) SOURCE_DIR="$2"; shift 2 ;;
     --dry-run) DRY_RUN=true; shift ;;
     --help|-h)
-      echo "Usage: $0 [--tool opencode|claude-code|cursor|all] [--dry-run]"
+      echo "Usage: $0 [--tool opencode|claude-code|cursor|codex|all] [--dry-run]"
       exit 0 ;;
     *) err "Unknown option: $1"; exit 1 ;;
   esac
@@ -64,6 +65,17 @@ fi
 COORDINATOR="$SOURCE_DIR/COORDINATOR.md"
 AGENTS_DIR="$SOURCE_DIR/agents"
 SKILLS_DIR="$SOURCE_DIR/skills"
+SOURCE_ABS=$(cd "$SOURCE_DIR" && pwd)
+if [[ "$(basename "$SOURCE_ABS")" == ".crux" ]]; then
+  ROOT_DIR=$(cd "$(dirname "$SOURCE_ABS")" && pwd)
+else
+  ROOT_DIR="$SOURCE_ABS"
+fi
+WORKSPACE_DIR="$ROOT_DIR/.crux/workspace"
+PROJECT_SLUG=$(printf '%s' "$(basename "$ROOT_DIR")" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-')
+PROJECT_SLUG="${PROJECT_SLUG#-}"
+PROJECT_SLUG="${PROJECT_SLUG%-}"
+[[ -z "$PROJECT_SLUG" ]] && PROJECT_SLUG="crux"
 
 if [[ ! -f "$COORDINATOR" ]]; then
   err "$COORDINATOR not found."
@@ -100,8 +112,59 @@ copy_file() {
 # Extract frontmatter value: extract_fm <key> <file>
 extract_fm() {
   local key="$1" file="$2"
-  awk "/^---/{p++} p==1 && /^${key}:/{gsub(/^${key}:[[:space:]]*/,\"\"); print; exit}" "$file" \
-    | tr -d '"' | xargs
+  awk -v key="$key" '
+    /^---$/ { frontmatter++; next }
+    frontmatter != 1 { next }
+    block {
+      if ($0 ~ /^[^[:space:]]/ || $0 ~ /^---$/) {
+        print value
+        printed = 1
+        exit
+      }
+      line = $0
+      sub(/^[[:space:]]+/, "", line)
+      if (line != "") {
+        value = value (value ? " " : "") line
+      }
+      next
+    }
+    $0 ~ ("^" key ":") {
+      line = $0
+      sub("^" key ":[[:space:]]*", "", line)
+      if (line == ">" || line == "|") {
+        block = 1
+        value = ""
+        next
+      }
+      gsub(/"/, "", line)
+      print line
+      printed = 1
+      exit
+    }
+    END {
+      if (block && !printed) print value
+    }
+  ' "$file" | xargs
+}
+
+codex_root() {
+  if [[ -n "${CODEX_HOME:-}" ]]; then
+    printf '%s' "$CODEX_HOME"
+  else
+    printf '%s/.codex' "$HOME"
+  fi
+}
+
+render_template() {
+  local text="$1"
+  shift
+  while [[ $# -gt 1 ]]; do
+    local key="$1"
+    local value="$2"
+    text="${text//${key}/${value}}"
+    shift 2
+  done
+  printf '%s' "$text"
 }
 
 # ---------------------------------------------------------------------------
@@ -112,19 +175,20 @@ detect_tools() {
   [[ -d ".opencode" ]]          && detected+=("opencode")
   [[ -d ".claude" ]] || command -v claude &>/dev/null && detected+=("claude-code")
   [[ -d ".cursor" ]]            && detected+=("cursor")
+  [[ -d "$(codex_root)" ]]      && detected+=("codex")
   echo "${detected[@]:-}"
 }
 
 if [[ "$TOOL" == "auto" ]]; then
   _detected=$(detect_tools)
   if [[ -z "$_detected" ]]; then
-    warn "No tools detected. Specify --tool opencode|claude-code|cursor|all"
+    warn "No tools detected. Specify --tool opencode|claude-code|cursor|codex|all"
     exit 0
   fi
   read -ra TOOLS <<< "$_detected"
   info "Auto-detected: ${TOOLS[*]}"
 elif [[ "$TOOL" == "all" ]]; then
-  TOOLS=("opencode" "claude-code" "cursor")
+  TOOLS=("opencode" "claude-code" "cursor" "codex")
 else
   TOOLS=("$TOOL")
 fi
@@ -267,6 +331,102 @@ convert_cursor() {
 }
 
 # ===========================================================================
+# CODEX
+# ===========================================================================
+convert_codex() {
+  hdr "codex"
+
+  local codex_home skill_root coordinator_name coordinator_desc coordinator_tpl coordinator_skill
+  codex_home="$(codex_root)"
+  skill_root="$codex_home/skills/crux/$PROJECT_SLUG"
+  coordinator_name="crux-${PROJECT_SLUG}-coordinator"
+  coordinator_desc="Use when this workspace should be handled through the Crux coordinator so it can route work to the appropriate project agent."
+  coordinator_tpl=$(printf '%s\n' \
+    '---' \
+    'name: __COORDINATOR_NAME__' \
+    'description: __COORDINATOR_DESC__' \
+    '---' \
+    '' \
+    '# Crux Coordinator' \
+    '' \
+    'Use this skill when the user wants to work through the Crux coordinator for the __PROJECT_SLUG__ workspace, or when a request should be routed across multiple project agents instead of handled as a single generic coding task.' \
+    '' \
+    '## Workspace Source Of Truth' \
+    '' \
+    'Read these in order:' \
+    '1. __SOURCE_ABS__/COORDINATOR.md' \
+    '2. __ROOT_DIR__/AGENTS.md' \
+    '3. __ROOT_DIR__/COORDINATOR.md if it exists outside installed .crux/' \
+    '4. __WORKSPACE_DIR__/MANIFEST.md if it exists' \
+    '5. __WORKSPACE_DIR__/TODO.md if it exists' \
+    '6. __WORKSPACE_DIR__/inbox.md if it exists' \
+    '' \
+    '## How To Operate' \
+    '' \
+    '- Treat Crux markdown files as the authority for routing, approvals, and task continuity.' \
+    '- Before delegating or continuing work, check coordinator task state in __WORKSPACE_DIR__/TODO.md when available.' \
+    '- Prefer resuming an open task over creating duplicate work.' \
+    "- When a specialist role is clearly a better fit, load that role's AGENT.md and, if present, SOUL.md, MEMORY.md, TODO.md, and NOTES.md before continuing." \
+    '- Load a role-owned Crux skill from __SOURCE_ABS__/skills/{skill-name}/SKILL.md only when the request actually needs that skill.' \
+    '- Follow approval gates and escalation rules defined by the coordinator and selected agent.')
+  coordinator_skill=$(render_template "$coordinator_tpl" \
+    "__COORDINATOR_NAME__" "$coordinator_name" \
+    "__COORDINATOR_DESC__" "$coordinator_desc" \
+    "__PROJECT_SLUG__" "$PROJECT_SLUG" \
+    "__SOURCE_ABS__" "$SOURCE_ABS" \
+    "__ROOT_DIR__" "$ROOT_DIR" \
+    "__WORKSPACE_DIR__" "$WORKSPACE_DIR")
+
+  write_file "$skill_root/agents/coordinator/SKILL.md" "$coordinator_skill"
+
+  for agent_file in "${AGENT_FILES[@]}"; do
+    local role display_name description agent_tpl agent_skill
+    role=$(basename "$(dirname "$agent_file")")
+    display_name=$(extract_fm "name" "$agent_file")
+    description=$(extract_fm "description" "$agent_file")
+
+    agent_tpl=$(printf '%s\n' \
+      '---' \
+      'name: __AGENT_SKILL_NAME__' \
+      'description: Use when the user explicitly wants the __DISPLAY_NAME__ role from the __PROJECT_SLUG__ Crux workspace, or when the task clearly matches this role'\''s domain. __DESCRIPTION__' \
+      '---' \
+      '' \
+      '# __DISPLAY_NAME__' \
+      '' \
+      'This Codex skill is a wrapper around the Crux agent at __SOURCE_ABS__/agents/__ROLE__/AGENT.md.' \
+      '' \
+      '## Load Order' \
+      '' \
+      'Read these sources before answering in this role:' \
+      '1. __SOURCE_ABS__/agents/__ROLE__/AGENT.md' \
+      '2. __SOURCE_ABS__/agents/__ROLE__/SOUL.md if present' \
+      '3. __WORKSPACE_DIR__/__ROLE__/MEMORY.md if present' \
+      '4. __WORKSPACE_DIR__/__ROLE__/TODO.md if present' \
+      '5. __WORKSPACE_DIR__/__ROLE__/NOTES.md if present' \
+      '6. __WORKSPACE_DIR__/MANIFEST.md if broader project state is relevant' \
+      '7. Any role-owned Crux skill from __SOURCE_ABS__/skills/{skill-name}/SKILL.md only when needed' \
+      '' \
+      '## Operating Rules' \
+      '' \
+      '- Stay inside this role'\''s domain, boundaries, and escalation rules.' \
+      '- Reuse open tasks from __WORKSPACE_DIR__/__ROLE__/TODO.md before starting new parallel work.' \
+      '- Treat TODO.md as task state, NOTES.md as support context, and MEMORY.md as durable facts.' \
+      '- If the role'\''s AGENT.md says another agent should own part of the work, hand off instead of improvising across boundaries.' \
+      '- Use project-local Crux skills directly from the workspace source tree instead of inventing a second copy.')
+    agent_skill=$(render_template "$agent_tpl" \
+      "__AGENT_SKILL_NAME__" "crux-${PROJECT_SLUG}-${role}" \
+      "__DISPLAY_NAME__" "$display_name" \
+      "__PROJECT_SLUG__" "$PROJECT_SLUG" \
+      "__DESCRIPTION__" "$description" \
+      "__SOURCE_ABS__" "$SOURCE_ABS" \
+      "__WORKSPACE_DIR__" "$WORKSPACE_DIR" \
+      "__ROLE__" "$role")
+
+    write_file "$skill_root/agents/${role}/SKILL.md" "$agent_skill"
+  done
+}
+
+# ===========================================================================
 # Dispatch
 # ===========================================================================
 CONVERTED=0
@@ -275,7 +435,8 @@ for tool in "${TOOLS[@]}"; do
     opencode)    convert_opencode;    CONVERTED=$((CONVERTED+1)) ;;
     claude-code) convert_claude_code; CONVERTED=$((CONVERTED+1)) ;;
     cursor)      convert_cursor;      CONVERTED=$((CONVERTED+1)) ;;
-    *) warn "Unknown tool: $tool (supported: opencode, claude-code, cursor)" ;;
+    codex)       convert_codex;       CONVERTED=$((CONVERTED+1)) ;;
+    *) warn "Unknown tool: $tool (supported: opencode, claude-code, cursor, codex)" ;;
   esac
 done
 

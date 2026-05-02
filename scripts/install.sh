@@ -70,7 +70,7 @@ Options:
   --agents <list>   Comma-separated agent IDs to include
                     e.g. kubernetes-admin,postgresql-admin
                     Defaults to all available agents
-  --tool <name>     Target AI tool: opencode | claude-code | cursor | all
+  --tool <name>     Target AI tool: opencode | claude-code | cursor | codex | all
                     Default: auto-detect
   --project <name>  Project name (used during workspace initialisation)
   --branch <name>   GitHub branch to download from (default: main)

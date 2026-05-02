@@ -27,7 +27,10 @@ Active development. Core architecture is stable.
 
 **Scripts:**
 - `scripts/install.sh` — curl entry point: downloads `.crux/` skeleton from GitHub, installs agents/skills, runs convert
-- `scripts/convert.sh` — syncs `.crux/agents/` and `.crux/skills/` → tool-specific locations (opencode, claude-code, cursor)
+- `scripts/install.ps1` — Windows PowerShell installer: downloads `.crux/` skeleton from GitHub, installs agents/skills, runs PowerShell convert
+- `scripts/convert.sh` — syncs `.crux/agents/` and `.crux/skills/` → tool-specific locations (opencode, claude-code, cursor, codex)
+- `scripts/convert.ps1` — Windows PowerShell sync script for opencode, claude-code, cursor, and codex targets
+- `scripts/update.ps1` — Windows PowerShell update wrapper around `install.ps1 --Force`
 
 **Core files (always committed):**
 - `COORDINATOR.md` — boot sequence, agent lifecycle, @mention routing, amendment handling
@@ -348,6 +351,24 @@ should be visible there rather than buried inside session-local state.
 Lives in `.crux/workspace/TODO.md` for coordinator work and `.crux/workspace/{role}/TODO.md`
 for agent work. It is the source of truth for whether work is open, in progress,
 waiting, blocked, done, or canceled. `NOTES.md` supports the work; it does not close the task.
+
+**Coordinator writes control-plane state only**
+The coordinator may write orchestration state:
+- `.crux/workspace/MANIFEST.md`
+- `.crux/workspace/TODO.md`
+- `.crux/workspace/inbox.md`
+- `.crux/workspace/MEMORY.md`
+- `.crux/workspace/sessions/`
+- `.crux/workspace/{role}/TODO.md` for task stubs, orchestration status, and reconciliation
+- `.crux/bus/`
+
+The coordinator must not write domain state on behalf of agents:
+- `.crux/workspace/{role}/MEMORY.md`
+- `.crux/workspace/{role}/NOTES.md`
+- `.crux/workspace/{role}/output/`
+- `.crux/docs/`
+- `decisions/`
+- application code or other domain-owned project files
 
 **CONSTITUTION.md is static and formal**
 Committed, versioned. Agents cannot modify it directly.
