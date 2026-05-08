@@ -66,6 +66,7 @@ Active development. Core architecture is stable.
 - `agents/eligibility-risk-analyst/` — AGENT.md + onboarding.md (preliminary eligibility matrices, document checks, risk review)
 - `agents/project-application-writer/` — AGENT.md + onboarding.md (project framing, novelty, work packages, application drafts)
 - `agents/client-delivery-manager/` — AGENT.md + onboarding.md (proposals, executive summaries, client delivery communication)
+- `agents/ciso-advisor/` — AGENT.md + onboarding.md + SOUL.md (CISO-level executive security advice, risk framing, incident and vulnerability communication, risk acceptance, ownership follow-up)
 - `agents/arif/` — AGENT.md + onboarding.md + SOUL.md (pragmatic transformation advice, AI opportunity framing, cost/risk trade-offs, workflow simplification, executive recommendations)
 - `agents/ledger-finance-manager/` — AGENT.md + onboarding.md (hledger-backed or rustledger-backed finance reporting, ledger health, transaction drafting, and ledger writeback)
 - `agents/linux-admin/` — AGENT.md + onboarding.md + SOUL.md (Linux host operations, SSH administration, Ansible automation, service/access/package/hardening review)
@@ -98,6 +99,12 @@ Active development. Core architecture is stable.
 - `skills/proposal-writer/` — advisory case → client proposal / scope note
 - `skills/executive-summary-writer/` — specialist outputs → decision-ready summary
 - `skills/client-email-writer/` — case context → client-facing email draft
+- `skills/cyber-risk-executive-brief/` — technical security content → short executive cyber risk brief
+- `skills/board-security-update/` — security status inputs → board-ready management update
+- `skills/incident-executive-brief/` — incident facts → calm executive incident communication
+- `skills/vulnerability-risk-prioritisation/` — vulnerabilities → business-priority and ownership view
+- `skills/risk-acceptance-decision-note/` — delayed remediation or residual risk → formal sign-off note
+- `skills/security-ownership-followup/` — stuck security issue → owner, next action, and follow-up note
 - `skills/decision-clarifier/` — fuzzy request → actual decision statement, constraints, and recommendation frame
 - `skills/ai-usecase-prioritiser/` — company context → practical AI use-case ranking and first-pilot recommendation
 - `skills/cost-efficiency-analyser/` — option set → cost/effort/risk/value trade-off analysis
