@@ -80,6 +80,7 @@ Active development. Core architecture is stable.
 - `agents/personal-productivity-coach/` — AGENT.md + onboarding.md (task triage, daily planning, weekly reviews, Obsidian-compatible markdown structure)
 - `agents/team-operations-coach/` — AGENT.md + onboarding.md (team structure, weekly planning, weekly reviews, blocker tracking, leadership summaries under `operations/`)
 - `agents/mailbox-operator/` — AGENT.md + onboarding.md (read-only Himalaya mailbox triage, email summaries, task extraction, Crux routing)
+- `agents/llm-wiki/` — AGENT.md + onboarding.md + assets/llm-wiki-schema.template.md (Karpathy-style private markdown wiki maintenance: source ingestion, compiled knowledge queries, analysis writeback, schema evolution, wiki linting)
 - `agents/red-team-lead/` — AGENT.md + onboarding.md (engagement lifecycle, scope gate, passive recon, reporting) — primary
 - `agents/web-pentester/` — AGENT.md + onboarding.md (OWASP Web Top 10) — subagent
 - `agents/api-pentester/` — AGENT.md + onboarding.md (OWASP API Top 10 2023, JWT, GraphQL) — subagent
@@ -186,6 +187,11 @@ Active development. Core architecture is stable.
 - `skills/leadership-style-mapper/` — maps natural management answers into internal `G/S/T` signals without asking users to use the codes directly
 - `skills/jira-workflow-manager/` — Jira issue search, creation, updates, transitions, comments, and sprint coordination through Atlassian MCP with explicit approval before write actions
 - `skills/mailbox-triage/` — reads configured mailboxes through Himalaya in read-only mode, classifies messages, summarizes threads, extracts actions, and routes outputs to inbox/notes/memory
+- `skills/llm-wiki-bootstrap/` — initializes or repairs raw/wiki starter structure, core wiki files, and schema guidance
+- `skills/llm-wiki-ingest/` — raw source → source summary, affected wiki page updates, glossary/index/overview/log updates
+- `skills/llm-wiki-query/` — answers from compiled wiki pages and optionally saves durable analyses
+- `skills/llm-wiki-lint/` — wiki health check for contradictions, stale claims, orphan pages, missing links, terminology drift, and provenance gaps
+- `skills/llm-wiki-schema-evolver/` — proposes and applies approved page type, frontmatter, output format, and workflow schema changes
 - `skills/codebase-scanner/` — directory scan → `.crux/docs/backend.md`
 - `skills/doc-summariser/` — docs/ → summaries/, updates MANIFEST.md
 

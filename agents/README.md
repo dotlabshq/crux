@@ -57,6 +57,7 @@ These are good direct entry points for most users:
 - `personal-productivity-coach`
 - `team-operations-coach`
 - `mailbox-operator`
+- `llm-wiki`
 - `red-team-lead`
 
 ### Routed Subagent
@@ -104,6 +105,7 @@ Reason:
 | `personal-productivity-coach` | `primary` | `Public Primary` | Personal task triage, daily planning, weekly review notes, markdown note structure | `task-capture-normaliser`, `task-triage`, `today-plan-writer`, `weekly-review-writer`, `follow-up-questioner` |
 | `team-operations-coach` | `primary` | `Public Primary` | Team structure, weekly team plans, weekly reviews, blocker tracking, leadership summaries under `operations/`, and Jira-backed coordination | `team-roster-manager`, `weekly-team-planner`, `weekly-team-review`, `cross-team-summary-writer`, `blocker-dependency-tracker`, `leadership-style-mapper`, `jira-workflow-manager` |
 | `mailbox-operator` | `primary` | `Public Primary` | Read-only mailbox triage through Himalaya, email summaries, action extraction, and Crux routing | `mailbox-triage` |
+| `llm-wiki` | `primary` | `Public Primary` | Karpathy-style private markdown wiki maintenance: source ingestion, compiled knowledge queries, analysis writeback, schema evolution, and wiki linting | `llm-wiki-bootstrap`, `llm-wiki-ingest`, `llm-wiki-query`, `llm-wiki-lint`, `llm-wiki-schema-evolver` |
 | `red-team-lead` | `primary` | `Public Primary` | Pentest engagement entry point, scope and authorization checks, specialist coordination, final findings and reporting | `engagement-setup`, `passive-recon`, `finding-document`, `report-generator` |
 | `web-pentester` | `subagent` | `Private Specialist` | Web application testing for OWASP Web Top 10 style issues | `web-recon`, `web-exploit` |
 | `api-pentester` | `subagent` | `Private Specialist` | REST/GraphQL API security testing, auth and authorization abuse, JWT/OAuth review | `api-recon`, `api-exploit` |
