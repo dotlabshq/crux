@@ -46,6 +46,7 @@ Requires already loaded:
 
 Loads during execution (lazy):
   .crux/docs/llm-wiki-schema.md       (generate from agent assets first if missing)
+  .crux/workspace/llm-wiki/output/extracted/{source-slug}.md when source extraction is needed
   {wiki-root}/index.md
   {wiki-root}/glossary.md
   {wiki-root}/overview.md if big-picture synthesis may change
@@ -78,13 +79,21 @@ Unloaded after: ingest report and wiki updates complete
    Confirm source is under raw-root unless user explicitly provided it.
    Never modify source files.
 
-2. Load orientation
+2. Extract readable content if needed
+   IF source is not directly readable markdown/text:
+     run llm-wiki-source-extractor first
+     use the extracted markdown/text artifact as ingest input
+     keep the original source path as the provenance source of truth
+   Supported direct formats:
+     .md, .markdown, .txt, .csv, .json, .xml when small enough to read directly
+
+3. Load orientation
    Read .crux/docs/llm-wiki-schema.md.
    Read wiki-root/index.md.
    Read wiki-root/glossary.md.
    Read last 5 entries from wiki-root/log.md.
 
-3. Read source
+4. Read source or extracted artifact
    Extract:
      - bibliographic or file metadata
      - key facts
@@ -93,34 +102,37 @@ Unloaded after: ingest report and wiki updates complete
      - entities, concepts, products, features, personas, style rules, or domain-specific page candidates
      - contradictions or stale claims relative to existing wiki pages
 
-4. Identify affected pages
+5. Identify affected pages
    Prefer updating existing pages found from index.md.
    Create new pages only when no existing page fits.
 
-5. Present update plan when changes are broad or contradictions exist
+6. Present update plan when changes are broad or contradictions exist
    Include pages to create, pages to update, glossary changes, overview changes, and contradictions.
 
-6. Write or update source summary
+7. Write or update source summary
    Target: wiki-root/sources/{source-slug}.md
+   Include both:
+     - original source path
+     - extraction artifact path, if used
 
-7. Update affected wiki pages
+8. Update affected wiki pages
    Preserve page provenance.
    Add source filename to frontmatter sources.
    Update related pages.
 
-8. Update glossary
+9. Update glossary
    Add new canonical terms.
    Flag variants, deprecated terms, or conflicts.
 
-9. Update index
+10. Update index
    Add new pages and update summaries/status for changed pages.
 
-10. Update overview only if synthesis changed
+11. Update overview only if synthesis changed
 
-11. Append log entry
+12. Append log entry
    Format: ## [YYYY-MM-DD] ingest | {Source Title}
 
-12. Return ingest report
+13. Return ingest report
    Include pages created, pages updated, contradictions, glossary changes, and open questions.
 ```
 
@@ -211,6 +223,8 @@ Ask before:
 |---|---|
 | Source missing | Stop and ask for a valid source path |
 | Source outside raw-root | Ask whether to treat it as a one-off external source |
+| Source is PDF/Office/binary | Run llm-wiki-source-extractor first |
+| Extraction artifact quality is poor | Stop before wiki writes and ask whether to OCR, use another extractor, or ingest partial text |
 | Wiki starter files missing | Run or recommend llm-wiki-bootstrap first |
 | Source too large for one pass | Propose chunked ingest with a source summary draft |
 | Contradiction detected | Follow contradiction-policy; default ask-before-update |

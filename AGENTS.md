@@ -188,6 +188,7 @@ Active development. Core architecture is stable.
 - `skills/jira-workflow-manager/` — Jira issue search, creation, updates, transitions, comments, and sprint coordination through Atlassian MCP with explicit approval before write actions
 - `skills/mailbox-triage/` — reads configured mailboxes through Himalaya in read-only mode, classifies messages, summarizes threads, extracts actions, and routes outputs to inbox/notes/memory
 - `skills/llm-wiki-bootstrap/` — initializes or repairs raw/wiki starter structure, core wiki files, and schema guidance
+- `skills/llm-wiki-source-extractor/` — converts PDF, Office, HTML, structured data, image, archive, and other non-markdown sources to ingest-ready markdown/text, preferring Microsoft MarkItDown when installed and local fallbacks otherwise
 - `skills/llm-wiki-ingest/` — raw source → source summary, affected wiki page updates, glossary/index/overview/log updates
 - `skills/llm-wiki-query/` — answers from compiled wiki pages and optionally saves durable analyses
 - `skills/llm-wiki-lint/` — wiki health check for contradictions, stale claims, orphan pages, missing links, terminology drift, and provenance gaps

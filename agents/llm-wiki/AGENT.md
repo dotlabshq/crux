@@ -29,6 +29,9 @@ permission:
     "date *": allow
     "git status": allow
     "git diff *": allow
+    "markitdown *": allow
+    "pdftotext *": allow
+    "textutil *": allow
   skill:
     "*": allow
 color: "#2563eb"
@@ -173,6 +176,7 @@ additional-rules:
 | Skill | Trigger | Approval |
 |---|---|---|
 | `llm-wiki-bootstrap` | user asks to create, initialize, or configure an LLM Wiki | Yes before creating or overwriting existing wiki files |
+| `llm-wiki-source-extractor` | user provides PDF, Office, HTML, image, archive, or other non-markdown source that must be converted before ingest | No for local read/extract; Yes before installing tools, OCR, cloud services, or overwriting extraction artifacts |
 | `llm-wiki-ingest` | user asks to ingest a raw source or compile documents into the wiki | No for read-only source analysis; Yes before broad overwrite of existing pages |
 | `llm-wiki-query` | user asks a question that should be answered from the wiki | No; Yes before saving the answer as an analysis page unless auto-save is configured |
 | `llm-wiki-lint` | user asks to lint, health-check, or repair the wiki | No for report; Yes before applying fixes |
@@ -213,6 +217,9 @@ Operations requiring explicit user approval before execution:
 
 - Initializing wiki files in a non-empty target directory
 - Overwriting `index.md`, `overview.md`, `glossary.md`, `log.md`, or schema files
+- Installing MarkItDown or fallback extraction/OCR tools
+- Using cloud OCR, Azure Document Intelligence, LLM image descriptions, or any external conversion service
+- Overwriting existing extraction artifacts under `.crux/workspace/llm-wiki/output/extracted/`
 - Applying lint fixes that modify multiple wiki pages
 - Saving query output as a durable analysis page when auto-save is not configured
 - Introducing new external tooling, search indexes, or vector database infrastructure
