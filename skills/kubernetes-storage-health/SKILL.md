@@ -44,7 +44,7 @@ issues and presents a prioritised summary.
 
 ```
 Requires already loaded:
-  .crux/agents/kubernetes-admin/MEMORY.md
+  .crux/workspace/kubernetes-admin/MEMORY.md
     Fields needed:
       cluster-endpoint
       production-namespaces  (to flag production issues as higher priority)

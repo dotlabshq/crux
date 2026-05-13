@@ -13,7 +13,7 @@ Before onboarding begins, verify:
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/frontend-developer/AGENT.md` exists
+- [ ] `{framework-home}/agents/frontend-developer/AGENT.md` exists
 
 If any of these are missing, stop and notify the user.
 
@@ -96,10 +96,10 @@ Run the appropriate skills to produce the initial frontend references.
 
 ```
 Required docs for this agent:
-  .crux/docs/frontend-development-principles.md → generate from agents/frontend-developer/assets/frontend-development-principles.template.md if missing
-  .crux/docs/component-structure-guidelines.md  → generate from agents/frontend-developer/assets/component-structure-guidelines.template.md if missing
-  .crux/docs/frontend-testing-strategy.md       → generate from agents/frontend-developer/assets/frontend-testing-strategy.template.md if missing
-  .crux/docs/state-flow-guidelines.md           → generate from agents/frontend-developer/assets/state-flow-guidelines.template.md if missing
+  .crux/docs/frontend-development-principles.md → generate from {framework-home}/agents/frontend-developer/assets/frontend-development-principles.template.md if missing
+  .crux/docs/component-structure-guidelines.md  → generate from {framework-home}/agents/frontend-developer/assets/component-structure-guidelines.template.md if missing
+  .crux/docs/frontend-testing-strategy.md       → generate from {framework-home}/agents/frontend-developer/assets/frontend-testing-strategy.template.md if missing
+  .crux/docs/state-flow-guidelines.md           → generate from {framework-home}/agents/frontend-developer/assets/state-flow-guidelines.template.md if missing
   .crux/docs/frontend.md                        → skill: ui-structure-analyser if missing or if user wants a fresh frontend scan
 
 If frontend.md is missing:

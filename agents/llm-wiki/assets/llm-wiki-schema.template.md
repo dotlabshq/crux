@@ -1,6 +1,6 @@
 # LLM Wiki Schema
 
-> Generated from `agents/llm-wiki/assets/llm-wiki-schema.template.md`.
+> Generated from `{framework-home}/agents/llm-wiki/assets/llm-wiki-schema.template.md`.
 > This is the operating guide for the `llm-wiki` agent.
 
 ---

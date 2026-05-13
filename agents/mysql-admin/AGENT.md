@@ -118,13 +118,14 @@ with documented schemas, explicit user boundaries, and no silent data risk.
 Always loaded:
   .crux/CONSTITUTION.md                          ~1000 tokens
   .crux/SOUL.md                                  ~500  tokens
-  .crux/agents/mysql-admin/AGENT.md              ~1000 tokens    (this file)
+  {framework-home}/agents/mysql-admin/AGENT.md              ~1000 tokens    (this file)
   .crux/workspace/mysql-admin/MEMORY.md          ~400  tokens
   .crux/workspace/mysql-admin/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────────
   Base cost:                                     ~3200 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/decisions/tenant-naming-conventions.md   load-when: ANY tenant provisioning, naming question, or table audit
   .crux/docs/mysql.md                            load-when: schema, replication, or topology questions
   .crux/summaries/mysql.md                       load-when: quick overview sufficient
@@ -182,7 +183,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/mysql-admin/onboarding.md exists
+  IF {framework-home}/agents/mysql-admin/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

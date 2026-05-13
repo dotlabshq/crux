@@ -44,7 +44,7 @@ root-cause hypothesis with recommended next steps.
 
 ```
 Requires already loaded:
-  .crux/agents/kubernetes-admin/MEMORY.md
+  .crux/workspace/kubernetes-admin/MEMORY.md
     Fields needed:
       production-namespaces (to flag severity)
 

@@ -1,24 +1,31 @@
-# Crux Source Layout vs Installed Layout
+# Crux Source, Framework Home, and Project Runtime
 
-Crux has two valid filesystem views:
+Crux has three filesystem views. They must stay separate.
 
 1. `source layout`
    The framework repository used to develop and package Crux itself.
-2. `installed layout`
-   The runtime shape inside a user project after Crux is installed.
+2. `framework home`
+   The user's reusable Crux installation, normally `$HOME/.crux`.
+3. `project runtime`
+   A project's living `.crux/` directory.
 
-The installed layout is the only valid runtime and documentation model.
-All architecture documents should describe paths as they appear inside the user project.
+The framework home is treated as read-mostly during project work. A project
+must not write learned knowledge, workspace state, sessions, or generated
+project docs back into `$HOME/.crux`.
 
 ## Rules
 
 These rules are mandatory:
 
 1. Source repo layout is for framework development only.
-2. Installed layout is the only valid runtime/documentation model.
-3. All architecture documents must reference installed paths.
-4. Install script is responsible for mapping source layout into installed `.crux/`.
-5. Generated docs, summaries, workspace, and user outputs must never be committed as source framework content.
+2. Framework home stores reusable definitions: agents, skills, templates,
+   workflows, framework docs, and the coordinator protocol skill.
+3. Project `.crux/` stores project-specific generated knowledge and live state.
+4. `.crux/docs/`, `.crux/summaries/`, and `.crux/decisions/` are the compiled
+   project knowledge layer and may be committed.
+5. `.crux/workspace/` is live runtime state and is normally gitignored.
+6. Runtime code is optional and belongs to a later `crux-runtime` phase; all
+   skills must remain useful as plain markdown instructions.
 
 ## Source Layout
 
@@ -38,61 +45,81 @@ This is the framework repository shape used by Crux maintainers.
 ```
 
 Notes:
-- This layout exists to make the framework easier to maintain and package.
-- Source paths are not the paths that runtime agents should reason about.
-- Agent and skill content may be authored here, but the text inside those files should still refer to installed `.crux/...` paths.
+- Source paths are not project runtime paths.
+- Agent and skill content may be authored here, but reusable framework paths
+  should be described as `{framework-home}/...`.
+- Project paths should be described as `.crux/...` relative to the project root.
 
-## Installed Layout
+## Framework Home
 
-This is the runtime shape inside a user project.
+Framework install maps source files into the user's framework home:
 
 ```text
-.crux/
-├── COORDINATOR.md
+$HOME/.crux/
 ├── AGENTS.md
-├── CONSTITUTION.md
-├── SOUL.md
+├── COORDINATOR.md                 legacy coordinator document
 ├── agents/
 ├── skills/
+│   └── crux-coordinator/
+│       └── SKILL.md               coordinator/project-operation protocol
 ├── templates/
 ├── workflows/
 ├── bus/
-├── docs/
-├── summaries/
-└── workspace/
+└── docs/
 ```
 
-This is the only layout that architecture and runtime documentation should reference.
+The framework home can be manually edited by the user or replaced during a Crux
+upgrade. Agents should read from it but should not write project discoveries or
+project state there.
+
+## Project Runtime
+
+Each project has its own living `.crux/` directory:
+
+```text
+{project}/.crux/
+├── CONSTITUTION.md
+├── SOUL.md
+├── docs/
+├── summaries/
+├── decisions/
+├── workflows/                     project-specific generated workflows, if any
+├── bus/                           project-local event/bus files, when enabled
+└── workspace/
+    ├── MANIFEST.md
+    ├── TODO.md
+    ├── inbox.md
+    ├── MEMORY.md
+    ├── sessions/
+    └── {role-id}/
+        ├── MEMORY.md
+        ├── TODO.md
+        ├── NOTES.md
+        ├── output/
+        └── sessions/
+```
+
+`.crux/docs/`, `.crux/summaries/`, and `.crux/decisions/` are the project
+compiled-knowledge layer. `.crux/workspace/` is live state.
 
 ## Mapping
 
-Install maps framework source into the user project's `.crux/` directory:
-
-| Source repo path | Installed path |
+| Source repo path | Framework home path |
 |---|---|
-| `agents/*` | `.crux/agents/*` |
-| `skills/*` | `.crux/skills/*` |
-| `templates/*` | `.crux/templates/*` |
-| `workflows/*` | `.crux/workflows/*` |
-| `bus/*` | `.crux/bus/*` |
-| `COORDINATOR.md` | `.crux/COORDINATOR.md` |
-| `AGENTS.md` | `.crux/AGENTS.md` |
+| `agents/*` | `$HOME/.crux/agents/*` |
+| `skills/*` | `$HOME/.crux/skills/*` |
+| `templates/*` | `$HOME/.crux/templates/*` |
+| `workflows/*` | `$HOME/.crux/workflows/*` |
+| `bus/*` | `$HOME/.crux/bus/*` |
+| `COORDINATOR.md` | `$HOME/.crux/COORDINATOR.md` |
+| `AGENTS.md` | `$HOME/.crux/AGENTS.md` |
 
-## Copy vs Generate
+Generated project files are not copied from source into framework home. They
+are created under `{project}/.crux/` during onboarding or lazy-loading.
 
-### Copied by install
+## Generated During Onboarding
 
-- `.crux/COORDINATOR.md`
-- `.crux/AGENTS.md`
-- `.crux/agents/*`
-- `.crux/skills/*`
-- `.crux/templates/*`
-- `.crux/workflows/*`
-- `.crux/bus/*`
-
-### Generated during onboarding / first boot
-
-These depend on user answers and project-specific setup, so install should not create them up front:
+These depend on user answers and project-specific setup:
 
 - `.crux/CONSTITUTION.md`
 - `.crux/SOUL.md`
@@ -100,38 +127,36 @@ These depend on user answers and project-specific setup, so install should not c
 - `.crux/workspace/MEMORY.md`
 - `.crux/workspace/inbox.md`
 - `.crux/workspace/{role}/MEMORY.md`
+- `.crux/workspace/{role}/TODO.md`
 - `.crux/workspace/{role}/NOTES.md`
-- generated project decisions
+- `.crux/decisions/{id}.md`
 - user-space outputs such as `notes/`, `operations/`, or `docs/compliance/`
 
-### Generated lazily on demand
+## Generated Lazily
 
 - `.crux/docs/{topic}.md`
 - `.crux/summaries/{topic}.md`
-- agent-specific reference docs generated from `agents/{role}/assets/`
-- workflow outputs and role-specific generated files
+- `.crux/workflows/{workflow}.md` when a project-specific workflow is generated
+- `.crux/workspace/{role}/output/**`
 
 ## Path Standard
 
-Even when a file is authored in the source repository as:
+Use `{framework-home}` when referring to reusable Crux definitions:
 
 ```text
-agents/backend-developer/AGENT.md
+{framework-home}/agents/backend-developer/AGENT.md
+{framework-home}/skills/service-implementation/SKILL.md
+{framework-home}/templates/AGENT.template.md
 ```
 
-its documentation should still refer to:
+Use `.crux/` when referring to project knowledge or live state:
 
 ```text
-.crux/agents/backend-developer/AGENT.md
+.crux/docs/backend.md
+.crux/summaries/backend.md
+.crux/decisions/tenant-naming-conventions.md
+.crux/workspace/backend-developer/MEMORY.md
 ```
 
-The same rule applies to skills, workflows, templates, bus files, docs, summaries, and workspace files.
-
-## Why This Split Exists
-
-This split keeps two concerns separate:
-
-- framework development and packaging
-- project runtime and user-facing documentation
-
-That separation avoids leaking generated project state back into the framework repository and keeps runtime documentation stable even if the framework repo layout changes later.
+This split keeps reusable framework upgrades separate from each project's
+learned knowledge and operational state.

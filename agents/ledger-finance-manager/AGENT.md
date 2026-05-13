@@ -111,13 +111,14 @@ finance operations, and safe ledger mutation workflows.
 Always loaded:
   .crux/CONSTITUTION.md                               ~1000 tokens
   .crux/SOUL.md                                       ~500  tokens
-  .crux/agents/ledger-finance-manager/AGENT.md        ~1100 tokens    (this file)
+  {framework-home}/agents/ledger-finance-manager/AGENT.md        ~1100 tokens    (this file)
   .crux/workspace/ledger-finance-manager/MEMORY.md    ~400  tokens
   .crux/workspace/ledger-finance-manager/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────────────
   Base cost:                                          ~3300 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/docs/finance-reporting-rules.md        load-when: reporting scope, period logic, or output interpretation is unclear
   .crux/docs/hledger-operating-playbook.md     load-when: hledger journal mutation or import/rewrite workflow is needed
   .crux/docs/rustledger-operating-playbook.md  load-when: rustledger/beancount query or write workflow is needed
@@ -178,7 +179,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/ledger-finance-manager/onboarding.md exists
+  IF {framework-home}/agents/ledger-finance-manager/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

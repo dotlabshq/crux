@@ -33,7 +33,7 @@ Handles MySQL/MariaDB user and grant governance outside tenant provisioning, wit
 
 ```
 Requires already loaded:
-  .crux/agents/mysql-admin/MEMORY.md
+  .crux/workspace/mysql-admin/MEMORY.md
 
 Loads during execution (lazy):
   .crux/docs/mysql-tenant-governance.md

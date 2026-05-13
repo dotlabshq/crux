@@ -43,7 +43,7 @@ smallest-sufficient scope, and concrete verification before non-trivial work.
 
 ```
 Requires already loaded:
-  .crux/agents/{role}/AGENT.md
+  {framework-home}/agents/{role}/AGENT.md
   .crux/workspace/{role}/TODO.md
 
 Loads during execution (lazy):

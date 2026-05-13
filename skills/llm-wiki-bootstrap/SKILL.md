@@ -45,7 +45,7 @@ Requires already loaded:
   .crux/workspace/llm-wiki/MEMORY.md
 
 Loads during execution (lazy):
-  agents/llm-wiki/assets/llm-wiki-schema.template.md
+  {framework-home}/agents/llm-wiki/assets/llm-wiki-schema.template.md
   .crux/docs/llm-wiki-schema.md if it exists
   {wiki-root}/index.md if it exists
   {wiki-root}/log.md if it exists
@@ -100,7 +100,7 @@ Unloaded after: starter structure created or repair plan returned
    wiki-root/glossary.md
    wiki-root/log.md
 
-6. Generate .crux/docs/llm-wiki-schema.md from agents/llm-wiki/assets/llm-wiki-schema.template.md if missing
+6. Generate .crux/docs/llm-wiki-schema.md from {framework-home}/agents/llm-wiki/assets/llm-wiki-schema.template.md if missing
 
 7. Append bootstrap entry to wiki-root/log.md if log exists or was created
 

@@ -13,7 +13,7 @@ Before onboarding begins, verify:
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/backend-developer/AGENT.md` exists
+- [ ] `{framework-home}/agents/backend-developer/AGENT.md` exists
 
 If any of these are missing, stop and notify the user.
 
@@ -96,10 +96,10 @@ Run the appropriate skills to produce the initial backend references.
 
 ```
 Required docs for this agent:
-  .crux/docs/backend-development-principles.md  → generate from agents/backend-developer/assets/backend-development-principles.template.md if missing
-  .crux/docs/api-contract-guidelines.md         → generate from agents/backend-developer/assets/api-contract-guidelines.template.md if missing
-  .crux/docs/backend-testing-strategy.md        → generate from agents/backend-developer/assets/backend-testing-strategy.template.md if missing
-  .crux/docs/schema-safety-guidelines.md        → generate from agents/backend-developer/assets/schema-safety-guidelines.template.md if missing
+  .crux/docs/backend-development-principles.md  → generate from {framework-home}/agents/backend-developer/assets/backend-development-principles.template.md if missing
+  .crux/docs/api-contract-guidelines.md         → generate from {framework-home}/agents/backend-developer/assets/api-contract-guidelines.template.md if missing
+  .crux/docs/backend-testing-strategy.md        → generate from {framework-home}/agents/backend-developer/assets/backend-testing-strategy.template.md if missing
+  .crux/docs/schema-safety-guidelines.md        → generate from {framework-home}/agents/backend-developer/assets/schema-safety-guidelines.template.md if missing
   .crux/docs/backend.md                         → skill: codebase-scanner if missing or if user wants a fresh architecture scan
 
 If backend.md is missing:

@@ -39,7 +39,7 @@ Performs a read-only MySQL table audit focused on naming, keys, and structural h
 
 ```
 Requires already loaded:
-  .crux/agents/mysql-admin/AGENT.md
+  {framework-home}/agents/mysql-admin/AGENT.md
   .crux/workspace/mysql-admin/MEMORY.md
 
 Estimated token cost: ~600 tokens

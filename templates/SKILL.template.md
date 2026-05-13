@@ -58,7 +58,7 @@ Crux convention for metadata:
 
 ```
 Requires already loaded:
-  .crux/agents/{{OWNER}}/MEMORY.md    (for {{specific fields}})
+  .crux/workspace/{{OWNER}}/MEMORY.md    (for {{specific fields}})
 
 Loads during execution (lazy):
   {{FILE_IF_NEEDED}}

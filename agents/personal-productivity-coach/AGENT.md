@@ -108,16 +108,17 @@ that helps the user decide what to do next.
 Always loaded:
   .crux/CONSTITUTION.md                                  ~1000 tokens
   .crux/SOUL.md                                          ~500  tokens
-  .crux/agents/personal-productivity-coach/AGENT.md      ~1000 tokens    (this file)
+  {framework-home}/agents/personal-productivity-coach/AGENT.md      ~1000 tokens    (this file)
   .crux/workspace/personal-productivity-coach/MEMORY.md  ~400  tokens
   .crux/workspace/personal-productivity-coach/TODO.md      ~300  tokens
   ───────────────────────────────────────────────────────────────────────
   Base cost:                                             ~3200 tokens
 
 Lazy docs (load only when needed):
-  .crux/docs/task-triage-principles.md          load-when: deciding how to classify messy input; generate from agents/personal-productivity-coach/assets if missing
-  .crux/docs/personal-planning-formats.md       load-when: writing daily or weekly plans; generate from agents/personal-productivity-coach/assets if missing
-  .crux/docs/obsidian-productivity-structure.md load-when: saving notes into the selected notes root; generate from agents/personal-productivity-coach/assets if missing
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
+  .crux/docs/task-triage-principles.md          load-when: deciding how to classify messy input; generate from {framework-home}/agents/personal-productivity-coach/assets if missing
+  .crux/docs/personal-planning-formats.md       load-when: writing daily or weekly plans; generate from {framework-home}/agents/personal-productivity-coach/assets if missing
+  .crux/docs/obsidian-productivity-structure.md load-when: saving notes into the selected notes root; generate from {framework-home}/agents/personal-productivity-coach/assets if missing
   {notes-root}/00 Inbox/                        load-when: inbox cleanup or capture requested
   {notes-root}/01 Projects/                     load-when: project placement or action note requested
   {notes-root}/Daily Notes/                     load-when: daily note or weekly review requested
@@ -169,7 +170,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/personal-productivity-coach/onboarding.md exists
+  IF {framework-home}/agents/personal-productivity-coach/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

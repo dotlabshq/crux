@@ -13,7 +13,7 @@ Before onboarding begins, verify:
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/mysql-admin/AGENT.md` exists
+- [ ] `{framework-home}/agents/mysql-admin/AGENT.md` exists
 
 If any are missing, stop and notify the user.
 

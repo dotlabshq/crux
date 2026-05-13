@@ -33,7 +33,7 @@ Summarises MySQL/MariaDB instance posture beyond one query or one table.
 
 ```
 Requires already loaded:
-  .crux/agents/mysql-admin/MEMORY.md
+  .crux/workspace/mysql-admin/MEMORY.md
 
 Loads during execution (lazy):
   .crux/docs/mysql-operations-principles.md

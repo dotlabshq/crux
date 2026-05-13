@@ -46,7 +46,7 @@ Requires already loaded:
 
 Loads during execution (lazy):
   .crux/docs/llm-wiki-schema.md
-  agents/llm-wiki/assets/llm-wiki-schema.template.md if base template is needed
+  {framework-home}/agents/llm-wiki/assets/llm-wiki-schema.template.md if base template is needed
   {wiki-root}/index.md
   {wiki-root}/glossary.md if terminology changes
   representative pages affected by the schema change

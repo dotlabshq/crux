@@ -50,7 +50,7 @@ Checks per namespace:
 
 ```
 Requires already loaded:
-  .crux/agents/kubernetes-admin/MEMORY.md
+  .crux/workspace/kubernetes-admin/MEMORY.md
     Fields needed:
       namespace-pattern
       environments

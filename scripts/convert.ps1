@@ -94,16 +94,20 @@ function Detect-Tools {
 if ($Source -eq 'auto') {
   if ((Test-Path 'COORDINATOR.md') -and (Test-Path 'agents') -and (Test-Path 'skills')) {
     $Source = '.'
+  } elseif ((Test-Path (Join-Path $HOME '.crux/COORDINATOR.md')) -and (Test-Path (Join-Path $HOME '.crux/agents')) -and (Test-Path (Join-Path $HOME '.crux/skills'))) {
+    $Source = Join-Path $HOME '.crux'
   } elseif ((Test-Path '.crux/COORDINATOR.md') -and (Test-Path '.crux/agents') -and (Test-Path '.crux/skills')) {
     $Source = '.crux'
   } else {
-    Write-Err 'No Crux source found. Run from the framework repo root or a project containing .crux/.'
+    Write-Err 'No Crux framework source found. Run from the framework repo root or install Crux to $HOME/.crux.'
     exit 1
   }
 }
 
 $sourceAbs = (Resolve-Path $Source).Path
-if ((Split-Path $sourceAbs -Leaf) -eq '.crux') {
+if ($sourceAbs -eq (Join-Path $HOME '.crux')) {
+  $rootDir = (Get-Location).Path
+} elseif ((Split-Path $sourceAbs -Leaf) -eq '.crux') {
   $rootDir = Split-Path -Parent $sourceAbs
 } else {
   $rootDir = $sourceAbs
@@ -176,11 +180,11 @@ This project uses the Crux multi-agent workspace framework.
 ## Boot Instructions
 
 On every session start:
-1. Read `.crux/COORDINATOR.md` — boot sequence and routing rules
+1. Read `$HOME/.crux/skills/crux-coordinator/SKILL.md` — Crux path, routing, and project operation protocol
 2. Read `.crux/CONSTITUTION.md` — universal rules (if it exists)
 3. Read `.crux/SOUL.md` — identity and tone defaults (if it exists)
 4. Read `.crux/workspace/MANIFEST.md` — current system state (if it exists)
-   - If `.crux/workspace/` does not exist → run workspace initialisation as described in COORDINATOR.md
+   - If `.crux/workspace/` does not exist → run workspace initialisation as described in the Crux coordinator skill
 5. Surface any pending items (agents pending onboard, amendments, open sessions)
 
 ## Agents
@@ -192,18 +196,18 @@ Type `@{role-id}` to activate an agent. The coordinator routes all @mentions.
 
 | Path | Purpose |
 |---|---|
-| `.crux/COORDINATOR.md` | Boot + routing logic |
-| `.crux/agents/{role}/AGENT.md` | Agent identity (source of truth) |
-| `.crux/skills/{name}/SKILL.md` | Skill definitions |
-| `.crux/workflows/{name}.md` | Multi-agent workflows |
+| `$HOME/.crux/skills/crux-coordinator/SKILL.md` | Crux project-operation protocol |
+| `$HOME/.crux/agents/{role}/AGENT.md` | Agent identity (source of truth) |
+| `$HOME/.crux/skills/{name}/SKILL.md` | Skill definitions |
+| `$HOME/.crux/workflows/{name}.md` | Reusable multi-agent workflows |
 | `.crux/decisions/` | Approved architectural decisions |
 | `.crux/workspace/` | Live state — gitignored |
 
-Do not modify `.crux/agents/` files during a session.
-Do not write to `.crux/workspace/` without following COORDINATOR.md protocols.
+Do not modify `$HOME/.crux/agents/` files during project operation.
+Do not write to `.crux/workspace/` without following the Crux coordinator skill.
 "@
 
-  if ((Test-Path 'CLAUDE.md') -and (Select-String -Path 'CLAUDE.md' -Pattern 'crux/COORDINATOR.md' -Quiet)) {
+  if ((Test-Path 'CLAUDE.md') -and (Select-String -Path 'CLAUDE.md' -Pattern 'crux-coordinator/SKILL.md' -Quiet)) {
     Write-Warn 'CLAUDE.md already contains Crux instructions — skipping'
   } elseif (Test-Path 'CLAUDE.md') {
     if ($DryRun) {
@@ -222,7 +226,7 @@ function Convert-Cursor {
   $lines = New-Object System.Collections.Generic.List[string]
   [void]$lines.Add('# Crux — Agent Workspace Rules')
   [void]$lines.Add('')
-  [void]$lines.Add('This project uses the Crux multi-agent framework. Read `.crux/COORDINATOR.md` on startup.')
+  [void]$lines.Add('This project uses the Crux multi-agent framework. Read `$HOME/.crux/skills/crux-coordinator/SKILL.md` on startup.')
   [void]$lines.Add('')
   [void]$lines.Add('## Active Agents')
   [void]$lines.Add('')
@@ -236,10 +240,10 @@ function Convert-Cursor {
   [void]$lines.Add('')
   [void]$lines.Add('## Rules')
   [void]$lines.Add('')
-  [void]$lines.Add('- Always read `.crux/COORDINATOR.md` before starting any task')
+  [void]$lines.Add('- Always read `$HOME/.crux/skills/crux-coordinator/SKILL.md` before starting Crux task routing or project state work')
   [void]$lines.Add('- Load `.crux/workspace/MANIFEST.md` to understand current system state')
-  [void]$lines.Add('- Agent definitions are in `.crux/agents/{role}/AGENT.md`')
-  [void]$lines.Add('- Do not modify `.crux/agents/` files during a session')
+  [void]$lines.Add('- Agent definitions are in `$HOME/.crux/agents/{role}/AGENT.md`')
+  [void]$lines.Add('- Do not modify `$HOME/.crux/agents/` files during project operation')
   [void]$lines.Add('- Follow approval gates defined in each agent''s AGENT.md')
 
   Write-File '.cursor/rules/crux.mdc' (($lines -join "`n") + "`n")
@@ -259,9 +263,9 @@ Use this skill when the user wants to work through the Crux coordinator for the 
 ## Workspace Source Of Truth
 
 Read these in order:
-1. $sourceAbs/COORDINATOR.md
-2. $rootDir/AGENTS.md
-3. $rootDir/COORDINATOR.md if it exists outside installed .crux/
+1. $sourceAbs/skills/crux-coordinator/SKILL.md
+2. $sourceAbs/AGENTS.md
+3. $sourceAbs/COORDINATOR.md as legacy fallback if the skill is missing
 4. $workspaceDir/MANIFEST.md if it exists
 5. $workspaceDir/TODO.md if it exists
 6. $workspaceDir/inbox.md if it exists
@@ -337,7 +341,7 @@ Write-Host ''
 if ($converted -gt 0) {
   Write-Host "Done. $converted tool(s) converted." -ForegroundColor Green
   Write-Host 'Re-run after editing any agents/ or skills/ source file,'
-  Write-Host 'or installed .crux/agents/ / .crux/skills/ in a user project.'
+  Write-Host 'or framework-home $HOME/.crux/agents/ / $HOME/.crux/skills/.'
 } else {
   Write-Warn 'Nothing converted.'
 }

@@ -39,7 +39,7 @@ user creation, and scoped grants.
 
 ```
 Requires already loaded:
-  .crux/agents/mysql-admin/AGENT.md
+  {framework-home}/agents/mysql-admin/AGENT.md
   .crux/workspace/mysql-admin/MEMORY.md
   .crux/decisions/tenant-naming-conventions.md   (if available)
 

@@ -110,17 +110,18 @@ patterns, keep state understandable, and avoid regressions in user-facing behavi
 Always loaded:
   .crux/CONSTITUTION.md                         ~1000 tokens
   .crux/SOUL.md                                 ~500  tokens
-  .crux/agents/frontend-developer/AGENT.md      ~1100 tokens    (this file)
+  {framework-home}/agents/frontend-developer/AGENT.md      ~1100 tokens    (this file)
   .crux/workspace/frontend-developer/MEMORY.md  ~400  tokens
   .crux/workspace/frontend-developer/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────
   Base cost:                                    ~3300 tokens
 
 Lazy docs (load only when needed):
-  .crux/docs/frontend-development-principles.md load-when: deciding implementation or review approach; generate from agents/frontend-developer/assets if missing
-  .crux/docs/component-structure-guidelines.md  load-when: component organisation or UI review questions; generate from agents/frontend-developer/assets if missing
-  .crux/docs/frontend-testing-strategy.md       load-when: frontend test plan or coverage questions; generate from agents/frontend-developer/assets if missing
-  .crux/docs/state-flow-guidelines.md           load-when: state ownership or interaction flow is touched; generate from agents/frontend-developer/assets if missing
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
+  .crux/docs/frontend-development-principles.md load-when: deciding implementation or review approach; generate from {framework-home}/agents/frontend-developer/assets if missing
+  .crux/docs/component-structure-guidelines.md  load-when: component organisation or UI review questions; generate from {framework-home}/agents/frontend-developer/assets if missing
+  .crux/docs/frontend-testing-strategy.md       load-when: frontend test plan or coverage questions; generate from {framework-home}/agents/frontend-developer/assets if missing
+  .crux/docs/state-flow-guidelines.md           load-when: state ownership or interaction flow is touched; generate from {framework-home}/agents/frontend-developer/assets if missing
   .crux/docs/frontend.md                        load-when: codebase frontend architecture context is needed; generate via skill if missing
   .crux/summaries/frontend.md                   load-when: quick frontend overview is sufficient
 
@@ -171,7 +172,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/frontend-developer/onboarding.md exists
+  IF {framework-home}/agents/frontend-developer/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

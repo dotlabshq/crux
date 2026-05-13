@@ -33,7 +33,7 @@ opencode fields:
   tools         write/edit/bash: true | false
   permission    edit/bash/webfetch: ask | allow | deny
                 bash supports glob patterns — last match wins
-                skill: pattern-based access to .crux/skills/
+                skill: pattern-based access to {framework-home}/skills/
 
 openclaw fields (visual + personality):
   color         named: primary secondary accent success warning error info
@@ -111,16 +111,17 @@ openclaw fields (visual + personality):
 Always loaded:
   .crux/CONSTITUTION.md                    ~1000 tokens
   .crux/SOUL.md                            ~500  tokens
-  .crux/agents/{{ROLE_ID}}/AGENT.md        ~800  tokens    (this file)
+  {framework-home}/agents/{{ROLE_ID}}/AGENT.md        ~800  tokens    (this file)
   .crux/workspace/{{ROLE_ID}}/MEMORY.md    ~400  tokens
   .crux/workspace/{{ROLE_ID}}/TODO.md      ~300  tokens
   ────────────────────────────────────────────────────────
   Base cost:                               ~3000 tokens
 
 Lazy docs (load only when needed):
-  .crux/docs/{{DOC_1}}        load-when: {{CONDITION_1}}; generate from agents/{{ROLE_ID}}/assets or local templates if missing
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
+  .crux/docs/{{DOC_1}}        load-when: {{CONDITION_1}}; generate from {framework-home}/agents/{{ROLE_ID}}/assets or local templates if missing
   .crux/summaries/{{DOC_1}}   load-when: overview sufficient, avoid full doc
-  .crux/docs/{{DOC_2}}        load-when: {{CONDITION_2}}; generate from agents/{{ROLE_ID}}/assets or local templates if missing
+  .crux/docs/{{DOC_2}}        load-when: {{CONDITION_2}}; generate from {framework-home}/agents/{{ROLE_ID}}/assets or local templates if missing
 
 Session start (load once, then keep):
   .crux/workspace/{{ROLE_ID}}/NOTES.md     support open tasks with context, discoveries, and workarounds
@@ -157,7 +158,7 @@ additional-rules:
 | `{{SKILL_2}}` | {{TRIGGER_2}} | {{Yes / No / Yes — role}} |
 
 <!--
-Skills live at: .crux/skills/<skill-name>/SKILL.md
+Skills live at: {framework-home}/skills/<skill-name>/SKILL.md
 Loaded on demand via the skill tool — not preloaded at startup.
 
 Examples:
@@ -172,7 +173,7 @@ Examples:
 ```
 Checked on every startup:
 
-  IF .crux/agents/{{ROLE_ID}}/onboarding.md exists
+  IF {framework-home}/agents/{{ROLE_ID}}/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

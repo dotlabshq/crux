@@ -10,7 +10,7 @@
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/arif/AGENT.md` exists
+- [ ] `{framework-home}/agents/arif/AGENT.md` exists
 
 If any of these are missing, stop and notify the user.
 
@@ -57,7 +57,7 @@ If missing, generate:
 - `.crux/docs/decision-framing-patterns.md`
 - `.crux/docs/executive-brief-format.md`
 
-Use the agent-local source templates under `.crux/agents/arif/assets/` before writing any generated `.crux/docs/*` file.
+Use the agent-local source templates under `{framework-home}/agents/arif/assets/` before writing any generated `.crux/docs/*` file.
 
 ---
 

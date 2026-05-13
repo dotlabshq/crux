@@ -33,7 +33,7 @@ Summarises PostgreSQL instance posture beyond one query or one table.
 
 ```
 Requires already loaded:
-  .crux/agents/postgresql-admin/MEMORY.md
+  .crux/workspace/postgresql-admin/MEMORY.md
 
 Loads during execution (lazy):
   .crux/docs/postgresql-operations-principles.md

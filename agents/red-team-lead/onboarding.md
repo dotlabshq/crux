@@ -11,7 +11,7 @@
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/red-team-lead/AGENT.md` exists
+- [ ] `{framework-home}/agents/red-team-lead/AGENT.md` exists
 
 If any are missing, stop and notify the user.
 
@@ -139,7 +139,7 @@ Question 6 — Missing tools
    (concise — max 800 tokens)
 
 4. Generate `.crux/workflows/pentest-engagement.md` (if missing):
-   source: `.crux/agents/red-team-lead/assets/pentest-engagement.workflow.template.md`
+   source: `{framework-home}/agents/red-team-lead/assets/pentest-engagement.workflow.template.md`
    purpose: coordinator orchestration for setup → recon → specialist testing → findings → report
    rule: do not commit the generated workflow file in the framework source repo
 ```

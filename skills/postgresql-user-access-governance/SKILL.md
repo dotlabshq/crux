@@ -32,7 +32,7 @@ Handles PostgreSQL role and privilege governance outside tenant provisioning, wi
 
 ```
 Requires already loaded:
-  .crux/agents/postgresql-admin/MEMORY.md
+  .crux/workspace/postgresql-admin/MEMORY.md
 
 Loads during execution (lazy):
   .crux/docs/postgresql-tenant-governance.md

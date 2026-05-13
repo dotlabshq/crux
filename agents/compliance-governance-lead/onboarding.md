@@ -13,7 +13,7 @@ Before onboarding begins, verify:
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/compliance-governance-lead/AGENT.md` exists
+- [ ] `{framework-home}/agents/compliance-governance-lead/AGENT.md` exists
 
 If any of these are missing, stop and notify the user.
 
@@ -117,9 +117,9 @@ Run the appropriate skills to produce the initial compliance artefacts.
 
 ```
 Required docs for this agent:
-  .crux/docs/iso27001-knowledge-base.md                       → generate from agents/compliance-governance-lead/assets/iso27001-knowledge-base.template.md if missing
-  .crux/docs/privacy-and-pci-requirements.md                  → generate from agents/compliance-governance-lead/assets/privacy-and-pci-requirements.template.md if missing
-  .crux/docs/vendor-security-baseline.md                      → generate from agents/compliance-governance-lead/assets/vendor-security-baseline.template.md if missing
+  .crux/docs/iso27001-knowledge-base.md                       → generate from {framework-home}/agents/compliance-governance-lead/assets/iso27001-knowledge-base.template.md if missing
+  .crux/docs/privacy-and-pci-requirements.md                  → generate from {framework-home}/agents/compliance-governance-lead/assets/privacy-and-pci-requirements.template.md if missing
+  .crux/docs/vendor-security-baseline.md                      → generate from {framework-home}/agents/compliance-governance-lead/assets/vendor-security-baseline.template.md if missing
   docs/compliance/organisation-profile.md                     → generate from onboarding answers
   docs/compliance/iso27001/isms-scope.md                      → skill: iso27001-isms-consulting
   docs/compliance/regulatory/applicability-matrix.md          → skill: regulatory-gap-assessment

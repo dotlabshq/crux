@@ -54,7 +54,7 @@ Checks per schema:
 
 ```
 Requires already loaded:
-  .crux/agents/postgresql-admin/MEMORY.md
+  .crux/workspace/postgresql-admin/MEMORY.md
     Fields needed:
       primary-host
       postgresql-version

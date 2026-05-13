@@ -13,7 +13,7 @@ Before onboarding begins, verify:
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/mailbox-operator/AGENT.md` exists
+- [ ] `{framework-home}/agents/mailbox-operator/AGENT.md` exists
 
 If any of these are missing, stop and notify the user.
 

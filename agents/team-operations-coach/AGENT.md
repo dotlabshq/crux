@@ -110,16 +110,17 @@ explicit ownership, visible blockers, and lightweight leadership insight.
 Always loaded:
   .crux/CONSTITUTION.md                               ~1000 tokens
   .crux/SOUL.md                                       ~500  tokens
-  .crux/agents/team-operations-coach/AGENT.md         ~1100 tokens    (this file)
+  {framework-home}/agents/team-operations-coach/AGENT.md         ~1100 tokens    (this file)
   .crux/workspace/team-operations-coach/MEMORY.md     ~400  tokens
   .crux/workspace/team-operations-coach/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────────────
   Base cost:                                          ~3300 tokens
 
 Lazy docs (load only when needed):
-  .crux/docs/team-operations-principles.md            load-when: deciding how to structure team operations; generate from agents/team-operations-coach/assets if missing
-  .crux/docs/situational-leadership-mapping.md        load-when: mapping natural answers into G/S/T signals; generate from agents/team-operations-coach/assets if missing
-  .crux/docs/weekly-team-reporting-format.md          load-when: writing weekly plans, reviews, or org summaries; generate from agents/team-operations-coach/assets if missing
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
+  .crux/docs/team-operations-principles.md            load-when: deciding how to structure team operations; generate from {framework-home}/agents/team-operations-coach/assets if missing
+  .crux/docs/situational-leadership-mapping.md        load-when: mapping natural answers into G/S/T signals; generate from {framework-home}/agents/team-operations-coach/assets if missing
+  .crux/docs/weekly-team-reporting-format.md          load-when: writing weekly plans, reviews, or org summaries; generate from {framework-home}/agents/team-operations-coach/assets if missing
   {operations-root}/teams/                            load-when: team ownership, roster, or team card work requested
   {operations-root}/people/                           load-when: member ownership or growth signal work requested
   {operations-root}/weekly/                           load-when: weekly planning or review requested
@@ -173,7 +174,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/team-operations-coach/onboarding.md exists
+  IF {framework-home}/agents/team-operations-coach/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

@@ -32,7 +32,7 @@ Turns backup and restore evidence into a practical PostgreSQL recovery-readiness
 
 ```
 Requires already loaded:
-  .crux/agents/postgresql-admin/MEMORY.md
+  .crux/workspace/postgresql-admin/MEMORY.md
 
 Loads during execution (lazy):
   .crux/docs/postgresql-backup-recovery-baseline.md

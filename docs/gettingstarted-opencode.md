@@ -19,7 +19,8 @@ It is the fastest way to understand how Crux feels in practice.
 ## Before You Start
 
 Make sure:
-- Crux is installed in your project
+- Crux framework files are installed in `$HOME/.crux`
+- the project has a local `.crux/` workspace
 - you opened the project in OpenCode
 - the assistant can see the files in this workspace
 

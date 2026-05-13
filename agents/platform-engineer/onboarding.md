@@ -13,7 +13,7 @@ Before onboarding begins, verify:
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/platform-engineer/AGENT.md` exists
+- [ ] `{framework-home}/agents/platform-engineer/AGENT.md` exists
 
 If any of these are missing, stop and notify the user.
 
@@ -97,10 +97,10 @@ Run the appropriate skills to produce the initial platform references.
 
 ```
 Required docs for this agent:
-  .crux/docs/platform-principles.md           → generate from agents/platform-engineer/assets/platform-principles.template.md if missing
-  .crux/docs/environment-guidelines.md        → generate from agents/platform-engineer/assets/environment-guidelines.template.md if missing
-  .crux/docs/deployment-safety-guidelines.md  → generate from agents/platform-engineer/assets/deployment-safety-guidelines.template.md if missing
-  .crux/docs/observability-guidelines.md      → generate from agents/platform-engineer/assets/observability-guidelines.template.md if missing
+  .crux/docs/platform-principles.md           → generate from {framework-home}/agents/platform-engineer/assets/platform-principles.template.md if missing
+  .crux/docs/environment-guidelines.md        → generate from {framework-home}/agents/platform-engineer/assets/environment-guidelines.template.md if missing
+  .crux/docs/deployment-safety-guidelines.md  → generate from {framework-home}/agents/platform-engineer/assets/deployment-safety-guidelines.template.md if missing
+  .crux/docs/observability-guidelines.md      → generate from {framework-home}/agents/platform-engineer/assets/observability-guidelines.template.md if missing
   .crux/docs/platform.md                      → generate from discovery and onboarding answers if missing
 
 If platform.md is missing:

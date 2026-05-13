@@ -48,7 +48,7 @@ Supports reconcile (re-apply without deleting existing policies).
 
 ```
 Requires already loaded:
-  .crux/agents/kubernetes-admin/MEMORY.md
+  .crux/workspace/kubernetes-admin/MEMORY.md
     Fields needed:
       ingress-controller-namespace  (default: ingress-nginx)
       monitoring-namespace          (default: monitoring)

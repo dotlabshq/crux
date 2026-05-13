@@ -101,13 +101,14 @@ statement risk, audit-readiness thinking, and early-stage submission controls.
 Always loaded:
   .crux/CONSTITUTION.md                                 ~1000 tokens
   .crux/SOUL.md                                         ~500  tokens
-  .crux/agents/eligibility-risk-analyst/AGENT.md        ~1000 tokens    (this file)
+  {framework-home}/agents/eligibility-risk-analyst/AGENT.md        ~1000 tokens    (this file)
   .crux/workspace/eligibility-risk-analyst/MEMORY.md    ~400  tokens
   .crux/workspace/eligibility-risk-analyst/TODO.md      ~300  tokens
   ──────────────────────────────────────────────────────────────────────
   Base cost:                                            ~3200 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/docs/eligibility-review-framework.md     load-when: fit rules or readiness scoring is needed
   .crux/docs/document-requirements-reference.md  load-when: missing-document analysis is needed
   .crux/docs/risk-review-checklist.md            load-when: compliance or statement-risk review is needed
@@ -148,7 +149,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/eligibility-risk-analyst/onboarding.md exists
+  IF {framework-home}/agents/eligibility-risk-analyst/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
   IF .crux/workspace/eligibility-risk-analyst/TODO.md contains open tasks

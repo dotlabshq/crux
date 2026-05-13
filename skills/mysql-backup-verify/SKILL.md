@@ -38,7 +38,7 @@ Evaluates MySQL backup and restore-readiness evidence without performing destruc
 
 ```
 Requires already loaded:
-  .crux/agents/mysql-admin/AGENT.md
+  {framework-home}/agents/mysql-admin/AGENT.md
   .crux/workspace/mysql-admin/MEMORY.md
 
 Estimated token cost: ~500 tokens

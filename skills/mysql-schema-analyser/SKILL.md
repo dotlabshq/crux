@@ -39,7 +39,7 @@ Builds a read-only overview of MySQL/MariaDB databases, schemas, and key operati
 
 ```
 Requires already loaded:
-  .crux/agents/mysql-admin/AGENT.md
+  {framework-home}/agents/mysql-admin/AGENT.md
   .crux/workspace/mysql-admin/MEMORY.md
 
 External requirement:

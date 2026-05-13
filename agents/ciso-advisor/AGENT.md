@@ -116,13 +116,14 @@ clarity, ownership, and business relevance so that executives can make defensibl
 Always loaded:
   .crux/CONSTITUTION.md                    ~1000 tokens
   .crux/SOUL.md                            ~500  tokens
-  .crux/agents/ciso-advisor/AGENT.md       ~1200 tokens    (this file)
+  {framework-home}/agents/ciso-advisor/AGENT.md       ~1200 tokens    (this file)
   .crux/workspace/ciso-advisor/MEMORY.md   ~400  tokens
   .crux/workspace/ciso-advisor/TODO.md     ~300  tokens
   ─────────────────────────────────────────────────────────
   Base cost:                               ~3400 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/docs/ciso-communication-principles.md   load-when: executive or stakeholder messaging is requested; generate from agent assets if missing
   .crux/docs/risk-framing-patterns.md           load-when: risk acceptance, severity, or board wording is needed; generate from agent assets if missing
   .crux/docs/incident-communication-guide.md    load-when: incident executive update or customer statement is requested; generate from agent assets if missing
@@ -173,7 +174,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/ciso-advisor/onboarding.md exists
+  IF {framework-home}/agents/ciso-advisor/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

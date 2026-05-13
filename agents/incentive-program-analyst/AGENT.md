@@ -102,13 +102,14 @@ grant fit analysis, and preliminary program comparisons.
 Always loaded:
   .crux/CONSTITUTION.md                                  ~1000 tokens
   .crux/SOUL.md                                          ~500  tokens
-  .crux/agents/incentive-program-analyst/AGENT.md        ~1000 tokens    (this file)
+  {framework-home}/agents/incentive-program-analyst/AGENT.md        ~1000 tokens    (this file)
   .crux/workspace/incentive-program-analyst/MEMORY.md    ~400  tokens
   .crux/workspace/incentive-program-analyst/TODO.md      ~300  tokens
   ───────────────────────────────────────────────────────────────────────
   Base cost:                                             ~3200 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/docs/incentive-program-catalog.md      load-when: comparing available support tracks
   .crux/docs/incentive-screening-rules.md      load-when: fit logic or exclusions are unclear
   .crux/docs/sector-support-patterns.md        load-when: sector-specific routing is needed
@@ -148,7 +149,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/incentive-program-analyst/onboarding.md exists
+  IF {framework-home}/agents/incentive-program-analyst/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
   IF .crux/workspace/incentive-program-analyst/TODO.md contains open tasks

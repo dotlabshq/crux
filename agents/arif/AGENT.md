@@ -116,13 +116,14 @@ the problem, surfacing trade-offs, and recommending a practical path that can be
 Always loaded:
   .crux/CONSTITUTION.md                        ~1000 tokens
   .crux/SOUL.md                                ~500  tokens
-  .crux/agents/arif/AGENT.md                   ~1100 tokens    (this file)
+  {framework-home}/agents/arif/AGENT.md                   ~1100 tokens    (this file)
   .crux/workspace/arif/MEMORY.md               ~400  tokens
   .crux/workspace/arif/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────
   Base cost:                                   ~3300 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/docs/ai-transformation-principles.md   load-when: AI use-case or pilot prioritisation is requested
   .crux/docs/cost-efficiency-heuristics.md     load-when: cost, ROI, cloud/local, or efficiency trade-offs are requested
   .crux/docs/decision-framing-patterns.md      load-when: a request is fuzzy, political, or high-stakes
@@ -175,7 +176,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/arif/onboarding.md exists
+  IF {framework-home}/agents/arif/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

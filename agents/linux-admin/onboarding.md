@@ -10,7 +10,7 @@
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/linux-admin/AGENT.md` exists
+- [ ] `{framework-home}/agents/linux-admin/AGENT.md` exists
 
 If any of these are missing, stop and notify the user.
 
@@ -60,7 +60,7 @@ If missing, generate:
 - `.crux/docs/ansible-execution-guidelines.md`
 - `.crux/docs/linux-hardening-baseline.md`
 
-Use the agent-local source templates under `.crux/agents/linux-admin/assets/` before writing any generated `.crux/docs/*` file.
+Use the agent-local source templates under `{framework-home}/agents/linux-admin/assets/` before writing any generated `.crux/docs/*` file.
 
 ---
 

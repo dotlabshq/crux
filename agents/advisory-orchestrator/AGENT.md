@@ -105,13 +105,14 @@ clear work allocation, and a realistic next-step plan.
 Always loaded:
   .crux/CONSTITUTION.md                             ~1000 tokens
   .crux/SOUL.md                                     ~500  tokens
-  .crux/agents/advisory-orchestrator/AGENT.md       ~1000 tokens    (this file)
+  {framework-home}/agents/advisory-orchestrator/AGENT.md       ~1000 tokens    (this file)
   .crux/workspace/advisory-orchestrator/MEMORY.md   ~400  tokens
   .crux/workspace/advisory-orchestrator/TODO.md      ~300  tokens
   ──────────────────────────────────────────────────────────────────
   Base cost:                                        ~3200 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/docs/advisory-service-catalog.md       load-when: service-line selection or offer framing is needed
   .crux/docs/advisory-intake-principles.md     load-when: intake quality or missing-info handling is unclear
   .crux/docs/advisory-reporting-format.md      load-when: building executive summaries or action plans
@@ -156,7 +157,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/advisory-orchestrator/onboarding.md exists
+  IF {framework-home}/agents/advisory-orchestrator/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

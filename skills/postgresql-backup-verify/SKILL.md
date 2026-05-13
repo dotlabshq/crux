@@ -45,7 +45,7 @@ or modify backups.
 
 ```
 Requires already loaded:
-  .crux/agents/postgresql-admin/MEMORY.md
+  .crux/workspace/postgresql-admin/MEMORY.md
     Fields needed:
       primary-host
       primary-port

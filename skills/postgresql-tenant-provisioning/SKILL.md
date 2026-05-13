@@ -48,7 +48,7 @@ Provisions a fully-configured tenant database or schema:
 
 ```
 Requires already loaded:
-  .crux/agents/postgresql-admin/MEMORY.md
+  .crux/workspace/postgresql-admin/MEMORY.md
     Fields needed:
       primary-host               (connection target)
       tenant-isolation-model     (schema-per-tenant | database-per-tenant)

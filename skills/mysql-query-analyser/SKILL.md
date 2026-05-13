@@ -39,7 +39,7 @@ Produces a practical MySQL query analysis focused on likely bottlenecks, access 
 
 ```
 Requires already loaded:
-  .crux/agents/mysql-admin/AGENT.md
+  {framework-home}/agents/mysql-admin/AGENT.md
   .crux/workspace/mysql-admin/MEMORY.md
 
 Estimated token cost: ~650 tokens

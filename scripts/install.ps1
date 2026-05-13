@@ -11,6 +11,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$FrameworkHome = if ($env:CRUX_HOME) { $env:CRUX_HOME } else { Join-Path $HOME '.crux' }
 
 function Write-Ok($Message) { Write-Host "  ✓ $Message" -ForegroundColor Green }
 function Write-Info($Message) { Write-Host "  → $Message" -ForegroundColor Cyan }
@@ -67,6 +68,7 @@ Write-Host ''
 if ($Project) { Write-Host "  Project:  $Project" -ForegroundColor Cyan }
 Write-Host "  Repo:     $Repo@$Branch" -ForegroundColor Cyan
 Write-Host "  Tool:     $Tool" -ForegroundColor Cyan
+Write-Host "  Framework:$FrameworkHome" -ForegroundColor Cyan
 if ($Agents) { Write-Host "  Agents:   $Agents" -ForegroundColor Cyan }
 if ($DryRun) { Write-Host '  Mode:     dry-run' -ForegroundColor Yellow }
 
@@ -98,11 +100,11 @@ try {
   }
   $archiveSource = $archiveSourceDir.FullName
 
-  Install-File (Join-Path $archiveSource 'COORDINATOR.md') '.\.crux\COORDINATOR.md'
-  Install-File (Join-Path $archiveSource 'AGENTS.md') '.\.crux\AGENTS.md'
-  Install-Tree (Join-Path $archiveSource 'bus') '.\.crux\bus'
-  Install-Tree (Join-Path $archiveSource 'templates') '.\.crux\templates'
-  Install-Tree (Join-Path $archiveSource 'workflows') '.\.crux\workflows'
+  Install-File (Join-Path $archiveSource 'COORDINATOR.md') (Join-Path $FrameworkHome 'COORDINATOR.md')
+  Install-File (Join-Path $archiveSource 'AGENTS.md') (Join-Path $FrameworkHome 'AGENTS.md')
+  Install-Tree (Join-Path $archiveSource 'bus') (Join-Path $FrameworkHome 'bus')
+  Install-Tree (Join-Path $archiveSource 'templates') (Join-Path $FrameworkHome 'templates')
+  Install-Tree (Join-Path $archiveSource 'workflows') (Join-Path $FrameworkHome 'workflows')
 
   Write-Ok "$script:InstalledCount framework files installed, $script:SkippedCount skipped"
 
@@ -118,12 +120,12 @@ try {
   foreach ($role in $agentList) {
     $sourceAgentDir = Join-Path $archiveSource "agents/$role"
     $sourceAgentFile = Join-Path $sourceAgentDir 'AGENT.md'
-    $destAgentDir = Join-Path '.\.crux\agents' $role
+    $destAgentDir = Join-Path (Join-Path $FrameworkHome 'agents') $role
     $destAgentFile = Join-Path $destAgentDir 'AGENT.md'
 
     if (-not (Test-Path $sourceAgentFile)) {
       Write-Warn "Agent not found in Crux framework: $role"
-      Write-Warn "  To create a custom agent: copy .crux/templates/AGENT.template.md -> .crux/agents/$role/AGENT.md"
+      Write-Warn "  To create a custom agent: copy $FrameworkHome/templates/AGENT.template.md -> $FrameworkHome/agents/$role/AGENT.md"
       continue
     }
 
@@ -142,8 +144,10 @@ try {
   }
 
   Write-Step 'Installing skills...'
+  Install-Tree (Join-Path $archiveSource 'skills/crux-coordinator') (Join-Path $FrameworkHome 'skills/crux-coordinator')
+
   foreach ($role in $agentList) {
-    $agentFile = Join-Path '.\.crux\agents' "$role\AGENT.md"
+    $agentFile = Join-Path (Join-Path $FrameworkHome 'agents') "$role\AGENT.md"
     if (-not (Test-Path $agentFile)) { continue }
 
     $skillLines = Select-String -Path $agentFile -Pattern '^\| `' | ForEach-Object { $_.Line }
@@ -152,7 +156,7 @@ try {
         $skillName = $matches[1].Trim()
         $sourceSkillDir = Join-Path $archiveSource "skills/$skillName"
         $sourceSkillFile = Join-Path $sourceSkillDir 'SKILL.md'
-        $destSkillDir = Join-Path '.\.crux\skills' $skillName
+        $destSkillDir = Join-Path (Join-Path $FrameworkHome 'skills') $skillName
         $destSkillFile = Join-Path $destSkillDir 'SKILL.md'
 
         if (-not (Test-Path $sourceSkillFile)) { continue }
@@ -170,7 +174,7 @@ try {
   }
 
   Write-Step 'Creating directory structure...'
-  foreach ($dir in @('.\.crux')) {
+  foreach ($dir in @('.\.crux', '.\.crux\docs', '.\.crux\summaries', '.\.crux\decisions', '.\.crux\workspace')) {
     if ($DryRun) {
       Write-Info "[dry-run] would create: $dir"
     } else {
@@ -220,9 +224,9 @@ try {
   Write-Step 'Converting agent definitions to tool format...'
   $convertScript = '.\scripts\convert.ps1'
   if ($DryRun) {
-    Write-Info "[dry-run] would run: powershell -File $convertScript -Tool $Tool"
+    Write-Info "[dry-run] would run: powershell -File $convertScript -Tool $Tool -Source $FrameworkHome"
   } else {
-    & $convertScript -Tool $Tool
+    & $convertScript -Tool $Tool -Source $FrameworkHome
   }
 
   Write-Host ''
@@ -234,14 +238,14 @@ try {
   Write-Host ''
   Write-Host '  1. Start your AI tool in this project directory'
   if ($agentList.Count -gt 0) {
-    Write-Host '  2. The coordinator will run workspace initialisation on first boot'
+    Write-Host '  2. The Crux coordinator skill will run workspace initialisation on first boot'
     Write-Host '     and ask a few questions to set up your workspace'
     Write-Host '  3. Activate an agent:'
     foreach ($role in $agentList) {
       Write-Host "       @$role" -ForegroundColor Cyan
     }
   } else {
-    Write-Host '  2. The coordinator boots automatically and runs workspace initialisation'
+    Write-Host '  2. The Crux coordinator skill boots automatically and runs workspace initialisation'
   }
   Write-Host ''
   Write-Host '  When you update agents or skills:' -ForegroundColor White

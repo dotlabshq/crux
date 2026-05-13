@@ -9,7 +9,7 @@
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/client-delivery-manager/AGENT.md` exists
+- [ ] `{framework-home}/agents/client-delivery-manager/AGENT.md` exists
 
 ---
 

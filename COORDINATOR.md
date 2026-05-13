@@ -26,6 +26,23 @@ vibe: The system knows what it is, what it has, and what it needs — before you
 > It has no domain, no lazy docs, no skills of its own.
 > It reads, routes, and governs.
 
+> Current canonical form: `{framework-home}/skills/crux-coordinator/SKILL.md`.
+> This file is retained as a legacy coordinator document for tools that still
+> expect a top-level `COORDINATOR.md`.
+
+## Path Model
+
+Crux separates reusable framework definitions from project-local state:
+
+```text
+{framework-home}/     reusable agents, skills, templates, workflows, docs
+{project}/.crux/      project knowledge, decisions, summaries, and live state
+```
+
+Treat `{framework-home}` as read-only during normal project operation. Write
+compiled project knowledge to `.crux/docs/`, `.crux/summaries/`, and
+`.crux/decisions/`. Write live task/session/memory state to `.crux/workspace/`.
+
 ## Control-Plane Write Scope
 
 The coordinator has orchestration-only write authority.
@@ -66,7 +83,7 @@ Step 1 — Locate .crux/
 Step 2 — Load static core
   .crux/CONSTITUTION.md
   .crux/SOUL.md
-  .crux/COORDINATOR.md    (this file)
+  {framework-home}/skills/crux-coordinator/SKILL.md
 
   Fallbacks:
     CONSTITUTION.md missing → run Workspace Initialisation (Section II)
@@ -201,12 +218,12 @@ Step 7 — Complete
 ```
 User types: @{role-id}
 
-1. Read .crux/agents/{role-id}/AGENT.md
+1. Read {framework-home}/agents/{role-id}/AGENT.md
    IF not found → "Agent '{role-id}' not found.
                    Available: {list from .crux/workspace/MANIFEST.md}"
 
 2. Check .crux/workspace/MANIFEST.md:
-   pending-onboard → run .crux/agents/{role-id}/onboarding.md first
+   pending-onboard → run {framework-home}/agents/{role-id}/onboarding.md first
    onboarded       → open session, proceed
 
 3. Open session:
@@ -222,14 +239,14 @@ User types: @{role-id}
 5. Load agent context:
    .crux/CONSTITUTION.md
    .crux/SOUL.md
-   .crux/agents/{role-id}/SOUL.md          (if exists)
-   .crux/agents/{role-id}/AGENT.md
+   {framework-home}/agents/{role-id}/SOUL.md          (if exists)
+   {framework-home}/agents/{role-id}/AGENT.md
    .crux/workspace/{role-id}/MEMORY.md     (create from template if missing)
    .crux/workspace/{role-id}/TODO.md       (create from template if missing)
    .crux/workspace/{role-id}/NOTES.md      (create from template if missing)
 
    If the agent expects `.crux/docs/` references and they are missing:
-     a. check agent-local assets or templates under .crux/agents/{role-id}/
+     a. check agent-local assets or templates under {framework-home}/agents/{role-id}/
      b. generate the missing `.crux/docs/` file from that agent-local source
      c. continue without requiring the repo to contain pre-generated `.crux/docs/`
 
@@ -274,7 +291,7 @@ Trigger detected (user input matches a workflow trigger phrase):
 
 1. Load .crux/workflows/{workflow-name}.md
    IF not found:
-     a. search .crux/agents/*/assets/{workflow-name}.workflow.template.md
+     a. search {framework-home}/agents/*/assets/{workflow-name}.workflow.template.md
      b. IF exactly one matching asset exists:
           generate .crux/workflows/{workflow-name}.md from that asset
           continue
@@ -325,7 +342,7 @@ Coordinator may reconcile agent TODO state for workflow bookkeeping, but it must
 ```
 @{role-id} received:
 
-1. Read .crux/agents/{role-id}/AGENT.md frontmatter → mode
+1. Read {framework-home}/agents/{role-id}/AGENT.md frontmatter → mode
 
 2. Route:
    primary   → load AGENT.md into current context, direct handoff
@@ -397,7 +414,7 @@ First boot:
 Always loaded:
   .crux/CONSTITUTION.md         ~1000 tokens
   .crux/SOUL.md                 ~500  tokens
-  .crux/COORDINATOR.md          ~1200 tokens    (this file)
+  {framework-home}/skills/crux-coordinator/SKILL.md ~1200 tokens
   .crux/workspace/MANIFEST.md   ~600  tokens
   .crux/workspace/TODO.md       ~400  tokens
   .crux/workspace/MEMORY.md     ~400  tokens

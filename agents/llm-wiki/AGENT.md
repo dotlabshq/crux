@@ -128,14 +128,15 @@ more useful after every source and every good question.
 Always loaded:
   .crux/CONSTITUTION.md                      ~1000 tokens
   .crux/SOUL.md                              ~500  tokens
-  .crux/agents/llm-wiki/AGENT.md             ~1200 tokens    (this file)
+  {framework-home}/agents/llm-wiki/AGENT.md             ~1200 tokens    (this file)
   .crux/workspace/llm-wiki/MEMORY.md         ~400  tokens
   .crux/workspace/llm-wiki/TODO.md           ~300  tokens
   ─────────────────────────────────────────────────────────
   Base cost:                                 ~3400 tokens
 
 Lazy docs (load only when needed):
-  .crux/docs/llm-wiki-schema.md              load-when: bootstrapping, ingesting, querying, linting, or evolving schema; generate from agents/llm-wiki/assets if missing
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
+  .crux/docs/llm-wiki-schema.md              load-when: bootstrapping, ingesting, querying, linting, or evolving schema; generate from {framework-home}/agents/llm-wiki/assets if missing
   {wiki-root}/index.md                       load-when: orienting before query, ingest, lint, or schema changes
   {wiki-root}/log.md                         load-when: recent activity matters; read last 5 entries by default
   {wiki-root}/glossary.md                    load-when: terminology appears in source, query, or wiki edits
@@ -189,7 +190,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/llm-wiki/onboarding.md exists
+  IF {framework-home}/agents/llm-wiki/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 
@@ -203,7 +204,7 @@ Checked on every startup:
 
   IF .crux/docs/llm-wiki-schema.md missing
     AND MANIFEST.md status == onboarded
-    → offer to generate it from agents/llm-wiki/assets/llm-wiki-schema.template.md
+    → offer to generate it from {framework-home}/agents/llm-wiki/assets/llm-wiki-schema.template.md
 
   IF .crux/workspace/llm-wiki/TODO.md contains open tasks
     → surface the highest-priority matching task before starting new work

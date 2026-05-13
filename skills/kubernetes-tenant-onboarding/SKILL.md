@@ -52,7 +52,7 @@ Provisions a fully-configured tenant namespace on the cluster:
 
 ```
 Requires already loaded:
-  .crux/agents/kubernetes-admin/MEMORY.md
+  .crux/workspace/kubernetes-admin/MEMORY.md
     Fields needed:
       tenant-namespace-pattern    (e.g. {tenant-id}-{env})
       production-namespaces       (for approval gate check)

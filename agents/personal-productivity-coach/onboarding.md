@@ -12,7 +12,7 @@ Before onboarding begins, verify:
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/personal-productivity-coach/AGENT.md` exists
+- [ ] `{framework-home}/agents/personal-productivity-coach/AGENT.md` exists
 
 If any of these are missing, stop and notify the user.
 
@@ -107,9 +107,9 @@ Run the appropriate skills to produce the initial planning support docs and temp
 
 ```
 Required docs for this agent:
-  .crux/docs/task-triage-principles.md           → generate from agents/personal-productivity-coach/assets/task-triage-principles.template.md if missing
-  .crux/docs/personal-planning-formats.md        → generate from agents/personal-productivity-coach/assets/personal-planning-formats.template.md if missing
-  .crux/docs/obsidian-productivity-structure.md  → generate from agents/personal-productivity-coach/assets/obsidian-productivity-structure.template.md if missing
+  .crux/docs/task-triage-principles.md           → generate from {framework-home}/agents/personal-productivity-coach/assets/task-triage-principles.template.md if missing
+  .crux/docs/personal-planning-formats.md        → generate from {framework-home}/agents/personal-productivity-coach/assets/personal-planning-formats.template.md if missing
+  .crux/docs/obsidian-productivity-structure.md  → generate from {framework-home}/agents/personal-productivity-coach/assets/obsidian-productivity-structure.template.md if missing
   {notes-root}/Templates/Daily Note.md           → generate or preserve existing
   {notes-root}/Templates/Weekly Review.md        → generate or preserve existing
   {notes-root}/00 Inbox/README.md                → generate if missing

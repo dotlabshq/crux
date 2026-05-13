@@ -32,7 +32,7 @@ Turns backup and restore evidence into a practical MySQL recovery-readiness judg
 
 ```
 Requires already loaded:
-  .crux/agents/mysql-admin/MEMORY.md
+  .crux/workspace/mysql-admin/MEMORY.md
 
 Loads during execution (lazy):
   .crux/docs/mysql-backup-recovery-baseline.md

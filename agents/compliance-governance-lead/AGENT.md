@@ -110,16 +110,17 @@ auditable documents, actionable control plans, and procurement decisions that ar
 Always loaded:
   .crux/CONSTITUTION.md                                     ~1000 tokens
   .crux/SOUL.md                                             ~500  tokens
-  .crux/agents/compliance-governance-lead/AGENT.md          ~1100 tokens    (this file)
+  {framework-home}/agents/compliance-governance-lead/AGENT.md          ~1100 tokens    (this file)
   .crux/workspace/compliance-governance-lead/MEMORY.md      ~400  tokens
   .crux/workspace/compliance-governance-lead/TODO.md      ~300  tokens
   ───────────────────────────────────────────────────────────────────────────
   Base cost:                                                ~3300 tokens
 
 Lazy docs (load only when needed):
-  .crux/docs/iso27001-knowledge-base.md         load-when: ISO 27001 scope, SoA, risk, audit, policy questions; generate from agents/compliance-governance-lead/assets if missing
-  .crux/docs/privacy-and-pci-requirements.md    load-when: GDPR, KVKK, PCI-DSS applicability or control mapping needed; generate from agents/compliance-governance-lead/assets if missing
-  .crux/docs/vendor-security-baseline.md        load-when: product procurement or vendor evaluation requested; generate from agents/compliance-governance-lead/assets if missing
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
+  .crux/docs/iso27001-knowledge-base.md         load-when: ISO 27001 scope, SoA, risk, audit, policy questions; generate from {framework-home}/agents/compliance-governance-lead/assets if missing
+  .crux/docs/privacy-and-pci-requirements.md    load-when: GDPR, KVKK, PCI-DSS applicability or control mapping needed; generate from {framework-home}/agents/compliance-governance-lead/assets if missing
+  .crux/docs/vendor-security-baseline.md        load-when: product procurement or vendor evaluation requested; generate from {framework-home}/agents/compliance-governance-lead/assets if missing
   docs/compliance/organisation-profile.md       load-when: preparing scoped deliverables for this organisation
   docs/compliance/iso27001/*.md                 load-when: document pack or ISO remediation work requested
   docs/compliance/regulatory/*.md               load-when: regulatory gap reports or obligation mapping needed
@@ -169,7 +170,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/compliance-governance-lead/onboarding.md exists
+  IF {framework-home}/agents/compliance-governance-lead/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

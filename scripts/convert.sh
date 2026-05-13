@@ -2,9 +2,9 @@
 # Requires bash 3.2+ (macOS default)
 # =============================================================================
 # Crux — convert.sh
-# Syncs Crux agent/skill definitions → tool-specific locations.
-# Run this after editing source-repo `agents/` or `skills/`, or installed
-# `.crux/agents/` / `.crux/skills/` in a user project.
+# Syncs Crux framework-home agent/skill definitions → tool-specific locations.
+# Run this after editing source-repo `agents/` or `skills/`, or framework-home
+# `$HOME/.crux/agents/` / `$HOME/.crux/skills/`.
 #
 # Usage:
 #   ./scripts/convert.sh                     # auto-detect tools
@@ -54,10 +54,13 @@ done
 if [[ "$SOURCE_DIR" == "auto" ]]; then
   if [[ -f "COORDINATOR.md" && -d "agents" && -d "skills" ]]; then
     SOURCE_DIR="."
+  elif [[ -f "$HOME/.crux/COORDINATOR.md" && -d "$HOME/.crux/agents" && -d "$HOME/.crux/skills" ]]; then
+    SOURCE_DIR="$HOME/.crux"
   elif [[ -f ".crux/COORDINATOR.md" && -d ".crux/agents" && -d ".crux/skills" ]]; then
+    # Legacy project-local framework install.
     SOURCE_DIR=".crux"
   else
-    err "No Crux source found. Run from the framework repo root or a project containing .crux/."
+    err "No Crux framework source found. Run from the framework repo root or install Crux to \$HOME/.crux."
     exit 1
   fi
 fi
@@ -66,7 +69,9 @@ COORDINATOR="$SOURCE_DIR/COORDINATOR.md"
 AGENTS_DIR="$SOURCE_DIR/agents"
 SKILLS_DIR="$SOURCE_DIR/skills"
 SOURCE_ABS=$(cd "$SOURCE_DIR" && pwd)
-if [[ "$(basename "$SOURCE_ABS")" == ".crux" ]]; then
+if [[ "$SOURCE_ABS" == "$HOME/.crux" ]]; then
+  ROOT_DIR=$(pwd)
+elif [[ "$(basename "$SOURCE_ABS")" == ".crux" ]]; then
   ROOT_DIR=$(cd "$(dirname "$SOURCE_ABS")" && pwd)
 else
   ROOT_DIR="$SOURCE_ABS"
@@ -257,11 +262,11 @@ This project uses the Crux multi-agent workspace framework.
 ## Boot Instructions
 
 On every session start:
-1. Read `.crux/COORDINATOR.md` — boot sequence and routing rules
+1. Read `$HOME/.crux/skills/crux-coordinator/SKILL.md` — Crux path, routing, and project operation protocol
 2. Read `.crux/CONSTITUTION.md` — universal rules (if it exists)
 3. Read `.crux/SOUL.md` — identity and tone defaults (if it exists)
 4. Read `.crux/workspace/MANIFEST.md` — current system state (if it exists)
-   - If `.crux/workspace/` does not exist → run workspace initialisation as described in COORDINATOR.md
+   - If `.crux/workspace/` does not exist → run workspace initialisation as described in the Crux coordinator skill
 5. Surface any pending items (agents pending onboard, amendments, open sessions)
 
 ## Agents
@@ -273,20 +278,20 @@ Type `@{role-id}` to activate an agent. The coordinator routes all @mentions.
 
 | Path | Purpose |
 |---|---|
-| `.crux/COORDINATOR.md` | Boot + routing logic |
-| `.crux/agents/{role}/AGENT.md` | Agent identity (source of truth) |
-| `.crux/skills/{name}/SKILL.md` | Skill definitions |
-| `.crux/workflows/{name}.md` | Multi-agent workflows |
+| `$HOME/.crux/skills/crux-coordinator/SKILL.md` | Crux project-operation protocol |
+| `$HOME/.crux/agents/{role}/AGENT.md` | Agent identity (source of truth) |
+| `$HOME/.crux/skills/{name}/SKILL.md` | Skill definitions |
+| `$HOME/.crux/workflows/{name}.md` | Reusable multi-agent workflows |
 | `.crux/decisions/` | Approved architectural decisions |
 | `.crux/workspace/` | Live state — gitignored |
 
-Do not modify `.crux/agents/` files during a session.
-Do not write to `.crux/workspace/` without following COORDINATOR.md protocols.
+Do not modify `$HOME/.crux/agents/` files during project operation.
+Do not write to `.crux/workspace/` without following the Crux coordinator skill.
 CLAUDEMD
 )
 
   # Append only if CLAUDE.md does not already contain Crux boot instructions
-  if [[ -f "CLAUDE.md" ]] && grep -q "crux/COORDINATOR.md" "CLAUDE.md" 2>/dev/null; then
+  if [[ -f "CLAUDE.md" ]] && grep -q "crux-coordinator/SKILL.md" "CLAUDE.md" 2>/dev/null; then
     warn "CLAUDE.md already contains Crux instructions — skipping"
   else
     if [[ -f "CLAUDE.md" ]]; then
@@ -310,7 +315,7 @@ convert_cursor() {
 
   local rules=""
   rules+="# Crux — Agent Workspace Rules\n\n"
-  rules+="This project uses the Crux multi-agent framework. Read \`.crux/COORDINATOR.md\` on startup.\n\n"
+  rules+="This project uses the Crux multi-agent framework. Read \`$HOME/.crux/skills/crux-coordinator/SKILL.md\` on startup.\n\n"
   rules+="## Active Agents\n\n"
 
   for agent_file in "${AGENT_FILES[@]}"; do
@@ -321,10 +326,10 @@ convert_cursor() {
   done
 
   rules+="\n## Rules\n\n"
-  rules+="- Always read \`.crux/COORDINATOR.md\` before starting any task\n"
+  rules+="- Always read \`$HOME/.crux/skills/crux-coordinator/SKILL.md\` before starting Crux task routing or project state work\n"
   rules+="- Load \`.crux/workspace/MANIFEST.md\` to understand current system state\n"
-  rules+="- Agent definitions are in \`.crux/agents/{role}/AGENT.md\`\n"
-  rules+="- Do not modify \`.crux/agents/\` files during a session\n"
+  rules+="- Agent definitions are in \`$HOME/.crux/agents/{role}/AGENT.md\`\n"
+  rules+="- Do not modify \`$HOME/.crux/agents/\` files during project operation\n"
   rules+="- Follow approval gates defined in each agent's AGENT.md\n"
 
   write_file ".cursor/rules/crux.mdc" "$(printf '%b' "$rules")"
@@ -354,9 +359,9 @@ convert_codex() {
     '## Workspace Source Of Truth' \
     '' \
     'Read these in order:' \
-    '1. __SOURCE_ABS__/COORDINATOR.md' \
-    '2. __ROOT_DIR__/AGENTS.md' \
-    '3. __ROOT_DIR__/COORDINATOR.md if it exists outside installed .crux/' \
+    '1. __SOURCE_ABS__/skills/crux-coordinator/SKILL.md' \
+    '2. __SOURCE_ABS__/AGENTS.md' \
+    '3. __SOURCE_ABS__/COORDINATOR.md as legacy fallback if the skill is missing' \
     '4. __WORKSPACE_DIR__/MANIFEST.md if it exists' \
     '5. __WORKSPACE_DIR__/TODO.md if it exists' \
     '6. __WORKSPACE_DIR__/inbox.md if it exists' \
@@ -366,7 +371,7 @@ convert_codex() {
     '- Treat Crux markdown files as the authority for routing, approvals, and task continuity.' \
     '- Before delegating or continuing work, check coordinator task state in __WORKSPACE_DIR__/TODO.md when available.' \
     '- Prefer resuming an open task over creating duplicate work.' \
-    "- When a specialist role is clearly a better fit, load that role's AGENT.md and, if present, SOUL.md, MEMORY.md, TODO.md, and NOTES.md before continuing." \
+    "- When a specialist role is clearly a better fit, load that role's AGENT.md from framework home and, if present, project MEMORY.md, TODO.md, and NOTES.md before continuing." \
     '- Load a role-owned Crux skill from __SOURCE_ABS__/skills/{skill-name}/SKILL.md only when the request actually needs that skill.' \
     '- Follow approval gates and escalation rules defined by the coordinator and selected agent.')
   coordinator_skill=$(render_template "$coordinator_tpl" \
@@ -412,7 +417,7 @@ convert_codex() {
       '- Reuse open tasks from __WORKSPACE_DIR__/__ROLE__/TODO.md before starting new parallel work.' \
       '- Treat TODO.md as task state, NOTES.md as support context, and MEMORY.md as durable facts.' \
       '- If the role'\''s AGENT.md says another agent should own part of the work, hand off instead of improvising across boundaries.' \
-      '- Use project-local Crux skills directly from the workspace source tree instead of inventing a second copy.')
+      '- Use framework-home Crux skills directly instead of inventing a second copy in the project.')
     agent_skill=$(render_template "$agent_tpl" \
       "__AGENT_SKILL_NAME__" "crux-${PROJECT_SLUG}-${role}" \
       "__DISPLAY_NAME__" "$display_name" \
@@ -444,7 +449,7 @@ echo ""
 if [[ $CONVERTED -gt 0 ]]; then
   echo -e "${GREEN}${BOLD}Done.${RESET} ${CONVERTED} tool(s) converted."
   echo -e "Re-run after editing any ${CYAN}agents/${RESET} or ${CYAN}skills/${RESET} source file,"
-  echo -e "or installed ${CYAN}.crux/agents/${RESET} / ${CYAN}.crux/skills/${RESET} in a user project."
+  echo -e "or framework-home ${CYAN}\$HOME/.crux/agents/${RESET} / ${CYAN}\$HOME/.crux/skills/${RESET}."
 else
   warn "Nothing converted."
 fi

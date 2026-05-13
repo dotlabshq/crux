@@ -12,7 +12,7 @@
 #   ./scripts/update.sh --dry-run
 #
 # Note: --force is passed to install.sh automatically.
-#       Local changes to .crux/agents/ or .crux/skills/ will be overwritten.
+#       Local changes to $HOME/.crux/agents/ or $HOME/.crux/skills/ will be overwritten.
 # =============================================================================
 set -euo pipefail
 

@@ -2,8 +2,9 @@
 # Requires bash 3.2+ (macOS default)
 # =============================================================================
 # Crux — install.sh
-# Downloads the Crux framework source, maps it into `.crux/` in the current
-# project, and converts agent definitions for the specified AI tool.
+# Downloads the Crux framework source, maps it into the user's framework home
+# (`$HOME/.crux` by default), prepares project-local `.crux/`, and converts
+# agent definitions for the specified AI tool.
 #
 # Quick start:
 #   curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install.sh | bash
@@ -42,6 +43,7 @@ TOOL="auto"
 PROJECT_NAME=""
 DRY_RUN=false
 FORCE=false
+FRAMEWORK_HOME="${CRUX_HOME:-$HOME/.crux}"
 
 REPO_RAW="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
 REPO_ARCHIVE="https://github.com/${REPO}/archive/refs/heads/${BRANCH}.tar.gz"
@@ -75,7 +77,7 @@ Options:
   --project <name>  Project name (used during workspace initialisation)
   --branch <name>   GitHub branch to download from (default: main)
   --dry-run         Preview without writing files
-  --force           Overwrite existing .crux/ files
+  --force           Overwrite existing framework-home files
 
 Examples:
   # Minimal
@@ -103,6 +105,7 @@ echo ""
 [[ -n "$PROJECT_NAME" ]] && echo -e "  Project:  ${CYAN}${PROJECT_NAME}${RESET}"
 echo -e "  Repo:     ${CYAN}${REPO}@${BRANCH}${RESET}"
 echo -e "  Tool:     ${CYAN}${TOOL}${RESET}"
+echo -e "  Framework:${CYAN}${FRAMEWORK_HOME}${RESET}"
 [[ -n "$AGENTS_ARG" ]]   && echo -e "  Agents:   ${CYAN}${AGENTS_ARG}${RESET}"
 $DRY_RUN && echo -e "  ${YELLOW}Mode:     dry-run${RESET}"
 
@@ -215,11 +218,11 @@ ok "Downloaded"
 INSTALLED=0
 SKIPPED=0
 
-install_file "$EXTRACTED/COORDINATOR.md" "./.crux/COORDINATOR.md"
-install_file "$EXTRACTED/AGENTS.md" "./.crux/AGENTS.md"
-install_tree "$EXTRACTED/bus" "./.crux/bus"
-install_tree "$EXTRACTED/templates" "./.crux/templates"
-install_tree "$EXTRACTED/workflows" "./.crux/workflows"
+install_file "$EXTRACTED/COORDINATOR.md" "$FRAMEWORK_HOME/COORDINATOR.md"
+install_file "$EXTRACTED/AGENTS.md" "$FRAMEWORK_HOME/AGENTS.md"
+install_tree "$EXTRACTED/bus" "$FRAMEWORK_HOME/bus"
+install_tree "$EXTRACTED/templates" "$FRAMEWORK_HOME/templates"
+install_tree "$EXTRACTED/workflows" "$FRAMEWORK_HOME/workflows"
 
 ok "${INSTALLED} framework files installed, ${SKIPPED} skipped"
 
@@ -245,13 +248,13 @@ fi
 for role in "${AGENT_LIST[@]}"; do
   role=$(echo "$role" | xargs)  # trim whitespace
   src_agent_dir="$EXTRACTED/agents/${role}"
-  dest_agent_dir=".crux/agents/${role}"
+  dest_agent_dir="$FRAMEWORK_HOME/agents/${role}"
   src_agent="$src_agent_dir/AGENT.md"
   dest_agent="$dest_agent_dir/AGENT.md"
 
   if [[ ! -f "$src_agent" ]]; then
     warn "Agent not found in Crux framework: ${role}"
-    warn "  To create a custom agent: copy .crux/templates/AGENT.template.md → .crux/agents/${role}/AGENT.md"
+    warn "  To create a custom agent: copy $FRAMEWORK_HOME/templates/AGENT.template.md → $FRAMEWORK_HOME/agents/${role}/AGENT.md"
     continue
   fi
 
@@ -274,9 +277,11 @@ done
 # ---------------------------------------------------------------------------
 step "Installing skills..."
 
+install_tree "$EXTRACTED/skills/crux-coordinator" "$FRAMEWORK_HOME/skills/crux-coordinator"
+
 # Find skills referenced by installed agents
 for role in "${AGENT_LIST[@]}"; do
-  agent_file=".crux/agents/${role}/AGENT.md"
+  agent_file="$FRAMEWORK_HOME/agents/${role}/AGENT.md"
   [[ ! -f "$agent_file" ]] && continue
 
   # Extract skill names from the Skills table
@@ -284,7 +289,7 @@ for role in "${AGENT_LIST[@]}"; do
     skill_name=$(echo "$skill_name" | xargs)
     src_skill_dir="$EXTRACTED/skills/${skill_name}"
     src_skill="$src_skill_dir/SKILL.md"
-    dest_skill_dir=".crux/skills/${skill_name}"
+    dest_skill_dir="$FRAMEWORK_HOME/skills/${skill_name}"
     dest_skill="$dest_skill_dir/SKILL.md"
 
     if [[ ! -f "$src_skill" ]]; then
@@ -316,6 +321,10 @@ step "Creating directory structure..."
 
 DIRS=(
   ".crux"
+  ".crux/docs"
+  ".crux/summaries"
+  ".crux/decisions"
+  ".crux/workspace"
 )
 
 for d in "${DIRS[@]}"; do
@@ -380,7 +389,7 @@ for _script in convert.sh install.sh update.sh; do
   fi
 done
 
-CONVERT_ARGS=("--tool" "$TOOL")
+CONVERT_ARGS=("--tool" "$TOOL" "--source" "$FRAMEWORK_HOME")
 $DRY_RUN && CONVERT_ARGS+=("--dry-run")
 
 if $DRY_RUN; then
@@ -402,14 +411,14 @@ echo -e "  ${BOLD}Next steps:${RESET}"
 echo ""
 echo -e "  1. Start your AI tool in this project directory"
 if [[ ${#AGENT_LIST[@]} -gt 0 ]]; then
-  echo -e "  2. The coordinator will run workspace initialisation on first boot"
+  echo -e "  2. The Crux coordinator skill will run workspace initialisation on first boot"
   echo -e "     and ask a few questions to set up your workspace"
   echo -e "  3. Activate an agent:"
   for role in "${AGENT_LIST[@]}"; do
     echo -e "       ${CYAN}@${role}${RESET}"
   done
 else
-  echo -e "  2. The coordinator boots automatically and runs workspace initialisation"
+  echo -e "  2. The Crux coordinator skill boots automatically and runs workspace initialisation"
 fi
 echo ""
 echo -e "  ${BOLD}When you update agents or skills:${RESET}"

@@ -111,17 +111,18 @@ and safe by making environment, deployment, and observability behaviour explicit
 Always loaded:
   .crux/CONSTITUTION.md                         ~1000 tokens
   .crux/SOUL.md                                 ~500  tokens
-  .crux/agents/platform-engineer/AGENT.md       ~1100 tokens    (this file)
+  {framework-home}/agents/platform-engineer/AGENT.md       ~1100 tokens    (this file)
   .crux/workspace/platform-engineer/MEMORY.md   ~400  tokens
   .crux/workspace/platform-engineer/TODO.md      ~300  tokens
   ────────────────────────────────────────────────────────────
   Base cost:                                    ~3300 tokens
 
 Lazy docs (load only when needed):
-  .crux/docs/platform-principles.md             load-when: deciding platform approach or review scope; generate from agents/platform-engineer/assets if missing
-  .crux/docs/environment-guidelines.md          load-when: environment setup or config questions; generate from agents/platform-engineer/assets if missing
-  .crux/docs/deployment-safety-guidelines.md    load-when: deployment or rollout risk is touched; generate from agents/platform-engineer/assets if missing
-  .crux/docs/observability-guidelines.md        load-when: observability or runtime visibility is touched; generate from agents/platform-engineer/assets if missing
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
+  .crux/docs/platform-principles.md             load-when: deciding platform approach or review scope; generate from {framework-home}/agents/platform-engineer/assets if missing
+  .crux/docs/environment-guidelines.md          load-when: environment setup or config questions; generate from {framework-home}/agents/platform-engineer/assets if missing
+  .crux/docs/deployment-safety-guidelines.md    load-when: deployment or rollout risk is touched; generate from {framework-home}/agents/platform-engineer/assets if missing
+  .crux/docs/observability-guidelines.md        load-when: observability or runtime visibility is touched; generate from {framework-home}/agents/platform-engineer/assets if missing
   .crux/docs/platform.md                        load-when: platform architecture context is needed; generate via skill if missing
   .crux/summaries/platform.md                   load-when: quick platform overview is sufficient
 
@@ -172,7 +173,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/platform-engineer/onboarding.md exists
+  IF {framework-home}/agents/platform-engineer/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

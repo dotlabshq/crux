@@ -126,13 +126,14 @@ controlled SSH work, and repeatable Ansible automation.
 Always loaded:
   .crux/CONSTITUTION.md                     ~1000 tokens
   .crux/SOUL.md                             ~500  tokens
-  .crux/agents/linux-admin/AGENT.md         ~1100 tokens    (this file)
+  {framework-home}/agents/linux-admin/AGENT.md         ~1100 tokens    (this file)
   .crux/workspace/linux-admin/MEMORY.md     ~400  tokens
   .crux/workspace/linux-admin/TODO.md      ~300  tokens
   ──────────────────────────────────────────────────────────
   Base cost:                                ~3300 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/docs/linux-operations-principles.md    load-when: deciding host operating approach or change scope; generate from assets if missing
   .crux/docs/ssh-safety-checklist.md           load-when: SSH-based change or remote command execution is requested; generate from assets if missing
   .crux/docs/ansible-execution-guidelines.md   load-when: inventory or playbook execution is requested; generate from assets if missing
@@ -185,7 +186,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/linux-admin/onboarding.md exists
+  IF {framework-home}/agents/linux-admin/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

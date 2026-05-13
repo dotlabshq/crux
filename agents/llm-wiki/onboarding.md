@@ -14,7 +14,7 @@ Before onboarding begins, verify:
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/llm-wiki/AGENT.md` exists
+- [ ] `{framework-home}/agents/llm-wiki/AGENT.md` exists
 
 If any of these are missing, stop and notify the user.
 
@@ -114,7 +114,7 @@ Generate the initial schema guidance and starter wiki files if missing.
 
 ```
 Required docs for this agent:
-  .crux/docs/llm-wiki-schema.md → generate from agents/llm-wiki/assets/llm-wiki-schema.template.md if missing
+  .crux/docs/llm-wiki-schema.md → generate from {framework-home}/agents/llm-wiki/assets/llm-wiki-schema.template.md if missing
 
 Required workspace paths:
   .crux/workspace/llm-wiki/output/

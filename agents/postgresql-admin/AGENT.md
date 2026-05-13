@@ -124,13 +124,14 @@ with documented schemas, clean role boundaries, and no silent data risks.
 Always loaded:
   .crux/CONSTITUTION.md                              ~1000 tokens
   .crux/SOUL.md                                      ~500  tokens
-  .crux/agents/postgresql-admin/AGENT.md             ~1000 tokens    (this file)
+  {framework-home}/agents/postgresql-admin/AGENT.md             ~1000 tokens    (this file)
   .crux/workspace/postgresql-admin/MEMORY.md         ~400  tokens
   .crux/workspace/postgresql-admin/TODO.md      ~300  tokens
   ──────────────────────────────────────────────────────────────────
   Base cost:                                         ~3200 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/decisions/tenant-naming-conventions.md   load-when: ANY tenant provisioning, naming question, or table audit
   .crux/docs/postgresql.md                       load-when: schema, replication, or topology questions
   .crux/summaries/postgresql.md                  load-when: quick overview sufficient
@@ -193,7 +194,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/postgresql-admin/onboarding.md exists
+  IF {framework-home}/agents/postgresql-admin/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

@@ -32,7 +32,7 @@ Builds a concise MySQL/MariaDB replication health view from live replication evi
 
 ```
 Requires already loaded:
-  .crux/agents/mysql-admin/MEMORY.md
+  .crux/workspace/mysql-admin/MEMORY.md
 
 Loads during execution (lazy):
   .crux/docs/mysql-operations-principles.md

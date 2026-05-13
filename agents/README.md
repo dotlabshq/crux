@@ -1,6 +1,6 @@
 # Agents Index
 
-This file is the human-readable index of all currently defined agents under `.crux/agents/`.
+This file is the human-readable index of all currently defined agents under `{framework-home}/agents/`.
 
 It answers four questions:
 - what each agent does
@@ -148,7 +148,7 @@ So the practical recommendation is:
 
 ## Planned But Not Yet Added
 
-These are part of the current direction but are not yet defined under `.crux/agents/`:
+These are part of the current direction but are not yet defined under `{framework-home}/agents/`:
 - `mobile-developer`
 - `data-engineer`
 - `finance-agent`

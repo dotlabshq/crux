@@ -13,7 +13,7 @@ Before onboarding begins, verify:
 - [ ] `.crux/CONSTITUTION.md` exists
 - [ ] `.crux/SOUL.md` exists
 - [ ] `.crux/workspace/MANIFEST.md` exists
-- [ ] `.crux/agents/team-operations-coach/AGENT.md` exists
+- [ ] `{framework-home}/agents/team-operations-coach/AGENT.md` exists
 
 If any of these are missing, stop and notify the user.
 
@@ -142,9 +142,9 @@ Run the appropriate skills to produce the initial operations references, templat
 
 ```
 Required docs for this agent:
-  .crux/docs/team-operations-principles.md                 → generate from agents/team-operations-coach/assets/team-operations-principles.template.md if missing
-  .crux/docs/situational-leadership-mapping.md             → generate from agents/team-operations-coach/assets/situational-leadership-mapping.template.md if missing
-  .crux/docs/weekly-team-reporting-format.md               → generate from agents/team-operations-coach/assets/weekly-team-reporting-format.template.md if missing
+  .crux/docs/team-operations-principles.md                 → generate from {framework-home}/agents/team-operations-coach/assets/team-operations-principles.template.md if missing
+  .crux/docs/situational-leadership-mapping.md             → generate from {framework-home}/agents/team-operations-coach/assets/situational-leadership-mapping.template.md if missing
+  .crux/docs/weekly-team-reporting-format.md               → generate from {framework-home}/agents/team-operations-coach/assets/weekly-team-reporting-format.template.md if missing
   {operations-root}/templates/team-card.md                 → generate or preserve existing
   {operations-root}/templates/person-card.md               → generate or preserve existing
   {operations-root}/templates/weekly-team-plan.md          → generate or preserve existing

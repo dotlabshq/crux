@@ -103,13 +103,14 @@ document checklists, process updates, and concise professional writing.
 Always loaded:
   .crux/CONSTITUTION.md                               ~1000 tokens
   .crux/SOUL.md                                       ~500  tokens
-  .crux/agents/client-delivery-manager/AGENT.md       ~1000 tokens    (this file)
+  {framework-home}/agents/client-delivery-manager/AGENT.md       ~1000 tokens    (this file)
   .crux/workspace/client-delivery-manager/MEMORY.md   ~400  tokens
   .crux/workspace/client-delivery-manager/TODO.md      ~300  tokens
   ────────────────────────────────────────────────────────────────────
   Base cost:                                          ~3200 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/docs/client-delivery-style-guide.md      load-when: writing external material
   .crux/docs/proposal-structure-guide.md         load-when: building a proposal or scope note
   .crux/docs/advisory-reporting-format.md        load-when: building executive summaries or status outputs
@@ -150,7 +151,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/client-delivery-manager/onboarding.md exists
+  IF {framework-home}/agents/client-delivery-manager/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
   IF .crux/workspace/client-delivery-manager/TODO.md contains open tasks

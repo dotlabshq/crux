@@ -125,13 +125,14 @@ the mailbox or leaking sensitive mailbox secrets into project files.
 Always loaded:
   .crux/CONSTITUTION.md                         ~1000 tokens
   .crux/SOUL.md                                 ~500  tokens
-  .crux/agents/mailbox-operator/AGENT.md        ~1100 tokens    (this file)
+  {framework-home}/agents/mailbox-operator/AGENT.md        ~1100 tokens    (this file)
   .crux/workspace/mailbox-operator/MEMORY.md    ~400  tokens
   .crux/workspace/mailbox-operator/TODO.md      ~300  tokens
   ─────────────────────────────────────────────────────────────
   Base cost:                                    ~3300 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/docs/mailbox-triage-policy.md           load-when: classification or routing policy is unclear; generate from agent assets if missing
   .crux/workspace/inbox.md                      load-when: approval, blocked question, or operator handoff is detected
   .crux/workspace/{role}/MEMORY.md              load-when: a verified durable fact should be written for that role
@@ -183,7 +184,7 @@ External mailbox connector:
 ```
 Checked on every startup:
 
-  IF .crux/agents/mailbox-operator/onboarding.md exists
+  IF {framework-home}/agents/mailbox-operator/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

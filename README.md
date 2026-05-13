@@ -32,12 +32,15 @@ curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install
 | `--agents` | Comma-separated agent IDs to install | all available |
 | `--tool` | Target AI tool: `opencode` · `claude-code` · `cursor` · `codex` · `all` | auto-detect |
 | `--project` | Project name used during workspace initialisation | — |
-| `--force` | Overwrite existing `.crux/` files | false |
+| `--force` | Overwrite existing framework-home files | false |
 | `--dry-run` | Preview without writing files | false |
 
 ### After install
 
-Start your AI tool in the project directory. The install script places the framework under `.crux/`. On first launch, the coordinator runs workspace initialisation and onboarding to generate project-specific files from user answers.
+Start your AI tool in the project directory. The install script places reusable
+Crux framework files under the user's framework home, normally `$HOME/.crux`.
+The project-local `.crux/` directory is reserved for project knowledge,
+decisions, generated references, and live workspace state.
 
 ```
 @kubernetes-admin   cluster health, namespaces, tenant provisioning
@@ -46,7 +49,7 @@ Start your AI tool in the project directory. The install script places the frame
 
 ### Keeping agents in sync
 
-After editing any `.crux/agents/` or `.crux/skills/` file, re-run:
+After editing any framework-home `agents/` or `skills/` file, re-run:
 
 ```sh
 ./scripts/convert.sh
@@ -74,7 +77,9 @@ On Windows PowerShell:
 .\scripts\update.ps1
 ```
 
-This overwrites `.crux/agents/`, `.crux/skills/`, and framework files with the latest versions, then re-runs `convert.sh`. Local customisations to those files will be lost — commit them first if you want to preserve them.
+This overwrites framework-home `agents/`, `skills/`, templates, and other
+framework files with the latest versions, then re-runs `convert.sh`. Local
+customisations to framework-home files will be lost.
 
 ```sh
 # Update specific agents only
@@ -88,68 +93,29 @@ This overwrites `.crux/agents/`, `.crux/skills/`, and framework files with the l
 
 ## Directory Structure
 
-This section describes the installed runtime shape inside a user project.
-If you are working on the Crux framework repository itself, see [docs/source-layout.md](docs/source-layout.md) for source-layout vs installed-layout rules.
+Crux separates reusable framework definitions from project-local knowledge and
+runtime state.
 
 ```
-.crux/
-│
-│   ── Framework (committed) ─────────────────────────────────
-├── COORDINATOR.md         Boot logic, agent lifecycle, @mention routing.
-├── AGENTS.md              Project status, conventions, design decisions.
-│
-├── templates/             Framework starter files.
-│   ├── CONSTITUTION.template.md
-│   ├── SOUL.template.md
-│   ├── MANIFEST.template.md
-│   ├── TODO.template.md
-│   ├── MEMORY.template.md
-│   ├── NOTES.template.md
-│   ├── AGENT.template.md
-│   ├── SKILL.template.md
-│   ├── WORKFLOW.template.md
-│   ├── DECISION.template.md
-│   ├── onboarding.template.md
-│   └── skills/
-│       └── example-skill/
-│           └── SKILL.md
-│
-├── agents/                Agent identity and behaviour — versioned.
-│   └── {role-id}/
-│       ├── AGENT.md       Frontmatter + role definition + context budget.
-│       ├── SOUL.md        Agent-level tone overrides (optional).
-│       ├── onboarding.md  Onboarding sequence for this agent.
-│       └── assets/        Agent-local source material for generated docs.
-│
-├── skills/                Single-responsibility task units. Owned by one agent.
-│   └── {skill-name}/
-│       └── SKILL.md
-│
-├── workflows/             Multi-agent workflows. Orchestrated by coordinator.
-│   └── {name}.md          Each step delegates to one agent + one skill.
-│
-├── decisions/             Generated project decisions (ADR-lite).
-│   └── {id}.md            Created during onboarding or approval flow.
-│
-├── docs/                  Generated on demand after onboarding.
-│                         Created from owning agent assets or local templates.
-│   └── {topic}.md
-│
-├── summaries/             Token-efficient summaries of docs/ files.
-│   └── {topic}.md
-│
-├── bus/                   Inter-agent messaging.
-│   ├── protocol.md        Transport-agnostic message schema.
-│   ├── broadcast.jsonl    System-wide events.
-│   └── {role-id}/
-│       └── to-{target}.jsonl
-│
-│   ── Generated during onboarding / first boot ──────────────
-├── CONSTITUTION.md        Generated from template + user answers.
-├── SOUL.md                Generated from template + user answers.
-│
-│   ── Dynamic (gitignored) ───────────────────────────────────
-└── workspace/
+$HOME/.crux/               framework home, read mostly
+├── agents/                reusable agent identities and onboarding protocols
+├── skills/                reusable SKILL.md task protocols
+├── templates/             reusable starter templates
+├── workflows/             reusable workflow definitions
+├── bus/                   reusable bus protocol docs
+├── docs/                  framework-level references
+├── COORDINATOR.md         legacy coordinator document
+└── AGENTS.md              framework status and conventions
+
+{project}/.crux/           project knowledge and live state
+├── CONSTITUTION.md        generated project rules
+├── SOUL.md                generated project identity defaults
+├── docs/                  compiled project knowledge, generated from agent assets
+├── summaries/             token-efficient summaries of docs/
+├── decisions/             project decisions and cross-agent standards
+├── workflows/             project-specific generated workflows, when needed
+├── bus/                   project-local bus/events, when enabled
+└── workspace/             live state, normally gitignored
     ├── MANIFEST.md        Live system state — agent status, pending amendments.
     ├── TODO.md            Coordinator canonical task state.
     ├── inbox.md           Human approvals, handoffs, and pending operator decisions.
@@ -174,26 +140,31 @@ If you are working on the Crux framework repository itself, see [docs/source-lay
                 └── summary.md
 ```
 
+The project `.crux/docs/`, `.crux/summaries/`, and `.crux/decisions/` act as
+Crux's compiled project knowledge layer. This follows the LLM Wiki pattern:
+sources and interactions are distilled into durable markdown that future agents
+can read directly, without copying global agent or skill definitions into the
+project.
+
 ---
 
 ## Static vs Dynamic
 
 | Path | Type | Git | Created by |
 |---|---|---|---|
-| `CONSTITUTION.md` | generated static | after onboarding | coordinator during workspace initialisation |
-| `SOUL.md` | generated static | after onboarding | coordinator during workspace initialisation |
-| `COORDINATOR.md` | static | ✓ | manual — always present |
-| `AGENTS.md` | static | ✓ | manual — always present |
+| `.crux/CONSTITUTION.md` | generated static | after onboarding | coordinator during workspace initialisation |
+| `.crux/SOUL.md` | generated static | after onboarding | coordinator during workspace initialisation |
+| `$HOME/.crux/COORDINATOR.md` | framework static | external | framework install/update |
+| `$HOME/.crux/AGENTS.md` | framework static | external | framework install/update |
 | `../README.md` | static | ✓ | manual — project root, human docs |
-| `templates/*` | static | ✓ | manual — always present |
-| `agents/{role}/AGENT.md` | static | ✓ | manual from template |
-| `agents/{role}/onboarding.md` | static | ✓ | manual from template |
-| `skills/{name}/SKILL.md` | static | ✓ | manual from template |
-| `workflows/{name}.md` | static | ✓ | manual from template |
-| `decisions/{id}.md` | generated static | after onboarding | agent proposes + user approves, OR coordinator generates during onboarding |
+| `$HOME/.crux/templates/*` | framework static | external | framework install/update |
+| `$HOME/.crux/agents/{role}/AGENT.md` | framework static | external | manual from template |
+| `$HOME/.crux/agents/{role}/onboarding.md` | framework static | external | manual from template |
+| `$HOME/.crux/skills/{name}/SKILL.md` | framework static | external | manual from template |
+| `$HOME/.crux/workflows/{name}.md` | framework static | external | manual from template |
+| `.crux/decisions/{id}.md` | generated static | after onboarding | agent proposes + user approves, OR coordinator generates during onboarding |
 | `.crux/docs/{topic}.md` | generated static | after onboarding | onboarding, lazy-loading, or skills from owning agent assets |
-| `summaries/{topic}.md` | static | ✓ | doc-summariser skill |
-| `bus/protocol.md` | static | ✓ | manual — always present |
+| `.crux/summaries/{topic}.md` | generated static | after onboarding | doc-summariser skill |
 | `.crux/workspace/` | dynamic | ✗ | coordinator during workspace initialisation |
 | `.crux/workspace/MANIFEST.md` | dynamic | ✗ | coordinator during onboarding / workspace initialisation |
 | `.crux/workspace/TODO.md` | dynamic | ✗ | coordinator during onboarding / workspace initialisation |
@@ -214,7 +185,7 @@ Every agent loads files in this order:
 ```
 1. .crux/CONSTITUTION.md                    ~1000 tokens   always
 2. .crux/SOUL.md                            ~500  tokens   always
-3. .crux/agents/{role}/AGENT.md             ~800  tokens   always
+3. {framework-home}/agents/{role}/AGENT.md  ~800  tokens   always
 4. .crux/workspace/{role}/MEMORY.md         ~400  tokens   always
 5. .crux/workspace/{role}/TODO.md           ~300  tokens   always
 ─────────────────────────────────────────────────────────────────
@@ -224,12 +195,13 @@ Base cost:                                  ~3000 tokens
 7. .crux/summaries/{doc}.md                 on demand      overview sufficient
 8. .crux/docs/{doc}.md                      on demand      generate if missing, then load
 9. .crux/decisions/{id}.md                  on demand      when decision is referenced
-10. .crux/skills/{name}/SKILL.md            on trigger     unloaded after use
+10. {framework-home}/skills/{name}/SKILL.md on trigger     unloaded after use
 ```
 
 Coordinator additionally loads on workflow trigger:
 ```
-.crux/workflows/{name}.md                   on trigger     unloaded after workflow completes
+{framework-home}/workflows/{name}.md or .crux/workflows/{name}.md
+                                             on trigger     unloaded after workflow completes
 ```
 
 Hard limit: **8000 tokens** before execution begins.
@@ -239,10 +211,13 @@ Hard limit: **8000 tokens** before execution begins.
 ## Three Layers
 
 ```
-.crux/              static      who we are        committed, versioned
-.crux/workspace/    dynamic     what we know      gitignored, live state
-.crux/workspace/sessions/ ephemeral   what coord did    gitignored, coordinator sessions
-.crux/workspace/{role}/sessions/ ephemeral  what agents did   gitignored, per-agent sessions
+$HOME/.crux/        framework   reusable protocols     read mostly, externally updated
+.crux/docs/         compiled    project knowledge      may be committed
+.crux/summaries/    compiled    compact project docs   may be committed
+.crux/decisions/    compiled    approved decisions     may be committed
+.crux/workspace/    dynamic     live state             gitignored
+.crux/workspace/sessions/ ephemeral coordinator work   gitignored
+.crux/workspace/{role}/sessions/ ephemeral agent work  gitignored
 ```
 
 ---
@@ -254,7 +229,7 @@ When an agent starts and `.crux/workspace/MANIFEST.md` shows `status: pending-on
 ```
 1. Run environment discovery (silent checks)
 2. Ask user only what could not be discovered
-3. Generate missing `.crux/docs/` references from the agent's assets if needed
+3. Generate missing `.crux/docs/` references from framework-home agent assets if needed
 4. Run required skills → generate project docs, decisions, or notes-root content
 5. Write facts to `.crux/workspace/{role}/MEMORY.md`
 6. Create `.crux/workspace/{role}/NOTES.md` from template
@@ -269,7 +244,7 @@ When an agent starts and `.crux/workspace/MANIFEST.md` shows `status: pending-on
 When the coordinator detects a workflow trigger phrase:
 
 ```
-1. Load .crux/workflows/{name}.md
+1. Load `{framework-home}/workflows/{name}.md` or project `.crux/workflows/{name}.md`
 2. Collect inputs from user (one at a time, validate before proceeding)
 3. For each step:
      a. Check owning agent is onboarded (`.crux/workspace/MANIFEST.md` status == onboarded)
@@ -334,8 +309,9 @@ Agents and coordinator should:
 .crux/workspace/
 ```
 
-Everything under `.crux/workspace/` is gitignored. All static `.crux/` files are committed.
-Generated `.crux/docs/`, `decisions/`, project `docs/`, and any user-selected notes root are created during onboarding or lazy-loading, not pre-populated in the repo.
+Everything under `.crux/workspace/` is gitignored. Project `.crux/docs/`,
+`.crux/summaries/`, and `.crux/decisions/` are compiled project knowledge and
+may be committed when useful.
 
 ---
 
@@ -351,26 +327,28 @@ Skill:    copy templates/SKILL.template.md      → skills/{name}/SKILL.md
           run: ./scripts/convert.sh
 
 Workflow: copy templates/WORKFLOW.template.md   → workflows/{name}.md
-          update `.crux/workspace/MANIFEST.md` Workflows table
+          update `.crux/workspace/MANIFEST.md` Workflows table when enabled in a project
 ```
 
 ## Three-Layer Model
 
 | Concept | Where | Scope | Git |
 |---|---|---|---|
-| **Skill** | `skills/{name}/SKILL.md` | One agent, one task | ✓ |
-| **Workflow** | `workflows/{name}.md` | Coordinator + multiple agents | ✓ |
-| **Decision** | `decisions/{id}.md` | Human-approved, permanent record | ✓ |
-| **Doc** | `docs/{topic}.md` | Generated knowledge, replaceable | ✓ |
+| **Skill** | `$HOME/.crux/skills/{name}/SKILL.md` | One agent, one task | external |
+| **Workflow** | `$HOME/.crux/workflows/{name}.md` or `.crux/workflows/{name}.md` | Coordinator + multiple agents | external or project |
+| **Decision** | `.crux/decisions/{id}.md` | Human-approved, permanent project record | ✓ |
+| **Doc** | `.crux/docs/{topic}.md` | Generated project knowledge, replaceable | ✓ |
 | **Memory** | `.crux/workspace/{role}/MEMORY.md` | Agent runtime state | ✗ |
-## Source vs Installed
 
-Crux keeps a strict separation between framework source and project runtime:
+## Source vs Framework Home vs Project Runtime
+
+Crux keeps a strict separation between framework source, framework home, and
+project runtime:
 
 - Source repo layout is for framework development only.
-- Installed layout is the only valid runtime/documentation model.
-- All architecture documents must reference installed paths.
-- Install script maps source layout into installed `.crux/`.
-- Generated docs, summaries, workspace, and user outputs must never be committed as source framework content.
+- Framework home (`$HOME/.crux`) stores reusable agent, skill, template, and workflow definitions.
+- Project `.crux` stores generated project knowledge and live workspace state.
+- Global framework files are treated as read-only during project operation.
+- Generated project docs, summaries, workspace, and user outputs must never be written back into framework home.
 
 See [docs/source-layout.md](docs/source-layout.md) for the explicit mapping table and generation rules.

@@ -111,17 +111,18 @@ preserve behavioural clarity, and avoid hidden regressions.
 Always loaded:
   .crux/CONSTITUTION.md                        ~1000 tokens
   .crux/SOUL.md                                ~500  tokens
-  .crux/agents/backend-developer/AGENT.md      ~1100 tokens    (this file)
+  {framework-home}/agents/backend-developer/AGENT.md      ~1100 tokens    (this file)
   .crux/workspace/backend-developer/MEMORY.md  ~400  tokens
   .crux/workspace/backend-developer/TODO.md      ~300  tokens
   ────────────────────────────────────────────────────────────
   Base cost:                                   ~3300 tokens
 
 Lazy docs (load only when needed):
-  .crux/docs/backend-development-principles.md load-when: deciding implementation or review approach; generate from agents/backend-developer/assets if missing
-  .crux/docs/api-contract-guidelines.md        load-when: API or boundary design questions; generate from agents/backend-developer/assets if missing
-  .crux/docs/backend-testing-strategy.md       load-when: test plan or coverage questions; generate from agents/backend-developer/assets if missing
-  .crux/docs/schema-safety-guidelines.md       load-when: persistence or schema-sensitive paths are touched; generate from agents/backend-developer/assets if missing
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
+  .crux/docs/backend-development-principles.md load-when: deciding implementation or review approach; generate from {framework-home}/agents/backend-developer/assets if missing
+  .crux/docs/api-contract-guidelines.md        load-when: API or boundary design questions; generate from {framework-home}/agents/backend-developer/assets if missing
+  .crux/docs/backend-testing-strategy.md       load-when: test plan or coverage questions; generate from {framework-home}/agents/backend-developer/assets if missing
+  .crux/docs/schema-safety-guidelines.md       load-when: persistence or schema-sensitive paths are touched; generate from {framework-home}/agents/backend-developer/assets if missing
   .crux/docs/backend.md                        load-when: codebase architecture context is needed; generate via skill if missing
   .crux/summaries/backend.md                   load-when: quick backend overview is sufficient
 
@@ -175,7 +176,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/backend-developer/onboarding.md exists
+  IF {framework-home}/agents/backend-developer/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 

@@ -44,7 +44,7 @@ summary at `.crux/summaries/kubernetes.md`.
 
 ```
 Requires already loaded:
-  .crux/agents/kubernetes-admin/MEMORY.md   (cluster-endpoint, kubectl-version)
+  .crux/workspace/kubernetes-admin/MEMORY.md   (cluster-endpoint, kubectl-version)
 
 Does not load additional docs — all data comes from live cluster.
 

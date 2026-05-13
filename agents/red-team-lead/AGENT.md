@@ -115,13 +115,14 @@ actionable findings to clients without causing unintended harm.
 Always loaded:
   .crux/CONSTITUTION.md                        ~1000 tokens
   .crux/SOUL.md                                ~500  tokens
-  .crux/agents/red-team-lead/AGENT.md          ~900  tokens    (this file)
+  {framework-home}/agents/red-team-lead/AGENT.md          ~900  tokens    (this file)
   .crux/workspace/red-team-lead/MEMORY.md      ~400  tokens
   .crux/workspace/red-team-lead/TODO.md      ~300  tokens
   ────────────────────────────────────────────────────────────
   Base cost:                                   ~3100 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   engagements/{id}/scope.md          load-when: any active skill runs (scope gate)
   engagements/{id}/authorization.md  load-when: verifying auth before active testing
   engagements/{id}/vulnerabilities/  load-when: generating report or reviewing findings
@@ -171,12 +172,12 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/red-team-lead/onboarding.md exists
+  IF {framework-home}/agents/red-team-lead/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
 
   IF .crux/workflows/pentest-engagement.md is missing
-    AND .crux/agents/red-team-lead/assets/pentest-engagement.workflow.template.md exists
+    AND {framework-home}/agents/red-team-lead/assets/pentest-engagement.workflow.template.md exists
     → generate workflow file before workflow-driven pentest coordination starts
 
   IF MEMORY.md contains active-engagement-id

@@ -46,7 +46,7 @@ with a token-efficient summary at `.crux/summaries/postgresql.md`.
 
 ```
 Requires already loaded:
-  .crux/agents/postgresql-admin/MEMORY.md
+  .crux/workspace/postgresql-admin/MEMORY.md
     Fields needed:
       primary-host
       primary-port  (default: 5432)

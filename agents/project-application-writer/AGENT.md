@@ -102,13 +102,14 @@ work-package structuring, milestone planning, and application-ready documentatio
 Always loaded:
   .crux/CONSTITUTION.md                                  ~1000 tokens
   .crux/SOUL.md                                          ~500  tokens
-  .crux/agents/project-application-writer/AGENT.md       ~1000 tokens    (this file)
+  {framework-home}/agents/project-application-writer/AGENT.md       ~1000 tokens    (this file)
   .crux/workspace/project-application-writer/MEMORY.md   ~400  tokens
   .crux/workspace/project-application-writer/TODO.md      ~300  tokens
   ───────────────────────────────────────────────────────────────────────
   Base cost:                                             ~3200 tokens
 
 Lazy docs (load only when needed):
+  {framework-home}/skills/crux-coordinator/SKILL.md  load-when: Crux layout, routing, onboarding, task state, or project .crux protocol is unclear
   .crux/docs/project-writing-principles.md        load-when: project framing is weak or overly generic
   .crux/docs/innovation-framing-guide.md          load-when: novelty and technical uncertainty must be sharpened
   .crux/docs/application-dossier-structure.md     load-when: full application sections must be drafted
@@ -147,7 +148,7 @@ additional-rules:
 ```
 Checked on every startup:
 
-  IF .crux/agents/project-application-writer/onboarding.md exists
+  IF {framework-home}/agents/project-application-writer/onboarding.md exists
     AND MANIFEST.md status == pending-onboard
     → run onboarding before anything else
   IF .crux/workspace/project-application-writer/TODO.md contains open tasks
