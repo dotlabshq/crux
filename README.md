@@ -40,7 +40,9 @@ curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install
 Start your AI tool in the project directory. The install script places reusable
 Crux framework files under the user's framework home, normally `$HOME/.crux`.
 The project-local `.crux/` directory is reserved for project knowledge,
-decisions, generated references, and live workspace state.
+decisions, generated references, and live workspace state. The project root
+`AGENTS.md` is the bootstrap entrypoint and points agents to the Crux
+coordinator skill.
 
 ```
 @kubernetes-admin   cluster health, namespaces, tenant provisioning
@@ -100,12 +102,14 @@ runtime state.
 $HOME/.crux/               framework home, read mostly
 ├── agents/                reusable agent identities and onboarding protocols
 ├── skills/                reusable SKILL.md task protocols
+│   └── crux-coordinator/  canonical Crux boot, routing, and path protocol
 ├── templates/             reusable starter templates
 ├── workflows/             reusable workflow definitions
 ├── bus/                   reusable bus protocol docs
 ├── docs/                  framework-level references
-├── COORDINATOR.md         legacy coordinator document
-└── AGENTS.md              framework status and conventions
+└── COORDINATOR.md         legacy coordinator document
+
+{project}/AGENTS.md        project bootstrap; read crux-coordinator first
 
 {project}/.crux/           project knowledge and live state
 ├── CONSTITUTION.md        generated project rules
@@ -155,7 +159,7 @@ project.
 | `.crux/CONSTITUTION.md` | generated static | after onboarding | coordinator during workspace initialisation |
 | `.crux/SOUL.md` | generated static | after onboarding | coordinator during workspace initialisation |
 | `$HOME/.crux/COORDINATOR.md` | framework static | external | framework install/update |
-| `$HOME/.crux/AGENTS.md` | framework static | external | framework install/update |
+| `AGENTS.md` | project bootstrap | ✓ | install script, preserving existing project guidance |
 | `../README.md` | static | ✓ | manual — project root, human docs |
 | `$HOME/.crux/templates/*` | framework static | external | framework install/update |
 | `$HOME/.crux/agents/{role}/AGENT.md` | framework static | external | manual from template |

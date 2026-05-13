@@ -58,6 +58,56 @@ function Install-Tree([string]$SourceRoot, [string]$DestRoot) {
   }
 }
 
+function Install-ProjectAgentsBootstrap([string]$ArchiveSource) {
+  $agentsFile = 'AGENTS.md'
+  $marker = 'Crux Project Bootstrap'
+  $templatePath = Join-Path $ArchiveSource 'templates/AGENTS.template.md'
+
+  if ((Test-Path $agentsFile) -and (Select-String -LiteralPath $agentsFile -Pattern $marker -Quiet)) {
+    Write-Info 'AGENTS.md already contains Crux bootstrap'
+    return
+  }
+
+  if (Test-Path $templatePath) {
+    $content = Get-Content -LiteralPath $templatePath -Raw
+  } else {
+    $content = @'
+# Crux Project Bootstrap
+
+This project uses Crux.
+
+Before interpreting project state, routing work, loading agents, or writing
+`.crux/` files, read:
+
+`{framework-home}/skills/crux-coordinator/SKILL.md`
+
+Default `{framework-home}` is `$HOME/.crux` unless `CRUX_HOME` is set.
+
+Treat `{framework-home}/` as reusable framework home and `{project}/.crux/` as
+project knowledge and live state. Do not write learned project knowledge into
+`{framework-home}/`.
+'@
+  }
+
+  if ($DryRun) {
+    if (Test-Path $agentsFile) {
+      Write-Info '[dry-run] would prepend Crux bootstrap to AGENTS.md'
+    } else {
+      Write-Info '[dry-run] would create AGENTS.md from Crux bootstrap template'
+    }
+    return
+  }
+
+  if (Test-Path $agentsFile) {
+    $existing = Get-Content -LiteralPath $agentsFile -Raw
+    [System.IO.File]::WriteAllText($agentsFile, "$content`n`n---`n`n$existing", [System.Text.UTF8Encoding]::new($false))
+    Write-Ok 'AGENTS.md (prepended Crux bootstrap)'
+  } else {
+    [System.IO.File]::WriteAllText($agentsFile, "$content`n", [System.Text.UTF8Encoding]::new($false))
+    Write-Ok 'AGENTS.md'
+  }
+}
+
 $repoArchive = "https://github.com/$Repo/archive/refs/heads/$Branch.zip"
 
 Write-Host ''
@@ -101,7 +151,6 @@ try {
   $archiveSource = $archiveSourceDir.FullName
 
   Install-File (Join-Path $archiveSource 'COORDINATOR.md') (Join-Path $FrameworkHome 'COORDINATOR.md')
-  Install-File (Join-Path $archiveSource 'AGENTS.md') (Join-Path $FrameworkHome 'AGENTS.md')
   Install-Tree (Join-Path $archiveSource 'bus') (Join-Path $FrameworkHome 'bus')
   Install-Tree (Join-Path $archiveSource 'templates') (Join-Path $FrameworkHome 'templates')
   Install-Tree (Join-Path $archiveSource 'workflows') (Join-Path $FrameworkHome 'workflows')
@@ -182,6 +231,9 @@ try {
     }
   }
   Write-Ok 'Directories ready'
+
+  Write-Step 'Updating project AGENTS.md...'
+  Install-ProjectAgentsBootstrap $archiveSource
 
   Write-Step 'Updating .gitignore...'
   $gitignoreEntries = @('.crux/workspace/')

@@ -264,11 +264,10 @@ Use this skill when the user wants to work through the Crux coordinator for the 
 
 Read these in order:
 1. $sourceAbs/skills/crux-coordinator/SKILL.md
-2. $sourceAbs/AGENTS.md
-3. $sourceAbs/COORDINATOR.md as legacy fallback if the skill is missing
-4. $workspaceDir/MANIFEST.md if it exists
-5. $workspaceDir/TODO.md if it exists
-6. $workspaceDir/inbox.md if it exists
+2. $sourceAbs/COORDINATOR.md as legacy fallback if the skill is missing
+3. $workspaceDir/MANIFEST.md if it exists
+4. $workspaceDir/TODO.md if it exists
+5. $workspaceDir/inbox.md if it exists
 
 ## How To Operate
 

@@ -20,11 +20,13 @@ These rules are mandatory:
 1. Source repo layout is for framework development only.
 2. Framework home stores reusable definitions: agents, skills, templates,
    workflows, framework docs, and the coordinator protocol skill.
-3. Project `.crux/` stores project-specific generated knowledge and live state.
-4. `.crux/docs/`, `.crux/summaries/`, and `.crux/decisions/` are the compiled
+3. Project root `AGENTS.md` is the bootstrap entrypoint. It must point agents
+   to `{framework-home}/skills/crux-coordinator/SKILL.md`.
+4. Project `.crux/` stores project-specific generated knowledge and live state.
+5. `.crux/docs/`, `.crux/summaries/`, and `.crux/decisions/` are the compiled
    project knowledge layer and may be committed.
-5. `.crux/workspace/` is live runtime state and is normally gitignored.
-6. Runtime code is optional and belongs to a later `crux-runtime` phase; all
+6. `.crux/workspace/` is live runtime state and is normally gitignored.
+7. Runtime code is optional and belongs to a later `crux-runtime` phase; all
    skills must remain useful as plain markdown instructions.
 
 ## Source Layout
@@ -56,7 +58,6 @@ Framework install maps source files into the user's framework home:
 
 ```text
 $HOME/.crux/
-├── AGENTS.md
 ├── COORDINATOR.md                 legacy coordinator document
 ├── agents/
 ├── skills/
@@ -74,9 +75,11 @@ project state there.
 
 ## Project Runtime
 
-Each project has its own living `.crux/` directory:
+Each project has a root bootstrap file and its own living `.crux/` directory:
 
 ```text
+{project}/AGENTS.md                project bootstrap, points to crux-coordinator
+
 {project}/.crux/
 ├── CONSTITUTION.md
 ├── SOUL.md
@@ -104,7 +107,7 @@ compiled-knowledge layer. `.crux/workspace/` is live state.
 
 ## Mapping
 
-| Source repo path | Framework home path |
+| Source repo path | Installed path |
 |---|---|
 | `agents/*` | `$HOME/.crux/agents/*` |
 | `skills/*` | `$HOME/.crux/skills/*` |
@@ -112,7 +115,7 @@ compiled-knowledge layer. `.crux/workspace/` is live state.
 | `workflows/*` | `$HOME/.crux/workflows/*` |
 | `bus/*` | `$HOME/.crux/bus/*` |
 | `COORDINATOR.md` | `$HOME/.crux/COORDINATOR.md` |
-| `AGENTS.md` | `$HOME/.crux/AGENTS.md` |
+| `templates/AGENTS.template.md` | `{project}/AGENTS.md` during install, or prepended to an existing root file |
 
 Generated project files are not copied from source into framework home. They
 are created under `{project}/.crux/` during onboarding or lazy-loading.

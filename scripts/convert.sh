@@ -360,11 +360,10 @@ convert_codex() {
     '' \
     'Read these in order:' \
     '1. __SOURCE_ABS__/skills/crux-coordinator/SKILL.md' \
-    '2. __SOURCE_ABS__/AGENTS.md' \
-    '3. __SOURCE_ABS__/COORDINATOR.md as legacy fallback if the skill is missing' \
-    '4. __WORKSPACE_DIR__/MANIFEST.md if it exists' \
-    '5. __WORKSPACE_DIR__/TODO.md if it exists' \
-    '6. __WORKSPACE_DIR__/inbox.md if it exists' \
+    '2. __SOURCE_ABS__/COORDINATOR.md as legacy fallback if the skill is missing' \
+    '3. __WORKSPACE_DIR__/MANIFEST.md if it exists' \
+    '4. __WORKSPACE_DIR__/TODO.md if it exists' \
+    '5. __WORKSPACE_DIR__/inbox.md if it exists' \
     '' \
     '## How To Operate' \
     '' \

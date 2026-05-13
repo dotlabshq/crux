@@ -198,6 +198,62 @@ install_tree() {
   done < <(find "$src_root" -type f | sort)
 }
 
+install_project_agents_bootstrap() {
+  local agents_file="AGENTS.md"
+  local marker="Crux Project Bootstrap"
+  local template="$EXTRACTED/templates/AGENTS.template.md"
+  local content tmp
+
+  if [[ -f "$agents_file" ]] && grep -q "$marker" "$agents_file" 2>/dev/null; then
+    info "AGENTS.md already contains Crux bootstrap"
+    return
+  fi
+
+  if [[ -f "$template" ]]; then
+    content=$(cat "$template")
+  else
+    content=$(cat <<EOF
+# Crux Project Bootstrap
+
+This project uses Crux.
+
+Before interpreting project state, routing work, loading agents, or writing
+\`.crux/\` files, read:
+
+\`{framework-home}/skills/crux-coordinator/SKILL.md\`
+
+Default \`{framework-home}\` is \`$HOME/.crux\` unless \`CRUX_HOME\` is set.
+
+Treat \`{framework-home}/\` as reusable framework home and \`{project}/.crux/\` as
+project knowledge and live state. Do not write learned project knowledge into
+\`{framework-home}/\`.
+EOF
+)
+  fi
+
+  if $DRY_RUN; then
+    if [[ -f "$agents_file" ]]; then
+      info "[dry-run] would prepend Crux bootstrap to AGENTS.md"
+    else
+      info "[dry-run] would create AGENTS.md from Crux bootstrap template"
+    fi
+    return
+  fi
+
+  if [[ -f "$agents_file" ]]; then
+    tmp=$(mktemp)
+    {
+      printf '%s\n\n---\n\n' "$content"
+      cat "$agents_file"
+    } > "$tmp"
+    mv "$tmp" "$agents_file"
+    ok "AGENTS.md (prepended Crux bootstrap)"
+  else
+    printf '%s\n' "$content" > "$agents_file"
+    ok "AGENTS.md"
+  fi
+}
+
 # ---------------------------------------------------------------------------
 # Step 1: Download framework source
 # ---------------------------------------------------------------------------
@@ -219,7 +275,6 @@ INSTALLED=0
 SKIPPED=0
 
 install_file "$EXTRACTED/COORDINATOR.md" "$FRAMEWORK_HOME/COORDINATOR.md"
-install_file "$EXTRACTED/AGENTS.md" "$FRAMEWORK_HOME/AGENTS.md"
 install_tree "$EXTRACTED/bus" "$FRAMEWORK_HOME/bus"
 install_tree "$EXTRACTED/templates" "$FRAMEWORK_HOME/templates"
 install_tree "$EXTRACTED/workflows" "$FRAMEWORK_HOME/workflows"
@@ -337,7 +392,13 @@ done
 ok "Directories ready"
 
 # ---------------------------------------------------------------------------
-# Step 5: .gitignore
+# Step 5: Project AGENTS.md bootstrap
+# ---------------------------------------------------------------------------
+step "Updating project AGENTS.md..."
+install_project_agents_bootstrap
+
+# ---------------------------------------------------------------------------
+# Step 6: .gitignore
 # ---------------------------------------------------------------------------
 step "Updating .gitignore..."
 
@@ -366,7 +427,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Step 6: Download and run convert.sh
+# Step 7: Download and run convert.sh
 # ---------------------------------------------------------------------------
 step "Converting agent definitions to tool format..."
 

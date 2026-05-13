@@ -49,6 +49,23 @@ initialise, resume, and govern the work.
 
 ---
 
+## Project Bootstrap
+
+The portable Crux entrypoint is the project root `AGENTS.md`.
+
+Installers must create it from `{framework-home}/templates/AGENTS.template.md`
+when missing, or prepend the same bootstrap block when it already exists. That
+block must point agents to this skill:
+
+```text
+{framework-home}/skills/crux-coordinator/SKILL.md
+```
+
+`{framework-home}/AGENTS.md` is not authoritative. Framework guidance belongs
+in this skill so LLMs, IDEs, and future runtimes have one canonical protocol.
+
+---
+
 ## Path Model
 
 There are two active roots:
