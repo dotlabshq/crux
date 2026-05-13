@@ -46,8 +46,8 @@ Active development. Core architecture is stable.
 ### Completed
 
 **Scripts:**
-- `scripts/install.sh` — curl entry point: downloads framework files into `$HOME/.crux`, prepares root `AGENTS.md` and project `.crux/`, runs convert
-- `scripts/install.ps1` — Windows PowerShell installer: downloads framework files into the framework home, prepares root `AGENTS.md` and project `.crux/`, runs PowerShell convert
+- `scripts/install.sh` — curl entry point: downloads framework files and scripts into `$HOME/.crux`, prepares root `AGENTS.md` and project `.crux/`, runs framework-home convert
+- `scripts/install.ps1` — Windows PowerShell installer: downloads framework files and scripts into the framework home, prepares root `AGENTS.md` and project `.crux/`, runs framework-home convert
 - `scripts/convert.sh` — syncs framework-home `agents/` and `skills/` → tool-specific locations (opencode, claude-code, cursor, codex)
 - `scripts/convert.ps1` — Windows PowerShell sync script for opencode, claude-code, cursor, and codex targets
 - `scripts/update.ps1` — Windows PowerShell update wrapper around `install.ps1 --Force`
@@ -244,6 +244,7 @@ $HOME/.crux/
 │       ├── SOUL.md          optional — tone override
 │       ├── onboarding.md    onboarding sequence
 │       └── assets/          agent-local source material for generated `.crux/docs/`
+├── scripts/
 ├── skills/
 │   ├── crux-coordinator/
 │   │   └── SKILL.md         project-operation protocol

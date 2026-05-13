@@ -42,7 +42,9 @@ Crux framework files under the user's framework home, normally `$HOME/.crux`.
 The project-local `.crux/` directory is reserved for project knowledge,
 decisions, generated references, and live workspace state. The project root
 `AGENTS.md` is the bootstrap entrypoint and points agents to the Crux
-coordinator skill.
+coordinator skill. Framework management scripts live under
+`$HOME/.crux/scripts/`; the installer does not keep Crux scripts in the project
+folder.
 
 ```
 @kubernetes-admin   cluster health, namespaces, tenant provisioning
@@ -54,13 +56,13 @@ coordinator skill.
 After editing any framework-home `agents/` or `skills/` file, re-run:
 
 ```sh
-./scripts/convert.sh
+$HOME/.crux/scripts/convert.sh
 ```
 
 On Windows PowerShell:
 
 ```powershell
-.\scripts\convert.ps1
+$HOME\.crux\scripts\convert.ps1
 ```
 
 This syncs agent and skill definitions to tool-specific locations (`.opencode/agent/`, `.claude/agents/`, `.cursor/rules/`, Codex wrapper skills under `$CODEX_HOME/skills/crux/<project>/agents/`).
@@ -70,13 +72,13 @@ This syncs agent and skill definitions to tool-specific locations (`.opencode/ag
 To pull the latest agent, skill, and framework files from the upstream Crux repo:
 
 ```sh
-./scripts/update.sh
+$HOME/.crux/scripts/update.sh
 ```
 
 On Windows PowerShell:
 
 ```powershell
-.\scripts\update.ps1
+$HOME\.crux\scripts\update.ps1
 ```
 
 This overwrites framework-home `agents/`, `skills/`, templates, and other
@@ -85,10 +87,10 @@ customisations to framework-home files will be lost.
 
 ```sh
 # Update specific agents only
-./scripts/update.sh --agents kubernetes-admin,postgresql-admin
+$HOME/.crux/scripts/update.sh --agents kubernetes-admin,postgresql-admin
 
 # Preview without writing
-./scripts/update.sh --dry-run
+$HOME/.crux/scripts/update.sh --dry-run
 ```
 
 ---
@@ -101,6 +103,7 @@ runtime state.
 ```
 $HOME/.crux/               framework home, read mostly
 ├── agents/                reusable agent identities and onboarding protocols
+├── scripts/               framework management scripts
 ├── skills/                reusable SKILL.md task protocols
 │   └── crux-coordinator/  canonical Crux boot, routing, and path protocol
 ├── templates/             reusable starter templates
@@ -325,10 +328,10 @@ may be committed when useful.
 Agent:    copy templates/AGENT.template.md      → agents/{role}/AGENT.md
           copy templates/onboarding.template.md → agents/{role}/onboarding.md
           add agent-local assets under          → agents/{role}/assets/   (if the agent generates `.crux/docs/*`)
-          run: ./scripts/convert.sh
+          run: $HOME/.crux/scripts/convert.sh
 
 Skill:    copy templates/SKILL.template.md      → skills/{name}/SKILL.md
-          run: ./scripts/convert.sh
+          run: $HOME/.crux/scripts/convert.sh
 
 Workflow: copy templates/WORKFLOW.template.md   → workflows/{name}.md
           update `.crux/workspace/MANIFEST.md` Workflows table when enabled in a project

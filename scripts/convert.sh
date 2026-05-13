@@ -7,13 +7,13 @@
 # `$HOME/.crux/agents/` / `$HOME/.crux/skills/`.
 #
 # Usage:
-#   ./scripts/convert.sh                     # auto-detect tools
-#   ./scripts/convert.sh --tool opencode
-#   ./scripts/convert.sh --tool claude-code
-#   ./scripts/convert.sh --tool cursor
-#   ./scripts/convert.sh --tool codex
-#   ./scripts/convert.sh --tool all
-#   ./scripts/convert.sh --dry-run           # preview without writing
+#   $HOME/.crux/scripts/convert.sh                     # auto-detect tools
+#   $HOME/.crux/scripts/convert.sh --tool opencode
+#   $HOME/.crux/scripts/convert.sh --tool claude-code
+#   $HOME/.crux/scripts/convert.sh --tool cursor
+#   $HOME/.crux/scripts/convert.sh --tool codex
+#   $HOME/.crux/scripts/convert.sh --tool all
+#   $HOME/.crux/scripts/convert.sh --dry-run           # preview without writing
 # =============================================================================
 set -euo pipefail
 

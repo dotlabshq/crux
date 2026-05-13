@@ -108,6 +108,38 @@ project knowledge and live state. Do not write learned project knowledge into
   }
 }
 
+function Remove-ProjectLocalCruxScripts {
+  $legacyScripts = @(
+    'scripts/convert.sh',
+    'scripts/install.sh',
+    'scripts/update.sh',
+    'scripts/convert.ps1',
+    'scripts/install.ps1',
+    'scripts/update.ps1'
+  )
+
+  if ((Test-Path 'COORDINATOR.md') -and (Test-Path 'agents') -and (Test-Path 'skills')) {
+    Write-Info 'Crux source repo detected; keeping source scripts/'
+    return
+  }
+
+  foreach ($legacy in $legacyScripts) {
+    if (-not (Test-Path $legacy)) { continue }
+    $content = Get-Content -LiteralPath $legacy -Raw
+    if ($content -notmatch 'Crux —') {
+      Write-Warn "Leaving non-Crux project script untouched: $legacy"
+      continue
+    }
+
+    if ($DryRun) {
+      Write-Info "[dry-run] would remove legacy project-local Crux script: $legacy"
+    } else {
+      Remove-Item -LiteralPath $legacy -Force
+      Write-Ok "Removed legacy project-local Crux script: $legacy"
+    }
+  }
+}
+
 $repoArchive = "https://github.com/$Repo/archive/refs/heads/$Branch.zip"
 
 Write-Host ''
@@ -152,6 +184,7 @@ try {
 
   Install-File (Join-Path $archiveSource 'COORDINATOR.md') (Join-Path $FrameworkHome 'COORDINATOR.md')
   Install-Tree (Join-Path $archiveSource 'bus') (Join-Path $FrameworkHome 'bus')
+  Install-Tree (Join-Path $archiveSource 'scripts') (Join-Path $FrameworkHome 'scripts')
   Install-Tree (Join-Path $archiveSource 'templates') (Join-Path $FrameworkHome 'templates')
   Install-Tree (Join-Path $archiveSource 'workflows') (Join-Path $FrameworkHome 'workflows')
 
@@ -235,6 +268,9 @@ try {
   Write-Step 'Updating project AGENTS.md...'
   Install-ProjectAgentsBootstrap $archiveSource
 
+  Write-Step 'Cleaning project-local Crux helper scripts...'
+  Remove-ProjectLocalCruxScripts
+
   Write-Step 'Updating .gitignore...'
   $gitignoreEntries = @('.crux/workspace/')
   if (Test-Path '.gitignore') {
@@ -256,25 +292,8 @@ try {
     Write-Ok 'Created .gitignore'
   }
 
-  Write-Step 'Installing helper scripts...'
-  foreach ($scriptName in @('convert.sh', 'install.sh', 'update.sh', 'convert.ps1', 'install.ps1', 'update.ps1')) {
-    $scriptSource = Join-Path $archiveSource "scripts/$scriptName"
-    $scriptDest = Join-Path '.\scripts' $scriptName
-    if (-not (Test-Path $scriptSource)) { continue }
-
-    if ((Test-Path $scriptDest) -and -not $Force) {
-      Write-Info "Exists, skipping (--Force to overwrite): scripts/$scriptName"
-    } elseif ($DryRun) {
-      Write-Info "[dry-run] would install: scripts/$scriptName"
-    } else {
-      New-Item -ItemType Directory -Force -Path '.\scripts' | Out-Null
-      Copy-Item -LiteralPath $scriptSource -Destination $scriptDest -Force
-      Write-Ok "scripts/$scriptName"
-    }
-  }
-
   Write-Step 'Converting agent definitions to tool format...'
-  $convertScript = '.\scripts\convert.ps1'
+  $convertScript = Join-Path $FrameworkHome 'scripts/convert.ps1'
   if ($DryRun) {
     Write-Info "[dry-run] would run: powershell -File $convertScript -Tool $Tool -Source $FrameworkHome"
   } else {
@@ -301,7 +320,7 @@ try {
   }
   Write-Host ''
   Write-Host '  When you update agents or skills:' -ForegroundColor White
-  Write-Host '    .\scripts\convert.ps1' -ForegroundColor Cyan
+  Write-Host "    $FrameworkHome\scripts\convert.ps1" -ForegroundColor Cyan
   Write-Host ''
 }
 finally {

@@ -6,10 +6,10 @@
 # and re-runs convert.sh to sync tool-specific locations.
 #
 # Usage:
-#   ./scripts/update.sh                          # update all agents and framework
-#   ./scripts/update.sh --agents kubernetes-admin,postgresql-admin
-#   ./scripts/update.sh --tool opencode
-#   ./scripts/update.sh --dry-run
+#   $HOME/.crux/scripts/update.sh                          # update all agents and framework
+#   $HOME/.crux/scripts/update.sh --agents kubernetes-admin,postgresql-admin
+#   $HOME/.crux/scripts/update.sh --tool opencode
+#   $HOME/.crux/scripts/update.sh --dry-run
 #
 # Note: --force is passed to install.sh automatically.
 #       Local changes to $HOME/.crux/agents/ or $HOME/.crux/skills/ will be overwritten.

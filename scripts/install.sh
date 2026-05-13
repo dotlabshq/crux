@@ -254,6 +254,38 @@ EOF
   fi
 }
 
+cleanup_project_local_crux_scripts() {
+  local legacy_scripts=(
+    "scripts/convert.sh"
+    "scripts/install.sh"
+    "scripts/update.sh"
+    "scripts/convert.ps1"
+    "scripts/install.ps1"
+    "scripts/update.ps1"
+  )
+  local legacy
+
+  if [[ -f "COORDINATOR.md" && -d "agents" && -d "skills" ]]; then
+    info "Crux source repo detected; keeping source scripts/"
+    return
+  fi
+
+  for legacy in "${legacy_scripts[@]}"; do
+    [[ -f "$legacy" ]] || continue
+    if ! grep -q "Crux —" "$legacy" 2>/dev/null; then
+      warn "Leaving non-Crux project script untouched: $legacy"
+      continue
+    fi
+
+    if $DRY_RUN; then
+      info "[dry-run] would remove legacy project-local Crux script: $legacy"
+    else
+      rm "$legacy"
+      ok "Removed legacy project-local Crux script: $legacy"
+    fi
+  done
+}
+
 # ---------------------------------------------------------------------------
 # Step 1: Download framework source
 # ---------------------------------------------------------------------------
@@ -276,6 +308,7 @@ SKIPPED=0
 
 install_file "$EXTRACTED/COORDINATOR.md" "$FRAMEWORK_HOME/COORDINATOR.md"
 install_tree "$EXTRACTED/bus" "$FRAMEWORK_HOME/bus"
+install_tree "$EXTRACTED/scripts" "$FRAMEWORK_HOME/scripts"
 install_tree "$EXTRACTED/templates" "$FRAMEWORK_HOME/templates"
 install_tree "$EXTRACTED/workflows" "$FRAMEWORK_HOME/workflows"
 
@@ -398,7 +431,13 @@ step "Updating project AGENTS.md..."
 install_project_agents_bootstrap
 
 # ---------------------------------------------------------------------------
-# Step 6: .gitignore
+# Step 6: Remove legacy project-local Crux scripts
+# ---------------------------------------------------------------------------
+step "Cleaning project-local Crux helper scripts..."
+cleanup_project_local_crux_scripts
+
+# ---------------------------------------------------------------------------
+# Step 7: .gitignore
 # ---------------------------------------------------------------------------
 step "Updating .gitignore..."
 
@@ -427,28 +466,11 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Step 7: Download and run convert.sh
+# Step 8: Run framework-home convert.sh
 # ---------------------------------------------------------------------------
 step "Converting agent definitions to tool format..."
 
-CONVERT_SCRIPT="./scripts/convert.sh"
-
-# Install all scripts from archive (convert.sh, install.sh, update.sh)
-for _script in convert.sh install.sh update.sh; do
-  _src="$EXTRACTED/scripts/${_script}"
-  _dest="./scripts/${_script}"
-  [[ ! -f "$_src" ]] && continue
-  if [[ -f "$_dest" ]] && ! $FORCE; then
-    info "Exists, skipping (--force to overwrite): scripts/${_script}"
-  elif $DRY_RUN; then
-    info "[dry-run] would install: scripts/${_script}"
-  else
-    mkdir -p "./scripts"
-    cp "$_src" "$_dest"
-    chmod +x "$_dest"
-    ok "scripts/${_script}"
-  fi
-done
+CONVERT_SCRIPT="$FRAMEWORK_HOME/scripts/convert.sh"
 
 CONVERT_ARGS=("--tool" "$TOOL" "--source" "$FRAMEWORK_HOME")
 $DRY_RUN && CONVERT_ARGS+=("--dry-run")
@@ -483,5 +505,5 @@ else
 fi
 echo ""
 echo -e "  ${BOLD}When you update agents or skills:${RESET}"
-echo -e "    ${CYAN}./scripts/convert.sh${RESET}"
+echo -e "    ${CYAN}$FRAMEWORK_HOME/scripts/convert.sh${RESET}"
 echo ""

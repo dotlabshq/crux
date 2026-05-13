@@ -18,8 +18,9 @@ project docs back into `$HOME/.crux`.
 These rules are mandatory:
 
 1. Source repo layout is for framework development only.
-2. Framework home stores reusable definitions: agents, skills, templates,
-   workflows, framework docs, and the coordinator protocol skill.
+2. Framework home stores reusable definitions and management scripts: agents,
+   skills, templates, workflows, framework docs, scripts, and the coordinator
+   protocol skill.
 3. Project root `AGENTS.md` is the bootstrap entrypoint. It must point agents
    to `{framework-home}/skills/crux-coordinator/SKILL.md`.
 4. Project `.crux/` stores project-specific generated knowledge and live state.
@@ -36,6 +37,7 @@ This is the framework repository shape used by Crux maintainers.
 ```text
 /
 ├── agents/
+├── scripts/
 ├── skills/
 ├── templates/
 ├── workflows/
@@ -111,6 +113,7 @@ compiled-knowledge layer. `.crux/workspace/` is live state.
 |---|---|
 | `agents/*` | `$HOME/.crux/agents/*` |
 | `skills/*` | `$HOME/.crux/skills/*` |
+| `scripts/*` | `$HOME/.crux/scripts/*` |
 | `templates/*` | `$HOME/.crux/templates/*` |
 | `workflows/*` | `$HOME/.crux/workflows/*` |
 | `bus/*` | `$HOME/.crux/bus/*` |
