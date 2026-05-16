@@ -162,6 +162,7 @@ additional-rules:
 |---|---|---|
 | `cyber-risk-executive-brief` | leadership needs a short risk-based summary or decision memo | No |
 | `board-security-update` | the user needs a board-ready or senior-management security update | No |
+| `weekly-ciso-management-brief` | weekly cybersecurity notes, metrics, risks, decisions, or threat context must become a Marp-ready CISO management briefing | No |
 | `incident-executive-brief` | an incident needs calm, structured executive communication | No |
 | `vulnerability-risk-prioritisation` | a vulnerability or set of findings must be prioritised in business terms | No |
 | `risk-acceptance-decision-note` | delayed remediation or residual risk needs formal framing and sign-off language | No |

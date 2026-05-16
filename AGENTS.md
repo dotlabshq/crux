@@ -125,6 +125,7 @@ Active development. Core architecture is stable.
 - `skills/client-email-writer/` — case context → client-facing email draft
 - `skills/cyber-risk-executive-brief/` — technical security content → short executive cyber risk brief
 - `skills/board-security-update/` — security status inputs → board-ready management update
+- `skills/weekly-ciso-management-brief/` — weekly security inputs → Marp-ready CISO management briefing
 - `skills/incident-executive-brief/` — incident facts → calm executive incident communication
 - `skills/vulnerability-risk-prioritisation/` — vulnerabilities → business-priority and ownership view
 - `skills/risk-acceptance-decision-note/` — delayed remediation or residual risk → formal sign-off note
