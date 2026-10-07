@@ -3,8 +3,9 @@ name: crux-coordinator
 description: >
   Operating protocol for a Crux project. Use when: an agent or IDE needs to
   understand Crux layout, locate framework-home definitions, locate project
-  `.crux` state, route work to the right agent, run onboarding, manage task
-  continuity, or decide which files are read-only versus writable.
+  `.crux` state, route work to the right team or agent, run onboarding,
+  manage task continuity, or decide which files are read-only versus
+  writable. In a Crux company, load crux-team alongside it.
 license: MIT
 compatibility: all
 metadata:
@@ -36,7 +37,7 @@ runtime contract.
 
 - Starting work in a Crux-enabled project
 - Resolving whether a path belongs to framework home or project `.crux`
-- Routing a request to the correct agent
+- Routing a request to the correct team or agent
 - Running or resuming agent onboarding
 - Creating or updating coordinator task state
 - Generating missing project `.crux/docs/` from framework-home agent assets
@@ -68,12 +69,18 @@ in this skill so LLMs, IDEs, and future runtimes have one canonical protocol.
 
 ## Path Model
 
-There are two active roots:
+There are up to three active roots:
 
 ```text
 {framework-home}/     reusable Crux framework, read mostly
+{company-root}/.crux/ company: teams, the request board, company knowledge
 {project}/.crux/      project knowledge and live state
 ```
+
+A company root is marked by `.crux/COMPANY.md`. Teams, ownership and the
+request board are defined in `{framework-home}/skills/crux-team/SKILL.md`;
+load it whenever a company is resolved. Without a company, Crux runs
+project-scoped exactly as below.
 
 Default framework home:
 
@@ -90,6 +97,20 @@ Framework home contains:
 {framework-home}/workflows/
 {framework-home}/bus/
 {framework-home}/docs/
+{framework-home}/companies.toml   registry — never overwritten by install/update
+{framework-home}/local/           operator-private — never overwritten
+```
+
+Company `.crux` contains:
+
+```text
+.crux/COMPANY.md
+.crux/CONSTITUTION.md
+.crux/SOUL.md
+.crux/decisions/  .crux/docs/  .crux/summaries/
+.crux/teams/{team}/TEAM.md
+.crux/requests/{team}/*.md
+.crux/workspace/                 gitignored; per-team state in workspace/{team}/
 ```
 
 Project `.crux` contains:
@@ -112,6 +133,8 @@ Rules:
 - Write live state to `.crux/workspace/`.
 - Do not copy global agent or skill definitions into project knowledge.
 - Do not write learned project facts into `{framework-home}`.
+- Company state lives in the company repository, never in `{framework-home}`.
+  `companies.toml` holds only the id → root mapping.
 
 ---
 
@@ -120,20 +143,30 @@ Rules:
 Resolve paths in this order:
 
 ```text
-1. Project root
-   The current working directory or nearest parent containing `.crux/`.
+1. Company
+   a. nearest parent of cwd containing .crux/COMPANY.md
+   b. else nearest `.crux/company` walking up from cwd (an id) → {framework-home}/companies.toml → root
+   c. else a registered company with a team whose `owns` contains cwd
+   d. else none — project-scoped operation (crux-team asks only when the
+      operator named a company or team that did not resolve)
+   When found, resolve the team as crux-team describes.
 
-2. Project `.crux`
+2. Project root
+   The current working directory or nearest parent containing `.crux/`
+   that is not the company root and is not {framework-home}'s parent
+   (`$HOME/.crux` is framework home, never a project `.crux/`).
+
+3. Project `.crux`
    {project}/.crux/
 
-3. Framework home
+4. Framework home
    a. CRUX_HOME, if configured
    b. $HOME/.crux
    c. explicit user-provided path
 
-4. Framework source fallback
-   Only when developing Crux itself: repository root containing agents/,
-   skills/, templates/, and COORDINATOR.md.
+5. Framework source fallback
+   Only when developing Crux itself: a git checkout containing agents/,
+   skills/, templates/, and COORDINATOR.md that is not {framework-home}.
 ```
 
 Use placeholders consistently:
@@ -182,8 +215,9 @@ that multiple agents must respect.
 Knowledge precedence:
 
 ```text
+0. {company-root}/.crux/decisions/  approved company decisions
 1. .crux/decisions/             approved project decisions
-2. .crux/CONSTITUTION.md        project rules
+2. .crux/CONSTITUTION.md        project rules (company constitution first, when both exist)
 3. .crux/docs/                  generated project references
 4. .crux/summaries/             compact views of docs
 5. .crux/workspace/*/MEMORY.md  live role memory
@@ -201,13 +235,21 @@ conflict instead of silently merging it.
 Run these checks before meaningful Crux work:
 
 ```text
+0. Resolve company (Path Resolution step 1).
+   If found: run the crux-team boot (company, team, inbox) first, then
+   continue below for the project the team is working in, if it has `.crux/`.
 1. Locate project root.
 2. Locate project `.crux/`.
-   If missing, run workspace initialisation.
+   If missing and no company was resolved, run workspace initialisation.
+   If missing inside a company, continue without it: a code repository a
+   team owns needs no `.crux/` of its own. Offer initialisation only when
+   the team asks for project knowledge there.
 3. Locate framework home.
    Default: $HOME/.crux.
    If missing, ask user to install or point to a framework home.
-4. Read project core if present:
+4. Read project core if present (in a company, these are the company's
+   `.crux/workspace/` files for the coordinator team; other teams read
+   `.crux/workspace/{team}/` as crux-team describes):
    .crux/CONSTITUTION.md
    .crux/SOUL.md
    .crux/workspace/MANIFEST.md
@@ -227,13 +269,26 @@ Framework: {framework-home}
 Pending: {pending-items or none}
 ```
 
+In a company, use the crux-team boot report instead; it includes the team,
+the inbox and the owned repositories.
+
 ---
 
 ## Workspace Initialisation
 
-Run this when project `.crux/` or `.crux/workspace/MANIFEST.md` is missing.
+Run this when project `.crux/` or `.crux/workspace/MANIFEST.md` is missing
+and no company resolved.
 
 ```text
+0. Ask what this directory is:
+   - a project  → continue below
+   - a company  → a root for teams that own repositories; run Company
+                  Onboarding from {framework-home}/skills/crux-team/SKILL.md
+                  and stop here
+   Suggest *company* when the directory is empty or has no code of its own
+   and sits beside several repositories; suggest *project* when it contains
+   code. Ask either way.
+
 1. Ask project identity:
    - project name
    - one-sentence purpose
@@ -277,9 +332,16 @@ project. Those belong to framework home.
 
 ## Routing Protocol
 
-Route by explicit mention first, then by domain fit.
+In a company, route by ownership first, then by explicit mention, then by
+domain fit.
 
 ```text
+0. In a company, if the request is about a path or repository:
+   find the team whose `owns` is the longest prefix of that path.
+   Another team → write a request to .crux/requests/{team}/ (crux-team);
+                  never edit it from here.
+   This team    → continue below, within this team's roles.
+
 1. If user writes @{role-id}:
    route to that role if {framework-home}/agents/{role-id}/AGENT.md exists.
 
@@ -302,6 +364,7 @@ Routing decision table:
 
 | Request shape | Action |
 |---|---|
+| path owned by another team | Open a request to that team |
 | `@role` mentioned | Load that role, unless missing or disabled |
 | one clear domain | Route to owning agent |
 | multiple ordered domains | Use or create workflow plan |
@@ -397,6 +460,21 @@ Coordinator-like operation may write only orchestration state:
 .crux/bus/**
 ```
 
+In a company, the coordinator team additionally writes:
+
+```text
+{company-root}/.crux/teams/**              team definitions (with approval)
+{company-root}/.crux/requests/*/            new requests it opens
+{company-root}/.crux/requests/coordinator/  status of requests addressed to it
+{company-root}/AGENTS.md
+```
+
+Approval requests from teams arrive in `requests/coordinator/`. On boot, the
+coordinator copies each open `approval-request` into `.crux/workspace/inbox.md`
+under *Pending Approvals* (with the request path as reference), and after the
+human decides, sets the request to `done` (approved) or `declined` with the
+decision in *Owner's notes*.
+
 It must not write domain state on behalf of agents:
 
 ```text
@@ -453,6 +531,10 @@ For workflow requests:
 6. Record step status in .crux/workspace/sessions/{id}/scratch.md.
 ```
 
+In a company, a workflow whose steps belong to different teams becomes a
+sequence of requests linked by `parent_id`. The coordinator team owns the
+sequence; each team owns its step and its request status.
+
 Workflow state rules:
 
 - Coordinator owns workflow sequencing and step state.
@@ -508,6 +590,8 @@ Ambiguous approval is not approval.
 | Condition | Action |
 |---|---|
 | framework home missing | Ask user to install Crux or provide framework home |
+| company id not in companies.toml | Ask for the root, or run company init |
+| path owned by two teams | Stop; surface both TEAM.md files |
 | project `.crux` missing | Run workspace initialisation |
 | agent missing | List available agents from framework home |
 | skill missing | Report missing skill and owning agent, then ask whether to continue without it |

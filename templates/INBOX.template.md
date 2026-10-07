@@ -10,6 +10,9 @@
 
 ## Pending Approvals
 
+<!-- In a company, open `approval-request` files in .crux/requests/{coordinator}/
+     are copied here with their path; the decision is written back to the file. -->
+
 <!-- Use for actions waiting on explicit user approval -->
 <!-- Example:
 - id: APR-001
@@ -20,6 +23,7 @@
   summary: Apply NetworkPolicy to prod namespace
   impact: Limits cross-namespace traffic for prod-app
   needs_from_human: approve | reject | request changes
+  request: .crux/requests/coordinator/2026-04-22-apply-prod-netpol.md   # in a company
 -->
 
 *(none)*
