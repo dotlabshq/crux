@@ -6,6 +6,8 @@ param(
   [string]$Project = '',
   [string]$Branch = 'main',
   [string]$Repo = 'dotlabshq/crux',
+  [string]$Source = '',
+  [switch]$FrameworkOnly,
   [switch]$DryRun,
   [switch]$Force
 )
@@ -22,7 +24,22 @@ function Write-Step($Message) { Write-Host "`n$Message" -ForegroundColor White }
 $script:InstalledCount = 0
 $script:SkippedCount = 0
 
+# Operator-owned paths in framework home. Never written, even with -Force:
+# companies.toml is the company registry, local/ is operator-private.
+function Test-ProtectedPath([string]$DestPath) {
+  $full = [System.IO.Path]::GetFullPath($DestPath)
+  $registry = [System.IO.Path]::GetFullPath((Join-Path $FrameworkHome 'companies.toml'))
+  $local = [System.IO.Path]::GetFullPath((Join-Path $FrameworkHome 'local'))
+  if ($full -eq $registry -or $full -eq $local) { return $true }
+  return $full.StartsWith($local + [System.IO.Path]::DirectorySeparatorChar)
+}
+
 function Install-File([string]$SourcePath, [string]$DestPath) {
+  if (Test-ProtectedPath $DestPath) {
+    Write-Warn "Protected, never overwritten: $DestPath"
+    return
+  }
+
   if (-not (Test-Path $SourcePath)) {
     Write-Warn "Not found in archive: $SourcePath"
     return
@@ -171,16 +188,24 @@ $extractRoot = Join-Path $tempRoot 'extracted'
 New-Item -ItemType Directory -Force -Path $tempRoot | Out-Null
 
 try {
-  Write-Info "Fetching archive from $Repo@$Branch..."
-  Invoke-WebRequest -Uri $repoArchive -OutFile $archivePath
-  Expand-Archive -LiteralPath $archivePath -DestinationPath $extractRoot -Force
-  Write-Ok 'Downloaded'
+  if ($Source) {
+    if (-not ((Test-Path (Join-Path $Source 'COORDINATOR.md')) -and (Test-Path (Join-Path $Source 'agents')) -and (Test-Path (Join-Path $Source 'skills')))) {
+      throw "Not a Crux source checkout: $Source"
+    }
+    $archiveSource = (Resolve-Path $Source).ProviderPath
+    Write-Ok "Using local Crux source: $archiveSource"
+  } else {
+    Write-Info "Fetching archive from $Repo@$Branch..."
+    Invoke-WebRequest -Uri $repoArchive -OutFile $archivePath
+    Expand-Archive -LiteralPath $archivePath -DestinationPath $extractRoot -Force
+    Write-Ok 'Downloaded'
 
-  $archiveSourceDir = Get-ChildItem -Path $extractRoot -Directory | Select-Object -First 1
-  if (-not $archiveSourceDir) {
-    throw 'Could not locate extracted Crux archive root.'
+    $archiveSourceDir = Get-ChildItem -Path $extractRoot -Directory | Select-Object -First 1
+    if (-not $archiveSourceDir) {
+      throw 'Could not locate extracted Crux archive root.'
+    }
+    $archiveSource = $archiveSourceDir.FullName
   }
-  $archiveSource = $archiveSourceDir.FullName
 
   Install-File (Join-Path $archiveSource 'COORDINATOR.md') (Join-Path $FrameworkHome 'COORDINATOR.md')
   Install-Tree (Join-Path $archiveSource 'bus') (Join-Path $FrameworkHome 'bus')
@@ -189,6 +214,13 @@ try {
   Install-Tree (Join-Path $archiveSource 'workflows') (Join-Path $FrameworkHome 'workflows')
 
   Write-Ok "$script:InstalledCount framework files installed, $script:SkippedCount skipped"
+
+  # Operator-private directory; created once, never written by the installer.
+  $localDir = Join-Path $FrameworkHome 'local'
+  if (-not (Test-Path $localDir)) {
+    if ($DryRun) { Write-Info "[dry-run] would create: $localDir" }
+    else { New-Item -ItemType Directory -Force -Path $localDir | Out-Null; Write-Ok "$localDir (operator-private, never overwritten)" }
+  }
 
   Write-Step 'Installing agents...'
   if ($Agents) {
@@ -227,6 +259,7 @@ try {
 
   Write-Step 'Installing skills...'
   Install-Tree (Join-Path $archiveSource 'skills/crux-coordinator') (Join-Path $FrameworkHome 'skills/crux-coordinator')
+  Install-Tree (Join-Path $archiveSource 'skills/crux-team') (Join-Path $FrameworkHome 'skills/crux-team')
 
   foreach ($role in $agentList) {
     $agentFile = Join-Path (Join-Path $FrameworkHome 'agents') "$role\AGENT.md"
@@ -253,6 +286,13 @@ try {
         Install-Tree $sourceSkillDir $destSkillDir
       }
     }
+  }
+
+  if ($FrameworkOnly) {
+    Write-Host ''
+    Write-Host "Crux framework home updated: $FrameworkHome" -ForegroundColor Green
+    Write-Host '  Project steps skipped (-FrameworkOnly).'
+    return
   }
 
   Write-Step 'Creating directory structure...'

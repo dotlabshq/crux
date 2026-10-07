@@ -6,6 +6,9 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# -Force overwrites framework-home agents and skills. companies.toml and local/
+# are protected by install.ps1 and never touched.
+
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $installScript = Join-Path $scriptDir 'install.ps1'
 

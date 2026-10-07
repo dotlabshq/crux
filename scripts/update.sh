@@ -13,6 +13,7 @@
 #
 # Note: --force is passed to install.sh automatically.
 #       Local changes to $HOME/.crux/agents/ or $HOME/.crux/skills/ will be overwritten.
+#       $HOME/.crux/companies.toml and $HOME/.crux/local/ are never touched.
 # =============================================================================
 set -euo pipefail
 

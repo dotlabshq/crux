@@ -263,11 +263,15 @@ This project uses the Crux multi-agent workspace framework.
 
 On every session start:
 1. Read `$HOME/.crux/skills/crux-coordinator/SKILL.md` — Crux path, routing, and project operation protocol
-2. Read `.crux/CONSTITUTION.md` — universal rules (if it exists)
-3. Read `.crux/SOUL.md` — identity and tone defaults (if it exists)
-4. Read `.crux/workspace/MANIFEST.md` — current system state (if it exists)
-   - If `.crux/workspace/` does not exist → run workspace initialisation as described in the Crux coordinator skill
-5. Surface any pending items (agents pending onboard, amendments, open sessions)
+2. Resolve the company (coordinator skill, Path Resolution step 1; `$HOME/.crux/scripts/company.sh resolve` does it).
+   If this directory belongs to a company: read `$HOME/.crux/skills/crux-team/SKILL.md` and follow its boot
+   instead of steps 3–5 — company rules and state live at the company root, not in this directory.
+   Report its boot report and stop there. Do not initialise a project `.crux/` here.
+3. Read `.crux/CONSTITUTION.md` — universal rules (if it exists)
+4. Read `.crux/SOUL.md` — identity and tone defaults (if it exists)
+5. Read `.crux/workspace/MANIFEST.md` — current system state (if it exists)
+   - `.crux/workspace/` does not exist → run workspace initialisation as described in the Crux coordinator skill
+6. Surface any pending items (agents pending onboard, amendments, open sessions)
 
 ## Agents
 

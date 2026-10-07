@@ -43,6 +43,8 @@ TOOL="auto"
 PROJECT_NAME=""
 DRY_RUN=false
 FORCE=false
+SOURCE=""
+FRAMEWORK_ONLY=false
 FRAMEWORK_HOME="${CRUX_HOME:-$HOME/.crux}"
 
 REPO_RAW="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
@@ -62,6 +64,8 @@ while [[ $# -gt 0 ]]; do
     --repo)         REPO="$2";          shift 2
                     REPO_RAW="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
                     REPO_ARCHIVE="https://github.com/${REPO}/archive/refs/heads/${BRANCH}.tar.gz" ;;
+    --source)       SOURCE="$2";        shift 2 ;;
+    --framework-only) FRAMEWORK_ONLY=true; shift ;;
     --dry-run)      DRY_RUN=true;       shift ;;
     --force)        FORCE=true;         shift ;;
     --help|-h)
@@ -76,6 +80,9 @@ Options:
                     Default: auto-detect
   --project <name>  Project name (used during workspace initialisation)
   --branch <name>   GitHub branch to download from (default: main)
+  --source <dir>    Install from a local Crux checkout instead of downloading
+  --framework-only  Update framework home only; do not touch the current
+                    directory (no .crux/, AGENTS.md, .gitignore, tool files)
   --dry-run         Preview without writing files
   --force           Overwrite existing framework-home files
 
@@ -156,9 +163,25 @@ download_stdout() {
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+# Operator-owned paths in framework home. Never written, even with --force:
+# companies.toml is the company registry, local/ is operator-private.
+is_protected_path() {
+  local dest="$1"
+  case "$dest" in
+    "$FRAMEWORK_HOME/companies.toml"|"$FRAMEWORK_HOME/local"|"$FRAMEWORK_HOME/local/"*) return 0 ;;
+  esac
+  return 1
+}
+
 install_file() {
   local src="$1"
   local dest="$2"
+
+  if is_protected_path "$dest"; then
+    warn "Protected, never overwritten: ${dest}"
+    return
+  fi
 
   if [[ ! -f "$src" ]]; then
     warn "Not found in archive: ${src#$EXTRACTED/}"
@@ -289,19 +312,27 @@ cleanup_project_local_crux_scripts() {
 # ---------------------------------------------------------------------------
 # Step 1: Download framework source
 # ---------------------------------------------------------------------------
-step "Downloading Crux framework..."
+if [[ -n "$SOURCE" ]]; then
+  step "Using local Crux source..."
+  [[ -f "$SOURCE/COORDINATOR.md" && -d "$SOURCE/agents" && -d "$SOURCE/skills" ]] \
+    || { err "Not a Crux source checkout: $SOURCE"; exit 1; }
+  EXTRACTED="$(cd "$SOURCE" && pwd -P)"
+  ok "$EXTRACTED"
+else
+  step "Downloading Crux framework..."
 
-TMPDIR_WORK=$(mktemp -d)
-trap 'rm -rf "$TMPDIR_WORK"' EXIT
+  TMPDIR_WORK=$(mktemp -d)
+  trap 'rm -rf "$TMPDIR_WORK"' EXIT
 
-ARCHIVE="$TMPDIR_WORK/crux.tar.gz"
-EXTRACTED="$TMPDIR_WORK/extracted"
+  ARCHIVE="$TMPDIR_WORK/crux.tar.gz"
+  EXTRACTED="$TMPDIR_WORK/extracted"
 
-info "Fetching archive from ${REPO}@${BRANCH}..."
-download "$REPO_ARCHIVE" "$ARCHIVE"
-mkdir -p "$EXTRACTED"
-tar xzf "$ARCHIVE" --strip-components=1 -C "$EXTRACTED"
-ok "Downloaded"
+  info "Fetching archive from ${REPO}@${BRANCH}..."
+  download "$REPO_ARCHIVE" "$ARCHIVE"
+  mkdir -p "$EXTRACTED"
+  tar xzf "$ARCHIVE" --strip-components=1 -C "$EXTRACTED"
+  ok "Downloaded"
+fi
 
 INSTALLED=0
 SKIPPED=0
@@ -313,6 +344,12 @@ install_tree "$EXTRACTED/templates" "$FRAMEWORK_HOME/templates"
 install_tree "$EXTRACTED/workflows" "$FRAMEWORK_HOME/workflows"
 
 ok "${INSTALLED} framework files installed, ${SKIPPED} skipped"
+
+# Operator-private directory; created once, never written by the installer.
+if [[ ! -d "$FRAMEWORK_HOME/local" ]]; then
+  if $DRY_RUN; then info "[dry-run] would create: $FRAMEWORK_HOME/local/"
+  else mkdir -p "$FRAMEWORK_HOME/local"; ok "$FRAMEWORK_HOME/local/ (operator-private, never overwritten)"; fi
+fi
 
 # ---------------------------------------------------------------------------
 # Step 2: Install requested agents
@@ -366,6 +403,7 @@ done
 step "Installing skills..."
 
 install_tree "$EXTRACTED/skills/crux-coordinator" "$FRAMEWORK_HOME/skills/crux-coordinator"
+install_tree "$EXTRACTED/skills/crux-team" "$FRAMEWORK_HOME/skills/crux-team"
 
 # Find skills referenced by installed agents
 for role in "${AGENT_LIST[@]}"; do
@@ -401,6 +439,13 @@ for role in "${AGENT_LIST[@]}"; do
     | sed 's/.*`\([^`]*\)`.*/\1/'
   )
 done
+
+if $FRAMEWORK_ONLY; then
+  echo ""
+  echo -e "${BOLD}${GREEN}Crux framework home updated:${RESET} $FRAMEWORK_HOME"
+  echo -e "  Project steps skipped (--framework-only)."
+  exit 0
+fi
 
 # ---------------------------------------------------------------------------
 # Step 4: Create empty required directories
@@ -506,4 +551,7 @@ fi
 echo ""
 echo -e "  ${BOLD}When you update agents or skills:${RESET}"
 echo -e "    ${CYAN}$FRAMEWORK_HOME/scripts/convert.sh${RESET}"
+echo ""
+echo -e "  ${BOLD}To run several repositories as one company of teams:${RESET}"
+echo -e "    ${CYAN}$FRAMEWORK_HOME/scripts/company.sh init <id> --root <dir>${RESET}"
 echo ""
