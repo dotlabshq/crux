@@ -26,6 +26,7 @@ On every session start:
 | `workflows/` | `{framework-home}/workflows/` | Multi-agent workflows |
 | `bus/protocol.md` | `{framework-home}/bus/` | Message schema; the request board is its file transport |
 | `scripts/` | `{framework-home}/scripts/` | install, update, convert, company |
+| `integrations/pi-crux/` | `{framework-home}/integrations/` | Pi extension enforcing Crux rules (guard, budget, delegate, inbox) |
 | `docs/` | — | Design notes (e.g. `docs/company-model.md`) |
 
 Never installed or overwritten: `{framework-home}/companies.toml` (company

@@ -26,6 +26,7 @@ acp/.venv/
 acp/.pytest_cache/
 acp/**/__pycache__/
 acp/**/*.pyc
+integrations/*/node_modules/
 
 
 # ---------------------------------------------------------------------------

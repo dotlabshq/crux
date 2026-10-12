@@ -218,7 +218,7 @@ install_tree() {
     rel="${src_file#$src_root/}"
     dest="$dest_root/$rel"
     install_file "$src_file" "$dest"
-  done < <(find "$src_root" -type f | sort)
+  done < <(find "$src_root" -type f -not -path "*/node_modules/*" | sort)
 }
 
 install_project_agents_bootstrap() {
@@ -342,6 +342,7 @@ install_tree "$EXTRACTED/bus" "$FRAMEWORK_HOME/bus"
 install_tree "$EXTRACTED/scripts" "$FRAMEWORK_HOME/scripts"
 install_tree "$EXTRACTED/templates" "$FRAMEWORK_HOME/templates"
 install_tree "$EXTRACTED/workflows" "$FRAMEWORK_HOME/workflows"
+install_tree "$EXTRACTED/integrations" "$FRAMEWORK_HOME/integrations"
 
 ok "${INSTALLED} framework files installed, ${SKIPPED} skipped"
 

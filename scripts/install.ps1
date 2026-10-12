@@ -68,7 +68,7 @@ function Install-Tree([string]$SourceRoot, [string]$DestRoot) {
     return
   }
 
-  foreach ($file in (Get-ChildItem -Path $SourceRoot -Recurse -File | Sort-Object FullName)) {
+  foreach ($file in (Get-ChildItem -Path $SourceRoot -Recurse -File | Where-Object { $_.FullName -notmatch '[\\/]node_modules[\\/]' } | Sort-Object FullName)) {
     $relative = $file.FullName.Substring($SourceRoot.Length).TrimStart('\', '/')
     $dest = Join-Path $DestRoot $relative
     Install-File $file.FullName $dest
@@ -212,6 +212,7 @@ try {
   Install-Tree (Join-Path $archiveSource 'scripts') (Join-Path $FrameworkHome 'scripts')
   Install-Tree (Join-Path $archiveSource 'templates') (Join-Path $FrameworkHome 'templates')
   Install-Tree (Join-Path $archiveSource 'workflows') (Join-Path $FrameworkHome 'workflows')
+  Install-Tree (Join-Path $archiveSource 'integrations') (Join-Path $FrameworkHome 'integrations')
 
   Write-Ok "$script:InstalledCount framework files installed, $script:SkippedCount skipped"
 

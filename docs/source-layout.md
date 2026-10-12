@@ -42,7 +42,7 @@ This is the framework repository shape used by Crux maintainers.
 ├── templates/
 ├── workflows/
 ├── bus/
-├── scripts/
+├── integrations/      tool-specific packages, e.g. integrations/pi-crux (a Pi extension)
 ├── docs/
 ├── README.md
 └── CONTRIBUTING.md
