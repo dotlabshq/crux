@@ -12,6 +12,7 @@
 #   $HOME/.crux/scripts/convert.sh --tool claude-code
 #   $HOME/.crux/scripts/convert.sh --tool cursor
 #   $HOME/.crux/scripts/convert.sh --tool codex
+#   $HOME/.crux/scripts/convert.sh --tool pi
 #   $HOME/.crux/scripts/convert.sh --tool all
 #   $HOME/.crux/scripts/convert.sh --dry-run           # preview without writing
 # =============================================================================
@@ -42,7 +43,7 @@ while [[ $# -gt 0 ]]; do
     --crux|--source) SOURCE_DIR="$2"; shift 2 ;;
     --dry-run) DRY_RUN=true; shift ;;
     --help|-h)
-      echo "Usage: $0 [--tool opencode|claude-code|cursor|codex|all] [--dry-run]"
+      echo "Usage: $0 [--tool opencode|claude-code|cursor|codex|pi|all] [--dry-run]"
       exit 0 ;;
     *) err "Unknown option: $1"; exit 1 ;;
   esac
@@ -160,6 +161,38 @@ codex_root() {
   fi
 }
 
+# Pi coding agent home: $PI_CODING_AGENT_DIR or $HOME/.pi/agent.
+pi_root() {
+  if [[ -n "${PI_CODING_AGENT_DIR:-}" ]]; then
+    printf '%s' "$PI_CODING_AGENT_DIR"
+  else
+    printf '%s/.pi/agent' "$HOME"
+  fi
+}
+
+# Symlink dest → target. Idempotent; refuses to replace a real file or directory.
+link_path() {
+  local target="$1" dest="$2"
+  if [[ -L "$dest" ]]; then
+    if [[ "$(readlink "$dest")" == "$target" ]]; then
+      info "Link up to date: $dest → $target"
+      return
+    fi
+    if $DRY_RUN; then info "[dry-run] would relink: $dest → $target"; return; fi
+    rm "$dest"
+  elif [[ -e "$dest" ]]; then
+    warn "Not a symlink, leaving untouched: $dest (remove it to let Crux link it)"
+    return
+  fi
+  if $DRY_RUN; then
+    info "[dry-run] would link: $dest → $target"
+  else
+    mkdir -p "$(dirname "$dest")"
+    ln -s "$target" "$dest"
+    ok "$dest → $target"
+  fi
+}
+
 render_template() {
   local text="$1"
   shift
@@ -181,19 +214,20 @@ detect_tools() {
   [[ -d ".claude" ]] || command -v claude &>/dev/null && detected+=("claude-code")
   [[ -d ".cursor" ]]            && detected+=("cursor")
   [[ -d "$(codex_root)" ]]      && detected+=("codex")
+  [[ -d "$(pi_root)" ]] || command -v pi &>/dev/null && detected+=("pi")
   echo "${detected[@]:-}"
 }
 
 if [[ "$TOOL" == "auto" ]]; then
   _detected=$(detect_tools)
   if [[ -z "$_detected" ]]; then
-    warn "No tools detected. Specify --tool opencode|claude-code|cursor|codex|all"
+    warn "No tools detected. Specify --tool opencode|claude-code|cursor|codex|pi|all"
     exit 0
   fi
   read -ra TOOLS <<< "$_detected"
   info "Auto-detected: ${TOOLS[*]}"
 elif [[ "$TOOL" == "all" ]]; then
-  TOOLS=("opencode" "claude-code" "cursor" "codex")
+  TOOLS=("opencode" "claude-code" "cursor" "codex" "pi")
 else
   TOOLS=("$TOOL")
 fi
@@ -435,6 +469,96 @@ convert_codex() {
 }
 
 # ===========================================================================
+# PI
+# ===========================================================================
+# Pi has no agent concept: skills are linked from framework home (one source
+# of truth, lazy-loaded by Pi), and each role becomes a prompt template that
+# tells the model which Crux files to read, in Crux load order.
+convert_pi() {
+  hdr "pi"
+
+  local pi_home prompts_dir
+  pi_home="$(pi_root)"
+  prompts_dir="$pi_home/prompts"
+
+  # Skills: one directory symlink; Pi follows it and finds every SKILL.md.
+  link_path "$SOURCE_ABS/skills" "$pi_home/skills/crux"
+
+  # Coordinator template → /crux-coordinator
+  local coordinator_tpl coordinator_prompt
+  coordinator_tpl=$(printf '%s\n' \
+    '---' \
+    'description: Operate this workspace through the Crux coordinator (routing, task state, approvals)' \
+    'argument-hint: [request]' \
+    '---' \
+    'Act as the Crux coordinator for this workspace.' \
+    '' \
+    'Read, in order, before doing anything else:' \
+    '1. __SOURCE_ABS__/skills/crux-coordinator/SKILL.md' \
+    '2. __SOURCE_ABS__/skills/crux-team/SKILL.md if this directory belongs to a Crux company' \
+    '   (run `__SOURCE_ABS__/scripts/company.sh resolve` to find out)' \
+    '3. .crux/workspace/MANIFEST.md, TODO.md and inbox.md if they exist' \
+    '' \
+    'Route by ownership first, then by @role, then by domain fit. Do no domain work' \
+    'yourself: hand it to a role template (/{role-id}) or open a request to the' \
+    'owning team. Respect the coordinator write scope in the skill.' \
+    '' \
+    'Request: ${@:-report the current state and wait for instructions}')
+  coordinator_prompt=$(render_template "$coordinator_tpl" "__SOURCE_ABS__" "$SOURCE_ABS")
+  write_file "$prompts_dir/crux-coordinator.md" "$coordinator_prompt"
+
+  # One template per role → /{role-id}
+  for agent_file in "${AGENT_FILES[@]}"; do
+    local role display_name description agent_tpl agent_prompt
+    role=$(basename "$(dirname "$agent_file")")
+    display_name=$(extract_fm "name" "$agent_file")
+    description=$(extract_fm "description" "$agent_file")
+    # Descriptions contain "Use when:"; quote for YAML (single quotes, '' escapes).
+    description="${description//\'/\'\'}"
+
+    agent_tpl=$(printf '%s\n' \
+      '---' \
+      "description: 'Crux role — __DESCRIPTION__'" \
+      'argument-hint: [task]' \
+      '---' \
+      'Take the Crux role `__ROLE__` (__DISPLAY_NAME__) for this workspace.' \
+      '' \
+      'Load these before answering, in this order; skip files that do not exist:' \
+      '1. .crux/CONSTITUTION.md' \
+      '2. .crux/SOUL.md' \
+      '3. __SOURCE_ABS__/agents/__ROLE__/AGENT.md' \
+      '4. __SOURCE_ABS__/agents/__ROLE__/SOUL.md' \
+      '5. .crux/workspace/__ROLE__/MEMORY.md' \
+      '6. .crux/workspace/__ROLE__/TODO.md' \
+      '7. .crux/workspace/__ROLE__/NOTES.md' \
+      '' \
+      'In a Crux company, `.crux/` above means the company root; your team and its' \
+      'inbox come from __SOURCE_ABS__/skills/crux-team/SKILL.md.' \
+      '' \
+      'Load a Crux skill (__SOURCE_ABS__/skills/{skill}/SKILL.md, also listed by name' \
+      'in your available skills) only when the task triggers it.' \
+      'If .crux/workspace/MANIFEST.md marks this role pending-onboard, run' \
+      '__SOURCE_ABS__/agents/__ROLE__/onboarding.md first.' \
+      '' \
+      'Stay inside this role'\''s domain, boundaries and approval gates. Reuse an open' \
+      'task in TODO.md before creating a new one; update its status before and after' \
+      'meaningful work. Hand off anything another role or team owns.' \
+      '' \
+      'Task: ${@:-report your inbox and open tasks, then wait}')
+    agent_prompt=$(render_template "$agent_tpl" \
+      "__ROLE__" "$role" \
+      "__DISPLAY_NAME__" "$display_name" \
+      "__DESCRIPTION__" "$description" \
+      "__SOURCE_ABS__" "$SOURCE_ABS")
+    write_file "$prompts_dir/${role}.md" "$agent_prompt"
+  done
+
+  if [[ -d "$SOURCE_ABS/integrations/pi-crux" ]]; then
+    info "Crux extension for Pi: pi install $SOURCE_ABS/integrations/pi-crux"
+  fi
+}
+
+# ===========================================================================
 # Dispatch
 # ===========================================================================
 CONVERTED=0
@@ -444,7 +568,8 @@ for tool in "${TOOLS[@]}"; do
     claude-code) convert_claude_code; CONVERTED=$((CONVERTED+1)) ;;
     cursor)      convert_cursor;      CONVERTED=$((CONVERTED+1)) ;;
     codex)       convert_codex;       CONVERTED=$((CONVERTED+1)) ;;
-    *) warn "Unknown tool: $tool (supported: opencode, claude-code, cursor, codex)" ;;
+    pi)          convert_pi;          CONVERTED=$((CONVERTED+1)) ;;
+    *) warn "Unknown tool: $tool (supported: opencode, claude-code, cursor, codex, pi)" ;;
   esac
 done
 

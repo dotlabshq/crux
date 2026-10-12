@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
   [string]$Agents = '',
-  [ValidateSet('auto', 'opencode', 'claude-code', 'cursor', 'codex', 'all')]
+  [ValidateSet('auto', 'opencode', 'claude-code', 'cursor', 'codex', 'pi', 'all')]
   [string]$Tool = 'auto',
   [string]$Project = '',
   [string]$Branch = 'main',

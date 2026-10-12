@@ -30,7 +30,7 @@ curl -fsSL https://raw.githubusercontent.com/dotlabshq/crux/main/scripts/install
 | Option | Description | Default |
 |---|---|---|
 | `--agents` | Comma-separated agent IDs to install | all available |
-| `--tool` | Target AI tool: `opencode` · `claude-code` · `cursor` · `codex` · `all` | auto-detect |
+| `--tool` | Target AI tool: `opencode` · `claude-code` · `cursor` · `codex` · `pi` · `all` | auto-detect |
 | `--project` | Project name used during workspace initialisation | — |
 | `--force` | Overwrite existing framework-home files | false |
 | `--dry-run` | Preview without writing files | false |
@@ -65,7 +65,33 @@ On Windows PowerShell:
 $HOME\.crux\scripts\convert.ps1
 ```
 
-This syncs agent and skill definitions to tool-specific locations (`.opencode/agent/`, `.claude/agents/`, `.cursor/rules/`, Codex wrapper skills under `$CODEX_HOME/skills/crux/<project>/agents/`).
+This syncs agent and skill definitions to tool-specific locations (`.opencode/agent/`, `.claude/agents/`, `.cursor/rules/`, Codex wrapper skills under `$CODEX_HOME/skills/crux/<project>/agents/`, Pi prompt templates and a skills link under `$HOME/.pi/agent/`).
+
+| Tool | Agents become | Skills become | Written to |
+|---|---|---|---|
+| opencode | `agent/{role}.md` copies | `skills/{name}/SKILL.md` copies | project `.opencode/` |
+| claude-code | `.claude/agents/{role}.md` copies + `CLAUDE.md` boot block | — (read from framework home) | project |
+| cursor | one `.cursor/rules/crux.mdc` listing roles | — | project |
+| codex | wrapper skills that point at framework home | — | `$CODEX_HOME/skills/crux/<project>/` |
+| pi | prompt templates `/{role}` that point at framework home | one symlink `skills/crux → $HOME/.crux/skills` | `$HOME/.pi/agent/` |
+
+#### Pi
+
+[Pi](https://github.com/earendil-works/pi) has no built-in agent concept, so
+Crux maps onto its three extension points:
+
+- **Skills** — `$HOME/.pi/agent/skills/crux` is a symlink to framework-home
+  `skills/`. Pi follows it, lists every `SKILL.md` by name in the system prompt
+  and reads one only when a task matches. Framework home stays the single
+  source of truth; `update.sh` needs no re-convert for skills.
+- **Roles** — one prompt template per role, `/kubernetes-admin [task]`,
+  `/crux-coordinator [request]`. The template does not embed `AGENT.md`; it
+  tells the model which files to read in Crux load order.
+- **Rules as code** — the optional `pi-crux` extension (`integrations/pi-crux/`)
+  resolves the company and team at session start, blocks writes outside the
+  coordinator write scope and the team's owned paths, warns when the base
+  context exceeds the 8000-token budget, adds a `crux_delegate` tool and a
+  `/crux-inbox` command. Install with `pi install $HOME/.crux/integrations/pi-crux`.
 
 ### Updating from the Crux repo
 

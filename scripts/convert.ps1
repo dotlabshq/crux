@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-  [ValidateSet('auto', 'opencode', 'claude-code', 'cursor', 'codex', 'all')]
+  [ValidateSet('auto', 'opencode', 'claude-code', 'cursor', 'codex', 'pi', 'all')]
   [string]$Tool = 'auto',
   [Alias('crux')]
   [string]$Source = 'auto',
@@ -18,6 +18,29 @@ function Write-Hdr($Message) { Write-Host "`n$Message" -ForegroundColor Blue }
 function Get-CodexHome {
   if ($env:CODEX_HOME) { return $env:CODEX_HOME }
   return Join-Path $HOME '.codex'
+}
+
+function Get-PiHome {
+  if ($env:PI_CODING_AGENT_DIR) { return $env:PI_CODING_AGENT_DIR }
+  return Join-Path $HOME '.pi/agent'
+}
+
+# Symlink $DestPath -> $TargetPath. Idempotent; refuses to replace a real file or directory.
+function Link-Path([string]$TargetPath, [string]$DestPath) {
+  $item = Get-Item -LiteralPath $DestPath -Force -ErrorAction SilentlyContinue
+  if ($item -and $item.LinkType) {
+    if ($item.Target -eq $TargetPath) { Write-Info "Link up to date: $DestPath -> $TargetPath"; return }
+    if ($DryRun) { Write-Info "[dry-run] would relink: $DestPath -> $TargetPath"; return }
+    Remove-Item -LiteralPath $DestPath -Force
+  } elseif ($item) {
+    Write-Warn "Not a symlink, leaving untouched: $DestPath (remove it to let Crux link it)"
+    return
+  }
+  if ($DryRun) { Write-Info "[dry-run] would link: $DestPath -> $TargetPath"; return }
+  $parent = Split-Path -Parent $DestPath
+  if ($parent) { New-Item -ItemType Directory -Force -Path $parent | Out-Null }
+  New-Item -ItemType SymbolicLink -Path $DestPath -Target $TargetPath | Out-Null
+  Write-Ok "$DestPath -> $TargetPath"
 }
 
 function Get-ProjectSlug([string]$Path) {
@@ -88,6 +111,7 @@ function Detect-Tools {
   if (Test-Path '.claude') { [void]$detected.Add('claude-code') }
   if (Test-Path '.cursor') { [void]$detected.Add('cursor') }
   if (Test-Path (Get-CodexHome)) { [void]$detected.Add('codex') }
+  if ((Test-Path (Get-PiHome)) -or (Get-Command pi -ErrorAction SilentlyContinue)) { [void]$detected.Add('pi') }
   return $detected
 }
 
@@ -126,12 +150,12 @@ if (-not (Test-Path $coordinator)) {
 if ($Tool -eq 'auto') {
   $tools = Detect-Tools
   if ($tools.Count -eq 0) {
-    Write-Warn 'No tools detected. Specify -Tool opencode|claude-code|cursor|codex|all'
+    Write-Warn 'No tools detected. Specify -Tool opencode|claude-code|cursor|codex|pi|all'
     exit 0
   }
   Write-Info ("Auto-detected: {0}" -f ($tools -join ', '))
 } elseif ($Tool -eq 'all') {
-  $tools = @('opencode', 'claude-code', 'cursor', 'codex')
+  $tools = @('opencode', 'claude-code', 'cursor', 'codex', 'pi')
 } else {
   $tools = @($Tool)
 }
@@ -329,6 +353,86 @@ function Convert-Codex {
   }
 }
 
+# Pi has no agent concept: skills are linked from framework home (one source of
+# truth, lazy-loaded by Pi) and each role becomes a prompt template that tells
+# the model which Crux files to read, in Crux load order.
+function New-PiCoordinatorPrompt {
+  return @"
+---
+description: Operate this workspace through the Crux coordinator (routing, task state, approvals)
+argument-hint: [request]
+---
+Act as the Crux coordinator for this workspace.
+
+Read, in order, before doing anything else:
+1. $sourceAbs/skills/crux-coordinator/SKILL.md
+2. $sourceAbs/skills/crux-team/SKILL.md if this directory belongs to a Crux company
+   (run ``$sourceAbs/scripts/company.ps1 resolve`` to find out)
+3. .crux/workspace/MANIFEST.md, TODO.md and inbox.md if they exist
+
+Route by ownership first, then by @role, then by domain fit. Do no domain work
+yourself: hand it to a role template (/{role-id}) or open a request to the
+owning team. Respect the coordinator write scope in the skill.
+
+Request: `${@:-report the current state and wait for instructions}
+"@
+}
+
+function New-PiRolePrompt([string]$Role, [string]$DisplayName, [string]$Description) {
+  # Descriptions contain "Use when:"; quote for YAML (single quotes, '' escapes).
+  $Description = $Description.Replace("'", "''")
+  return @"
+---
+description: 'Crux role — $Description'
+argument-hint: [task]
+---
+Take the Crux role ``$Role`` ($DisplayName) for this workspace.
+
+Load these before answering, in this order; skip files that do not exist:
+1. .crux/CONSTITUTION.md
+2. .crux/SOUL.md
+3. $sourceAbs/agents/$Role/AGENT.md
+4. $sourceAbs/agents/$Role/SOUL.md
+5. .crux/workspace/$Role/MEMORY.md
+6. .crux/workspace/$Role/TODO.md
+7. .crux/workspace/$Role/NOTES.md
+
+In a Crux company, ``.crux/`` above means the company root; your team and its
+inbox come from $sourceAbs/skills/crux-team/SKILL.md.
+
+Load a Crux skill ($sourceAbs/skills/{skill}/SKILL.md, also listed by name
+in your available skills) only when the task triggers it.
+If .crux/workspace/MANIFEST.md marks this role pending-onboard, run
+$sourceAbs/agents/$Role/onboarding.md first.
+
+Stay inside this role's domain, boundaries and approval gates. Reuse an open
+task in TODO.md before creating a new one; update its status before and after
+meaningful work. Hand off anything another role or team owns.
+
+Task: `${@:-report your inbox and open tasks, then wait}
+"@
+}
+
+function Convert-Pi {
+  Write-Hdr 'pi'
+  $piHome = Get-PiHome
+  $promptsDir = Join-Path $piHome 'prompts'
+
+  Link-Path (Join-Path $sourceAbs 'skills') (Join-Path $piHome 'skills/crux')
+  Write-File (Join-Path $promptsDir 'crux-coordinator.md') (New-PiCoordinatorPrompt)
+
+  foreach ($agentFile in $agentFiles) {
+    $role = Split-Path -Leaf (Split-Path -Parent $agentFile.FullName)
+    $displayName = Get-FrontmatterValue 'name' $agentFile.FullName
+    $description = Get-FrontmatterValue 'description' $agentFile.FullName
+    Write-File (Join-Path $promptsDir "$role.md") (New-PiRolePrompt -Role $role -DisplayName $displayName -Description $description)
+  }
+
+  if (Test-Path (Join-Path $sourceAbs 'integrations/pi-crux')) {
+    Write-Info "Crux extension for Pi: pi install $(Join-Path $sourceAbs 'integrations/pi-crux')"
+  }
+}
+
 $converted = 0
 foreach ($toolName in $tools) {
   switch ($toolName) {
@@ -336,7 +440,8 @@ foreach ($toolName in $tools) {
     'claude-code' { Convert-ClaudeCode; $converted++ }
     'cursor' { Convert-Cursor; $converted++ }
     'codex' { Convert-Codex; $converted++ }
-    default { Write-Warn "Unknown tool: $toolName (supported: opencode, claude-code, cursor, codex)" }
+    'pi' { Convert-Pi; $converted++ }
+    default { Write-Warn "Unknown tool: $toolName (supported: opencode, claude-code, cursor, codex, pi)" }
   }
 }
 
