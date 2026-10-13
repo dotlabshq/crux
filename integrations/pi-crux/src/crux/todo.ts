@@ -53,9 +53,14 @@ export function todoStatus(text: string, id: string): string | undefined {
 	return parseTodos(text).find((r) => r.id === id)?.fields.status;
 }
 
+/** A field value on one line: the format is one `- key: value` line per field. */
+export function oneLine(value: string): string {
+	return value.replace(/\s*\r?\n\s*/g, " ").trim();
+}
+
 export function formatTodo(record: TodoRecord): string {
 	const lines = [`## ${record.id}`];
-	for (const [key, value] of Object.entries(record.fields)) lines.push(`- ${key}: ${value}`);
+	for (const [key, value] of Object.entries(record.fields)) lines.push(`- ${key}: ${oneLine(value)}`);
 	if (record.evidence_refs.length > 0) {
 		lines.push("- evidence_refs:");
 		for (const ref of record.evidence_refs) lines.push(`  - ${ref}`);

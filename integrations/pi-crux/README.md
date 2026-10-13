@@ -79,3 +79,20 @@ Pi loads `src/extension.ts` directly through jiti; there is no build step.
 - Onboarding status is read from MANIFEST.md but not run (TODO: offer the
   role's `onboarding.md` when the record says `pending-onboard`).
 - Token estimates are `length / 4`, not the model's tokenizer.
+- A delegated child never gets `crux_delegate` itself (`CRUX_DELEGATED_TASK`
+  is set), so delegation cannot recurse.
+- Local models through llama.cpp: Pi caches the router's model list and only
+  `/llama` refreshes it. A child started by `crux_delegate` after the loaded
+  models changed may fail with "model not found" until `/llama` is opened once.
+- Small local models follow the guard (a blocked call returns its reason) but
+  often skip updating their TODO record; `crux_delegate` then honestly reports
+  `NOT complete` even when the child says it is done.
+
+## Tested
+
+Pi 1.2.0 with llama.cpp (Qwen3.5-0.8B, tool calling): the guard blocked a
+coordinator write to `.crux/docs/` and a `bash mkdir` there; a team blocked
+from writing into another team's repository got the owner and request folder
+in the reason; `crux_delegate` ran a role in a child process that wrote its
+file but left the record at `todo`, reported as not complete; `/crux-inbox`
+listed a team's board and a coordinator's pending approval.

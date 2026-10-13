@@ -68,9 +68,13 @@ export const WRITE_RULES: WriteRule[] = [
 		patterns: [
 			"{workspace}/*/MEMORY.md",
 			"{workspace}/*/NOTES.md",
+			"{workspace}/*/output",
 			"{workspace}/*/output/**",
+			"{crux}/docs",
 			"{crux}/docs/**",
+			"{crux}/summaries",
 			"{crux}/summaries/**",
+			"{crux}/decisions",
 			"{crux}/decisions/**",
 		],
 		reason: "The coordinator does not write domain state; delegate this with crux_delegate to the owning role.",

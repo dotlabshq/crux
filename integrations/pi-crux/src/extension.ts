@@ -129,12 +129,14 @@ export default function cruxExtension(pi: ExtensionAPI) {
 
 	pi.on("before_agent_start", async (event, ctx) => {
 		if (!state.enabled) return undefined;
-		// Newer Pi fires this for custom messages too; only user prompts pick a role.
+		// Pi ≥ 1.2 also fires this for extension-triggered (custom message) runs,
+		// which carry no prompt. Every run gets the Crux block; only user prompts
+		// can switch the role.
 		const messageType = (event as { messageType?: string }).messageType;
-		if (messageType && messageType !== "user") return undefined;
-		const role = event.prompt.match(ROLE_PROMPT)?.[1];
+		const prompt = !messageType || messageType === "user" ? ((event as { prompt?: string }).prompt ?? "") : "";
+		const role = prompt.match(ROLE_PROMPT)?.[1];
 		if (role) state.role = role;
-		else if (COORDINATOR_PROMPT.test(event.prompt)) state.role = "coordinator";
+		else if (COORDINATOR_PROMPT.test(prompt)) state.role = "coordinator";
 		refreshBudget();
 		showStatus(ctx);
 		return { systemPrompt: `${event.systemPrompt}\n\n${contextBlock()}` };
@@ -150,7 +152,8 @@ export default function cruxExtension(pi: ExtensionAPI) {
 	});
 
 	// ---- Delegate -----------------------------------------------------------
-	pi.registerTool({
+	// A delegated child never delegates again: no recursion, one task per process.
+	if (!process.env.CRUX_DELEGATED_TASK) pi.registerTool({
 		name: "crux_delegate",
 		label: "Crux delegate",
 		description:
@@ -170,14 +173,21 @@ export default function cruxExtension(pi: ExtensionAPI) {
 					`Role ${role} is not one of team ${c.team.id}'s roles (${c.team.roles.join(", ")}). Work for another team is a request in ${c.cruxDir}/requests/<owner>/, not a delegation.`,
 				);
 			}
-			if (!fs.existsSync(`${state.frameworkHome}/agents/${role}/AGENT.md`)) {
-				throw new Error(`Unknown role ${role}: no ${state.frameworkHome}/agents/${role}/AGENT.md.`);
-			}
 			const manifestFile = `${c.workspaceDir}/MANIFEST.md`;
 			const agents = fs.existsSync(manifestFile) ? parseManifestAgents(fs.readFileSync(manifestFile, "utf8")) : [];
+			const onboardedHint = (list: typeof agents) => {
+				const ids = list.filter((a) => a.status === "onboarded").map((a) => a.id);
+				return ids.length > 0 ? ` Onboarded roles: ${ids.join(", ")}.` : " No role is onboarded yet.";
+			};
+			if (role === "coordinator") {
+				throw new Error(`The coordinator does not delegate to itself; pick a domain role.${onboardedHint(agents)}`);
+			}
+			if (!fs.existsSync(`${state.frameworkHome}/agents/${role}/AGENT.md`)) {
+				throw new Error(`Unknown role ${role}: no ${state.frameworkHome}/agents/${role}/AGENT.md.${onboardedHint(agents)}`);
+			}
 			const team = c.kind === "company" ? qualifiedTeamId(c) : undefined;
 			if (!isOnboarded(agents, role, team)) {
-				throw new Error(`Role ${role} is not onboarded in ${manifestFile}; run its onboarding first.`);
+				throw new Error(`Role ${role} is not onboarded in ${manifestFile}; run its onboarding first.${onboardedHint(agents)}`);
 			}
 
 			const scope = c.kind === "company" && c.team ? c.team.id : role;

@@ -79,6 +79,11 @@ describe("todo", () => {
 		expect(todoStatus(next, "T-C")).toBe("todo");
 		expect(parseTodos(next).find((r) => r.id === "T-C")?.evidence_refs).toEqual(["c.md"]);
 	});
+	it("keeps a multi-line task on one field line", () => {
+		const next = appendTodo(TODO, { id: "T-M", fields: { acceptance_criteria: "line one\n\nline two", status: "todo" }, evidence_refs: [] });
+		expect(next).toContain("- acceptance_criteria: line one line two\n- status: todo");
+		expect(todoStatus(next, "T-M")).toBe("todo");
+	});
 	it("appends to a fresh file", () => {
 		const next = appendTodo(emptyTodo("x", "2026-10-13"), { id: "T-1", fields: { status: "todo" }, evidence_refs: [] });
 		expect(todoStatus(next, "T-1")).toBe("todo");

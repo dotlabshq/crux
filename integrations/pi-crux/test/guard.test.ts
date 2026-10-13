@@ -76,11 +76,15 @@ describe("coordinator write scope (project)", () => {
 		["/p/.crux/workspace/kubernetes-admin/NOTES.md", false],
 		["/p/.crux/workspace/kubernetes-admin/output/report.md", false],
 		["/p/.crux/docs/cluster.md", false],
+		["/p/.crux/docs", false],
 		["/p/.crux/decisions/x.md", false],
 		["/p/src/main.ts", false],
 		["/u/.crux/agents/x/AGENT.md", false],
 	])("%s allowed=%s", (path, allowed) => {
 		expect(checkWrite(path, coordinator).allowed).toBe(allowed);
+	});
+	it("treats creating .crux/docs itself as domain state, not a project file", () => {
+		expect(checkToolCall("bash", { command: "mkdir -p .crux/docs" }, "/p", coordinator).rule).toBe("coordinator-no-domain-state");
 	});
 	it("names the rule and a delegation hint", () => {
 		const d = checkWrite("/p/.crux/docs/cluster.md", coordinator);
