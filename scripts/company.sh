@@ -207,7 +207,8 @@ cmd_init() {
   team_body="$(template_body TEAM.template.md | sed "s|{{TEAM_ID}}|coordinator|g")"
   write_new "$root/.crux/teams/coordinator/TEAM.md" "---
 id: coordinator
-roles: []
+roles:
+  - company-coordinator
 skills:
   - crux-coordinator
   - crux-team

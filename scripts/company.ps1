@@ -202,7 +202,8 @@ function Invoke-Init([string]$Id) {
   Write-NewFile (Join-Path $companyRoot '.crux/teams/coordinator/TEAM.md') @"
 ---
 id: coordinator
-roles: []
+roles:
+  - company-coordinator
 skills:
   - crux-coordinator
   - crux-team

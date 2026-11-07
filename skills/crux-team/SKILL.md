@@ -135,6 +135,8 @@ Run at session start, before reading anything else in the company.
      missing is normal; they are created on the team's first write
    read AGENTS.md files: the company's, then each one from the owned
      repository root down to cwd — the nearest to cwd is read last and wins
+   read {framework-home}/skills/{task_tool}/SKILL.md when COMPANY.md has a
+     `task_tool` other than `none` (see Task Tool) and run its boot step
    list .crux/requests/{team}/            ← the inbox
 ```
 
@@ -185,6 +187,7 @@ Owns:     {path} — {git branch, clean|N changed | not a git repository}
           (one line per owned path)
 Inbox:    {n} open, {n} accepted, {n} done-awaiting-requester  | empty
 Sent:     {n} of mine done or declined, waiting for me to pick up | none
+Tasks:    the task tool's boot line (its skill defines it) | none
 Tests:    last result recorded in MEMORY.md, or "not run"
 Pending:  unfilled templates ({{…}}, [e.g. …], a `*.template.md` heading or
           a "HOW TO USE THIS TEMPLATE" comment left in COMPANY.md,
@@ -194,6 +197,36 @@ Pending:  unfilled templates ({{…}}, [e.g. …], a `*.template.md` heading or
 
 To fill *Sent*, scan every `requests/*/` folder for files whose `from` is this
 team and whose `status` is `done` or `declined`.
+
+---
+
+## Task Tool
+
+A company may keep its tasks and approvals in a tool outside the board. The
+choice is the company's, made once at onboarding and recorded in
+`COMPANY.md`:
+
+```text
+task_tool: none                      the board is enough (default; a
+                                     missing field means none)
+task_tool: clave-workflow-manager    the skill of the chosen tool
+```
+
+The value is the name of a skill under `{framework-home}/skills/` whose
+frontmatter has `metadata.category: task-tool`. Such a skill carries the
+tool's working rules: identity, session naming, setup, the item loop, and
+how it reports in the boot report's *Tasks* line.
+
+Rules:
+
+1. Coordinator and team sessions load the chosen skill at boot and no other
+   task-tool skill. `none` → nothing is loaded; no session asks for a tool.
+2. The tool is an additional record, never a replacement for ownership: a
+   change outside the team's paths is still a request on the board.
+3. Where the tool has its own approval step, it runs in addition to the
+   constitution's approval rules, not instead of them.
+4. Which tools are offered at onboarding is whatever is installed: list the
+   skills with `category: task-tool` in framework home.
 
 ---
 
@@ -435,7 +468,20 @@ Steps:
    ask: working language, tone, behavioural overrides every team inherits
    write: the filled SOUL.md, template heading removed
 
-5. Teams — discover
+5. Task tool  (COMPANY.md → task_tool)
+   look: skills in {framework-home}/skills/ whose metadata says
+         `category: task-tool`
+   ask, without naming a product first: does the company want a tool for
+        task and approval management? Options: each installed task-tool
+        skill by the tool it serves (metadata.tool), or none — the board
+        alone.
+   write: `task_tool: <skill-name>` or `task_tool: none` in COMPANY.md.
+          Nothing is installed or configured here; the chosen skill's own
+          setup section says what each person runs before opening a
+          session. Say so.
+   skip: no task-tool skill installed → write `none`, mention it, move on
+
+6. Teams — discover
    look: the directories beside the company root (and any the operator
          names): for each, git status, README/AGENTS.md first lines, stack
          markers (package.json, pyproject, Makefile, infra/), sensitive files
@@ -446,31 +492,34 @@ Steps:
             crowded; do not propose more than the repositories justify.
    ask: confirm, rename, merge, drop, or add teams
 
-6. Teams — create, one at a time
+7. Teams — create, one at a time
    per confirmed team:
      write: company.sh team add <id> --role <r1,r2> --owns <paths> [--also …]
      write: its paragraph in TEAM.md (what it owns, who consumes it, what it
-            never does; a sensitive-data line when step 5 found any)
+            never does; a sensitive-data line when step 6 found any)
      ask: soul override for this team? (usually none)
 
-7. Coordinator team
+8. Coordinator team
    write: its paragraph — routes, keeps the board, owns the company
-          repository, does no domain work
+          repository, does no domain work; its role is
+          `company-coordinator` (set by company.sh init)
 
-8. Check
+9. Check
    run: company.sh resolve <path> for every owned path and for the root
    show: company, teams, owned paths, resolution result per path
    require: Pending = none (re-read files for {{…}}, [e.g. …], template
             headings and HOW TO USE comments)
 
-9. Commit
+10. Commit
    ask: commit the company repository now?
    write: one commit, "Found {company}: teams and constitution" — only on yes
 
-10. Hand-off
+11. Hand-off
    tell the operator how to start each team: open a session in the owned
    repository (it resolves to the team), or at the company root for the
-   coordinator. Nothing else is started automatically.
+   coordinator. If a task tool was chosen, point at its skill's setup
+   section: what each person runs in each repository before the first
+   session there. Nothing else is started automatically.
 ```
 
 ---
@@ -488,6 +537,11 @@ Adding a team, changing `owns`, or splitting a team is a coordinator action:
 
 Teams split when an inbox gets crowded, not before.
 
+Changing the task tool (`COMPANY.md` → `task_tool`) is also a coordinator
+action, on the operator's explicit yes: edit the field, commit at the
+company root, and tell every team to open new sessions — a running session
+keeps the skill it booted with.
+
 ---
 
 ## Failure Handling
@@ -501,6 +555,7 @@ Teams split when an inbox gets crowded, not before.
 | request frontmatter malformed | Do not guess status; ask the requester to fix it |
 | status changed by a non-owner | Report it; do not act on the changed status |
 | owner absent for a blocking request | Leave it open; surface it in the boot report and the coordinator inbox |
+| `task_tool` names a skill not in framework home | Boot without it; report `Tasks: {name} — skill not installed`; do not fall back to another tool |
 
 ---
 

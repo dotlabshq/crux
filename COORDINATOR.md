@@ -85,6 +85,15 @@ Step 2 — Load static core
   .crux/SOUL.md
   {framework-home}/skills/crux-coordinator/SKILL.md
 
+  In a company (a .crux/COMPANY.md on the walk-up), also:
+    {framework-home}/skills/crux-team/SKILL.md
+    {framework-home}/skills/{task_tool}/SKILL.md
+      when COMPANY.md has task_tool other than none — the company's task
+      and approval tool; load that skill and no other task-tool skill.
+      Its setup is "init once, add later" and belongs to a person: never
+      attempt owner-only setup with an agent token (crux-coordinator § Task
+      Tool).
+
   Fallbacks:
     CONSTITUTION.md missing → run Workspace Initialisation (Section II)
     SOUL.md missing         → run Workspace Initialisation (Section II)

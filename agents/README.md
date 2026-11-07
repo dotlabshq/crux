@@ -41,6 +41,7 @@ Rule of thumb:
 ### Public Primary
 
 These are good direct entry points for most users:
+- `company-coordinator`
 - `advisory-orchestrator`
 - `incentive-program-analyst`
 - `eligibility-risk-analyst`
@@ -86,6 +87,7 @@ Reason:
 
 | Role ID | Current Mode | Recommended Exposure | What It Does | Core Skills |
 |---|---|---|---|---|
+| `company-coordinator` | `primary` | `Public Primary` | The coordinator team of a Crux company: request routing by ownership, board keeping, approvals, Company Onboarding, team changes, and the company's chosen task tool (loaded from `COMPANY.md` → `task_tool`) | `crux-team`, `crux-coordinator`, the `category: task-tool` skill the company chose (e.g. `clave-workflow-manager`) |
 | `backend-developer` | `primary` | `Public Primary` | Server-side implementation, API review, backend tests, schema-sensitive review, backend docs | `api-surface-analyser`, `service-implementation`, `backend-test-writer`, `schema-change-review`, `backend-doc-writer`, `codebase-scanner`, `test-coverage-check`, `dependency-audit` |
 | `advisory-orchestrator` | `primary` | `Public Primary` | Advisory intake, client profiling, service-line selection, task routing, and executive action planning | `lead-intake-triage`, `missing-info-questioner`, `advisory-roadmap-writer` |
 | `incentive-program-analyst` | `primary` | `Public Primary` | Incentive and support-program mapping, preliminary support-fit analysis, and support landscape scans | `incentive-eligibility-check`, `program-landscape-scan` |
