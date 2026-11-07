@@ -65,8 +65,12 @@ External requirement:
   Entry name:              clave-<team>            e.g. clave-software
   Expected tool namespace: mcp__clave-<team>__*    e.g. mcp__clave-software__whoami
   Token:                   the person's own agent token for that team, given
-                           as ${CLAVE_TOKEN_<TEAM>} from a 0600 env file.
-                           Never a literal in config, never the owner token.
+                           as ${CLAVE_TOKEN_<AGENT>} (the agent's name in
+                           upper case; it equals the team's) from the
+                           git-ignored .env.clave file, loaded before the
+                           session opens. Never a literal in config, never
+                           the owner token.
+  CLI:                     @dotlabshq/clave ≥ 0.2.2 (`npx @dotlabshq/clave`)
 
 Session start calls:
   whoami                     → org, role (agent), actor
@@ -101,6 +105,9 @@ Identity rules:
    `clave add`, which sign the person in through the browser and keep that
    token in memory only.
 3. The MCP entry name is per team and machine-independent: `clave-<team>`.
+4. The coordinator team is no exception: agent `coordinator@<person>` in
+   the unit Management, MCP entry `clave-coordinator`. It holds an agent
+   token like every team and reaches owner-only acts the same way.
 
 ---
 
@@ -123,7 +130,7 @@ per repository per machine, and small additions later.
 
 | Command | Does | Who runs it |
 |---|---|---|
-| `clave init` | First setup of a repository on this machine: matches the project, creates the person's own agent for the team, issues a token, writes the MCP entry (`clave-<team>`, `${CLAVE_TOKEN_<TEAM>}`, 0600 env file) and the AGENTS.md block. Already set up → stops: "already set up (project X, agent Y); use `clave add`" | the person who will work there |
+| `npx @dotlabshq/clave init` | First setup of a repository on this machine: matches the project, creates the person's own agent for the team, issues a token, writes the MCP entry (`clave-<team>`, `${CLAVE_TOKEN_<AGENT>}`, secret in git-ignored `.env.clave`) and the AGENTS.md block. Already set up → stops: "already set up (project X, agent Y); use `clave add`" | the person who will work there |
 | `clave add unit\|project\|agent` | Adds to an existing setup | unit, project: the coordinator, with the person token of an owner or admin, on the operator's approval. agent: the person themself |
 
 Rules:
