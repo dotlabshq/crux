@@ -269,13 +269,17 @@ management?") and offers whatever `category: task-tool` skills are installed
 with that category, not by changing the protocol. Coordinator and team
 sessions load the chosen skill at boot and no other; `none` loads nothing.
 
-The skill owns the tool's rules. For clave: org = company, unit = team,
-project = repository (named in its `AGENTS.md`), agent `<name>@<person>`
-with one token per machine; session names `<team>:<project>@<person>`; MCP
-entry `clave-<team>` holding only the person's agent token; setup grows by
-`clave init` (once per repository per machine, by the person) and `clave add
-unit|project|agent` (later; unit/project by the coordinator with a person
-token on the operator's approval). The MCP entry is written before the
+The skill owns the tool's rules. For clave (server #131, CLI 0.3.0): org =
+company, unit = team, project = repository (its `AGENTS.md` names the key
+and `Work as: <team>`). One MCP entry per machine, user scope, named
+`clave`, with the person's personal token; each session starts with
+`session_start { project, as: "<team>" }` and acts as the agent
+`<team>@<handle>` (the coordinator: `as: "coordinator"`, unit Management).
+A member's agent is approved once by an owner or admin. Session names
+`<team>:<project>@<person>` are the `via`. `clave init` writes the
+`AGENTS.md` block and prints the one-time user-scope command; `clave add
+unit|project` stays owner/admin work. Agent tokens and `clave-<agent>`
+entries are for unattended agents only. The MCP entry is written before the
 session that uses it — a running session never gains a server.
 
 The coordinator team's role is `company-coordinator`

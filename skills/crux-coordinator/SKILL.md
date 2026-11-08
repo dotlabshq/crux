@@ -296,7 +296,7 @@ Rules:
 - Setup is **init once, add later**: the tool's skill says which command a
   person runs the first time a repository is connected and which adds a
   unit, project or agent afterwards. The coordinator never performs
-  owner-only setup with an agent token; it tells the operator what to run
+  owner-only setup under its agent identity; it tells the operator what to run
   and in which folder, and a new session is opened afterwards — a running
   session never gains a tool server.
 - Outside a company there is no task tool; the project protocol below

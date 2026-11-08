@@ -91,7 +91,7 @@ Step 2 — Load static core
       when COMPANY.md has task_tool other than none — the company's task
       and approval tool; load that skill and no other task-tool skill.
       Its setup is "init once, add later" and belongs to a person: never
-      attempt owner-only setup with an agent token (crux-coordinator § Task
+      attempt owner-only setup under its agent identity (crux-coordinator § Task
       Tool).
 
   Fallbacks:

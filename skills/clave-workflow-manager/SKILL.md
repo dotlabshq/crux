@@ -3,8 +3,9 @@ name: clave-workflow-manager
 description: >
   Working rules for a Crux company that keeps its tasks and approvals in
   clave through the clave MCP integration: who a session is in clave, how it
-  names itself, which token it holds, how a repository is set up and extended
-  (`clave init` once, `clave add` later), and the claim → plan → approval →
+  names itself (`session_start { project, as: team }`), how a machine and a
+  repository are set up (`clave init` once,
+  `clave add` later), and the claim → plan → approval →
   work → evidence → finish loop every item follows. Use when: the company's
   COMPANY.md says `task_tool: clave-workflow-manager`, a session starts in
   such a company, an item is pulled or finished, a Class A step needs
@@ -57,24 +58,23 @@ Product reference: `https://clave.one/getting-started-ai.md`.
 Requires already loaded:
   {company-root}/.crux/COMPANY.md             task_tool: clave-workflow-manager
   {company-root}/.crux/teams/{team}/TEAM.md   the team this session is
-  {repo}/AGENTS.md                            the clave project key of the repository
+  {repo}/AGENTS.md                            clave project key and `Work as: <team>`
 
 External requirement:
-  clave MCP integration, one entry per team, configured in the folder the
-  session opens in.
-  Entry name:              clave-<team>            e.g. clave-software
-  Expected tool namespace: mcp__clave-<team>__*    e.g. mcp__clave-software__whoami
-  Token:                   the person's own agent token for that team, given
-                           as ${CLAVE_TOKEN_<AGENT>} (the agent's name in
-                           upper case; it equals the team's) from the
-                           git-ignored .env.clave file, loaded before the
-                           session opens. Never a literal in config, never
-                           the owner token.
-  CLI:                     @dotlabshq/clave ≥ 0.2.2 (`npx @dotlabshq/clave`)
+  clave MCP integration: one entry per machine, user scope, named `clave`,
+  holding the person's personal token. The person adds it once, outside any
+  session (`clave init` prints the command); a session never adds it and
+  never sees the token.
+  Expected tool namespace: mcp__clave__*          e.g. mcp__clave__whoami
+  Server:                  clave with #131 (session_start takes `as`)
+  CLI:                     @dotlabshq/clave ≥ 0.3.0 (`npx @dotlabshq/clave`)
 
 Session start calls:
-  whoami                     → org, role (agent), actor
-  session_start { project }  → brief, memory (rules first), open items, cursor
+  session_start { project: "<key>", as: "<team>" }
+                             → from here on the session acts as the agent
+                               <team>@<handle> with the agent role; returns
+                               brief, memory (rules first), open items, cursor
+  whoami                     → confirms org, role (agent) and actor
 
 Estimated token cost: ~900 tokens
 Unloaded after: never while the session works in the company
@@ -86,28 +86,38 @@ Unloaded after: never while the session works in the company
 
 ```text
 org      = the Crux company                      one per company
-└── person   owner | admin | member               the account layer; agents are not accounts
-    └── agent  <name>@<person>, bound to a unit    e.g. software@basri
-        └── token  per machine (label: laptop, ci)
+└── person   owner | admin | member               the account layer; holds the personal token
+    └── agent  <team>@<handle>, bound to a unit    e.g. software@basri
+                                                   registered on first `as`
 
-unit     = Crux team      1:1   e.g. software ↔ software-development
+unit     = Crux team      1:1   e.g. software ↔ software-development,
+                                coordinator ↔ Management
 project  = repository     1:1   named in the repository's AGENTS.md;
                                 sub-projects for areas inside a repository
 ```
 
 Identity rules:
 
-1. Agent names may repeat across people; the identity is `<name>@<person>`.
-   Writes show as `agent:software@basri`.
-2. One identity per folder: the team's agent token. The owner or person
-   token is never kept in an MCP config. Owner-only acts (units, projects,
-   review, decide) happen in the clave panel or through `clave init` /
-   `clave add`, which sign the person in through the browser and keep that
-   token in memory only.
-3. The MCP entry name is per team and machine-independent: `clave-<team>`.
-4. The coordinator team is no exception: agent `coordinator@<person>` in
-   the unit Management, MCP entry `clave-coordinator`. It holds an agent
-   token like every team and reaches owner-only acts the same way.
+1. One MCP entry per machine (`clave`, user scope) with the person's
+   personal token. The team is chosen per session, not per folder:
+   `session_start { project, as: "<team>" }`. The repository's `AGENTS.md`
+   says which team (`Work as: <team>`).
+2. After `session_start` the session is the agent `<team>@<handle>` with the
+   agent role; writes show as `agent:software@basri`. Agent names repeat
+   across people; the identity is `<team>@<handle>`.
+3. First use of a team registers the person's agent for it. An owner's or
+   admin's is active at once; a member's waits for one approval by an owner
+   or admin — until then tools answer `approval_required`. Report it and
+   stop; do not retry under another team.
+4. The coordinator team is no exception: `as: "coordinator"`, unit
+   Management.
+5. The session never handles the token: it does not read, print, ask for or
+   write it. Owner-only acts (units, projects, review, decide) are the
+   person's, in the panel or through `clave add`, never through the agent
+   session.
+6. Agent tokens, `.env.clave` and `clave-<agent>` MCP entries exist only for
+   unattended agents (CI, loops). A person's interactive session does not
+   use them.
 
 ---
 
@@ -125,23 +135,25 @@ parent's prefix and adds its topic.
 
 ## Setup Grows Over Time
 
-There is no one-shot setup session. Setup is a command the person runs, once
-per repository per machine, and small additions later.
+There is no one-shot setup session. A person sets up a machine once and a
+repository once; additions come later.
 
 | Command | Does | Who runs it |
 |---|---|---|
-| `npx @dotlabshq/clave init` | First setup of a repository on this machine: matches the project, creates the person's own agent for the team, issues a token, writes the MCP entry (`clave-<team>`, `${CLAVE_TOKEN_<AGENT>}`, secret in git-ignored `.env.clave`) and the AGENTS.md block. Already set up → stops: "already set up (project X, agent Y); use `clave add`" | the person who will work there |
-| `clave add unit\|project\|agent` | Adds to an existing setup | unit, project: the coordinator, with the person token of an owner or admin, on the operator's approval. agent: the person themself |
+| `claude mcp add --scope user --transport http clave https://clave.one/v1/mcp --header "Authorization: Bearer <personal token>"` | The machine's one clave entry. `clave init` prints it with the token filled in | the person, once per machine, outside a session |
+| `npx @dotlabshq/clave init` | Writes the repository's `AGENTS.md` block (project key, `Work as: <team>`) and prints the user-scope command above if the machine lacks it | the person, once per repository |
+| `clave add unit\|project` | Adds a unit or project to the org | an owner or admin, on the operator's approval; the coordinator may prepare it, not run it with an agent session |
+| `clave add agent` | An **unattended** agent (CI, loop): agent token, `.env.clave`, `clave-<agent>` entry | the person who runs that automation |
 
 Rules:
 
 - **MCP entry first, then the session.** A running session never gains a
-  server; when an entry is added, open a new session.
-- The coordinator never attempts owner-only setup (units, projects, tokens)
-  with an agent token. It asks the operator to run `clave init` / `clave add`
-  or to do it in the panel.
-- A repository's `AGENTS.md` names its clave project key; without it the
-  session has no project and asks before guessing.
+  server; after the entry is added, open a new session.
+- The coordinator never attempts owner-only setup through its agent
+  session. It tells the operator what to run (`clave add …`) or to use the
+  panel.
+- A repository's `AGENTS.md` names its clave project key and team; without
+  them the session asks before guessing.
 
 ---
 
@@ -149,9 +161,10 @@ Rules:
 
 ```
 0. Boot (read-only)
-   whoami → actor must be an agent of this team
-   session_start { project } → read the brief; memory entries with
-   kind rule and status active are binding, everything else is notes
+   session_start { project, as: "<team>" } → read the brief; memory
+   entries with kind rule and status active are binding, everything else
+   is notes
+   whoami → actor must be <team>@<handle>, role agent
    Report: open items, questions asked to you, active freezes
 
 1. Pull
@@ -213,8 +226,10 @@ A project freeze refuses Class A requests; whoami lists freezes.
 
 | Condition | Action |
 |---|---|
-| `mcp__clave-<team>__*` tools missing | Check, in order: the MCP config of this folder names `clave-<team>`; the startup log; `whoami`. Report which step failed. Never ask for or print a token; the fix is `clave init` by the person, in a **new** session |
-| `whoami` shows a person or another team's agent | Stop; the folder holds the wrong identity. Report it, do not work under it |
+| `mcp__clave__*` tools missing | Check, in order: a user-scope `clave` entry exists (`claude mcp list`, names only); the startup log. Report which step failed. Never ask for or print a token; the fix is the person's one-time `claude mcp add --scope user …` (printed by `clave init`), then a **new** session |
+| An agent tool answers `session_required` | The connection was renewed (deploy, 30 min idle). Call `session_start { project, as }` again, then retry the step once |
+| `approval_required` after `session_start` | The person's agent for this team waits for an owner's or admin's approval. Report it and stop; do not switch to another team |
+| `whoami` shows a person, or another team's agent | Stop; `as` was wrong or missing. Call `session_start` with the team from `AGENTS.md`; do not work under the wrong identity |
 | No clave project key in `AGENTS.md` | Ask the operator for the key or for `clave init`; do not guess from the path |
 | Item held by someone else | Do not take it; ask or pick another claimable item |
 | Project frozen | Class A refused; report the freeze and wait |
@@ -232,5 +247,5 @@ Crux protocol, the team's owned paths.
 A boot line for the crux-team report:
 
 ```text
-Tasks:    clave — actor {name}@{person}, project {key}, {n} open, {n} asked | tools missing: {step}
+Tasks:    clave — actor {team}@{handle}, project {key}, {n} open, {n} asked | tools missing: {step} | approval_required
 ```

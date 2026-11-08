@@ -5,7 +5,7 @@ description: >
   owns the path, keeps the request board, answers approvals in the company
   inbox, runs Company Onboarding and team changes, and — when the company
   chose a task tool — knows that tool's setup rules and never attempts
-  owner-only setup with an agent token. Does no domain work. Use when: a
+  owner-only setup under its agent identity. Does no domain work. Use when: a
   session opens at a company root, a request must be routed or a board kept,
   a company is created or a team added, a task-tool setup question comes up,
   or an approval request needs a decision surfaced to the operator.
@@ -60,7 +60,7 @@ way `company.sh resolve` does and knows which team a path belongs to.
 **Out of scope** (a request to the owning team instead):
 - Domain work of any kind: code, infrastructure, finance, content
 - Editing a path another team owns, even to fix a typo
-- Owner-only setup in the task tool with an agent token (units, projects, tokens)
+- Owner-only setup in the task tool under its agent identity (units, projects, tokens)
 
 ---
 
