@@ -188,6 +188,7 @@ Owns:     {path} — {git branch, clean|N changed | not a git repository}
 Inbox:    {n} open, {n} accepted, {n} done-awaiting-requester  | empty
 Sent:     {n} of mine done or declined, waiting for me to pick up | none
 Tasks:    the task tool's boot line (its skill defines it) | none
+Sessions: running sub-sessions (team session only; see Sessions) | none
 Tests:    last result recorded in MEMORY.md, or "not run"
 Pending:  unfilled templates ({{…}}, [e.g. …], a `*.template.md` heading or
           a "HOW TO USE THIS TEMPLATE" comment left in COMPANY.md,
@@ -378,6 +379,48 @@ The notification is never the message: the file is.
 2. Inbox first: open requests are read before new work is taken.
 3. Sent: pick up any of your requests that are done or declined.
 4. Resume open TODOs in .crux/workspace/{team}/TODO.md before creating new ones.
+```
+
+## Sessions
+
+Where the host can run several sessions at once, a company works in three
+levels. A session's title is its name below.
+
+```text
+level         name                            cwd                       started by
+coordinator   {company} company               company root              the operator
+team session  {company}/{team} team session   the team's first `owns`   the coordinator (or operator)
+sub-session   {company}/{team}/{project}      the repository folder     its team session
+```
+
+- **Coordinator session** — the coordinator team. Starts team sessions;
+  never opens sub-sessions itself.
+- **Team session** — the team. Keeps the board inbox
+  (`.crux/requests/{team}/`) and the team's task-tool items, decides what
+  runs where, and starts one sub-session per repository that has work.
+- **Sub-session** — the same team identity (same company, team, roles,
+  task-tool identity), scoped to one repository. `{project}` is that
+  repository's task-tool key, else its directory name. It does the work it
+  was given, reports to its team session, and does not take board requests
+  on its own; anything for another team still goes through the board.
+
+Rules:
+
+1. A team with a single repository needs no sub-session: the team session
+   works there.
+2. Sessions are opened on demand, never to idle. A team with no open
+   request, item or TODO has no session; the coordinator opens one when
+   work lands for it or the operator asks.
+3. One team session per team, one sub-session per repository at a time.
+4. A sub-session ends when its work is done; its result (commits, closed
+   items) is relayed to the team session, which updates the board.
+5. The session title is a Crux name; a task tool's own session or step
+   label stays as its skill defines it.
+
+The team session's boot report adds:
+
+```text
+Sessions: {project} — {state}, one per running sub-session | none
 ```
 
 ## Ending a Piece of Work

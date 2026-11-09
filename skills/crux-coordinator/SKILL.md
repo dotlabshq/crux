@@ -272,6 +272,11 @@ Pending: {pending-items or none}
 In a company, use the crux-team boot report instead; it includes the team,
 the inbox and the owned repositories.
 
+Session levels in a company (coordinator `{company} company`, team session
+`{company}/{team} team session`, sub-session `{company}/{team}/{project}`)
+are defined in crux-team § Sessions. The coordinator starts team sessions,
+on demand only, and never sub-sessions.
+
 ---
 
 ## Task Tool
