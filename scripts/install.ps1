@@ -262,6 +262,28 @@ try {
   Install-Tree (Join-Path $archiveSource 'skills/crux-coordinator') (Join-Path $FrameworkHome 'skills/crux-coordinator')
   Install-Tree (Join-Path $archiveSource 'skills/crux-team') (Join-Path $FrameworkHome 'skills/crux-team')
 
+  # Task-tool skills (frontmatter `category: task-tool`) are company choices,
+  # not referenced by any agent: install them all so onboarding can offer them
+  # and a company's `task_tool` resolves.
+  foreach ($skillFile in Get-ChildItem -Path (Join-Path $archiveSource 'skills') -Filter 'SKILL.md' -Recurse -Depth 1 -File) {
+    $lines = Get-Content -Path $skillFile.FullName
+    if ($lines.Count -lt 2 -or $lines[0] -ne '---') { continue }
+    $isTaskTool = $false
+    for ($i = 1; $i -lt $lines.Count; $i++) {
+      if ($lines[$i] -eq '---') { break }
+      if ($lines[$i] -match '^\s*category:\s*task-tool\s*$') { $isTaskTool = $true; break }
+    }
+    if (-not $isTaskTool) { continue }
+
+    $skillName = $skillFile.Directory.Name
+    if ($DryRun) {
+      Write-Info "[dry-run] would install task-tool skill: $skillName"
+    } else {
+      Write-Info "Installing task-tool skill: $skillName"
+    }
+    Install-Tree $skillFile.Directory.FullName (Join-Path (Join-Path $FrameworkHome 'skills') $skillName)
+  }
+
   foreach ($role in $agentList) {
     $agentFile = Join-Path (Join-Path $FrameworkHome 'agents') "$role\AGENT.md"
     if (-not (Test-Path $agentFile)) { continue }

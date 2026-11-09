@@ -406,6 +406,24 @@ step "Installing skills..."
 install_tree "$EXTRACTED/skills/crux-coordinator" "$FRAMEWORK_HOME/skills/crux-coordinator"
 install_tree "$EXTRACTED/skills/crux-team" "$FRAMEWORK_HOME/skills/crux-team"
 
+# Task-tool skills (frontmatter `category: task-tool`) are company choices,
+# not referenced by any agent: install them all so onboarding can offer them
+# and a company's `task_tool` resolves.
+for src_skill in "$EXTRACTED"/skills/*/SKILL.md; do
+  [[ -f "$src_skill" ]] || continue
+  awk 'NR==1 && $0!="---"{exit 1} NR>1 && $0=="---"{exit 1}
+       /^[[:space:]]*category:[[:space:]]*task-tool[[:space:]]*$/{found=1; exit 0}
+       END{exit found?0:1}' "$src_skill" || continue
+  src_skill_dir="$(dirname "$src_skill")"
+  skill_name="$(basename "$src_skill_dir")"
+  if $DRY_RUN; then
+    info "[dry-run] would install task-tool skill: ${skill_name}"
+  else
+    info "Installing task-tool skill: ${skill_name}"
+  fi
+  install_tree "$src_skill_dir" "$FRAMEWORK_HOME/skills/${skill_name}"
+done
+
 # Find skills referenced by installed agents
 for role in "${AGENT_LIST[@]}"; do
   agent_file="$FRAMEWORK_HOME/agents/${role}/AGENT.md"
